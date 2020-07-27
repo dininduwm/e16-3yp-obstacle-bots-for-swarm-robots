@@ -60,9 +60,7 @@ while True:
             robotData[markerIds[i][0]][0] = conData[0]
             robotData[markerIds[i][0]][1] = conData[1]
 
-        print(robotData)
-
-
+    print(robotData)
     cv2.imshow('Cam', frame)
 
     #saving to the file
