@@ -1,4 +1,4 @@
-from math import atan
+from math import atan, sqrt
 
 def positions(start_x, start_y, start_gradient, end_x, end_y, end_gradient):
     # calculate the required gradient
