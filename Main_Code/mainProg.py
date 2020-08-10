@@ -1,12 +1,13 @@
 import cv2
 import numpy as np
 from math import atan
-import kalman
+from kalman import kalman
 
 cam = cv2.VideoCapture(0) # video source to capture images
 
 # robot datas
 robotData = {} 
+robotDataSet = set()
 
 # finction to convert for points to center point + angle
 def convert(points):
@@ -42,6 +43,9 @@ while True:
     # Detect the markers in the image8
     markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
 
+    # current marker id set
+    markerSet = set()
+    
     for i in range(len(markerCorners)):
         # ploting rectangles around the markers
         pts = np.array([markerCorners[i][0][0],markerCorners[i][0][1],markerCorners[i][0][2],markerCorners[i][0][3]], np.int32)
@@ -52,14 +56,41 @@ while True:
         conData = convert(markerCorners[i][0])
         frame = cv2.circle(frame, tuple(conData[0]), 1, (255,0,0), 2)
 
+        # add to the marker id set
+        markerSet.add(markerIds[i][0])
+
         # adding data to the dictionary
         if (markerIds[i][0] in robotData):
             robotData[markerIds[i][0]][0] = conData[0]
             robotData[markerIds[i][0]][1] = conData[1]
+
+            # adding data to the kalman obj
+            k_obj = robotData[markerIds[i][0]][2]       # grabbing the kalman object
+            kalVal = k_obj(conData[0][0], conData[0][1] , conData[1], True)    # calculating the kalman value
+
         else:
+            # add new key to the set
+            robotDataSet.add(markerIds[i][0])
+
+            k_obj = kalman(0, 0, 0)            # creating the kalman object
+            kalVal = k_obj(conData[0][0], conData[0][1], conData[1], True) # adding data to the kalman object
             robotData[markerIds[i][0]] = [0,0,0,0]
             robotData[markerIds[i][0]][0] = conData[0]
             robotData[markerIds[i][0]][1] = conData[1]
+            robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
+
+    # updating the not detected objects through kalman algo
+    differentSet = robotDataSet - markerSet
+    print(differentSet)
+            
+    for id in differentSet:
+        k_obj = robotData[id][2]       # grabbing the kalman object
+        kalVal = k_obj(0,0,0,False)    # calculating the kalman value
+
+        # setting data to the dataset
+        robotData[id][0][0] = kalVal[0]
+        robotData[id][0][1] = kalVal[1]
+        robotData[id][1] = kalVal[2]
 
     print(robotData)
     cv2.imshow('Cam', frame)
