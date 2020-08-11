@@ -21,10 +21,9 @@ def sendToSerial(ser, data):
     data = data + '\n'
     ser.write(data.encode())
 
+# this function is triggered periodicaly to broadcast data
 def serialAutoSend(ser, sharedData):
-
     frequency = 1   # frequency the data to be sent in seconds
-
     while True:
         sendToSerial(ser, sharedData[0])
         time.sleep(frequency)
