@@ -2,12 +2,16 @@ import cv2
 import numpy as np
 from math import atan
 from kalman import kalman
+from positioning_algo import positions  
 
 cam = cv2.VideoCapture(0) # video source to capture images
 
 # robot datas
 robotData = {} 
 robotDataSet = set()
+
+# position dictonary to bradcast
+broadcastPos = {}
 
 # finction to convert for points to center point + angle
 def convert(points):
@@ -79,9 +83,12 @@ while True:
             robotData[markerIds[i][0]][1] = conData[1]
             robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
 
+        # adding data to be broadcasted
+        # TODO: destination have to be changed
+        broadcastPos[markerIds[i][0]] = positions(conData[0], conData[1], [0,0], 0)
+
     # updating the not detected objects through kalman algo
     differentSet = robotDataSet - markerSet
-    print(differentSet)
             
     for id in differentSet:
         k_obj = robotData[id][2]       # grabbing the kalman object
@@ -92,7 +99,12 @@ while True:
         robotData[id][0][1] = kalVal[1]
         robotData[id][1] = kalVal[2]
 
-    print(robotData)
+        # adding data to be broadcasted
+        # TODO: destination have to be changed
+        broadcastPos[id] = positions([kalVal[0], kalVal[1]], kalVal[2], [0,0], 0)
+
+    # print(robotData)
+    print(broadcastPos)
     cv2.imshow('Cam', frame)
 
     #saving to the file
