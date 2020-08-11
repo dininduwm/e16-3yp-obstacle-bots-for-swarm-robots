@@ -1,8 +1,26 @@
 import cv2
 import numpy as np
+import time
 from math import atan
 from kalman import kalman
 from positioning_algo import positions  
+import json
+import serial
+from multiprocessing import Process, Manager
+from serialCom import readSerialData, sendToSerial, serialAutoSend
+
+# TODO: to be used in future 
+# important variables
+manager = Manager()
+sharedData = manager.list()
+sharedData.append("") # json string
+
+# com port of the device
+comPort = '/dev/ttyACM0'
+
+# making the connection with the seral port
+ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
+ser.flushInput()   
 
 cam = cv2.VideoCapture(0) # video source to capture images
 
@@ -23,7 +41,10 @@ def convert(points):
 
     # calculating the center point
     center = [int((p1[0]+p2[0]+p3[0]+p4[0])/4), int((p1[1]+p2[1]+p3[1]+p4[1])/4)]
-    angle = atan((p1[1]-p2[1])/(p1[0]-p2[0]))
+    if (p1[0] - p2[0] == 0):
+        angle = atan(float('inf'))
+    else:
+        angle = atan((p1[1]-p2[1])/(p1[0]-p2[0]))
 
     return [center, angle]
 
@@ -41,78 +62,104 @@ parameters =  cv2.aruco.DetectorParameters_create()
 # saving to a video
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
 
-while True:
-    ret, frame = cam.read()    
+def camProcess():
+    global sharedData
+    print("Cam Process Started")
+    while True:
+        ret, frame = cam.read()    
 
-    # Detect the markers in the image8
-    markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
+        # Detect the markers in the image8
+        markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
 
-    # current marker id set
-    markerSet = set()
-    
-    for i in range(len(markerCorners)):
-        # ploting rectangles around the markers
-        pts = np.array([markerCorners[i][0][0],markerCorners[i][0][1],markerCorners[i][0][2],markerCorners[i][0][3]], np.int32)
-        pts = pts.reshape((-1,1,2))
-        cv2.polylines(frame,[pts],True,(0,255,255))
+        # current marker id set
+        markerSet = set()
+        
+        for i in range(len(markerCorners)):
+            # ploting rectangles around the markers
+            pts = np.array([markerCorners[i][0][0],markerCorners[i][0][1],markerCorners[i][0][2],markerCorners[i][0][3]], np.int32)
+            pts = pts.reshape((-1,1,2))
+            cv2.polylines(frame,[pts],True,(0,255,255))
 
-        # converting to center point
-        conData = convert(markerCorners[i][0])
-        frame = cv2.circle(frame, tuple(conData[0]), 1, (255,0,0), 2)
+            # converting to center point
+            conData = convert(markerCorners[i][0])
+            frame = cv2.circle(frame, tuple(conData[0]), 1, (255,0,0), 2)
 
-        # add to the marker id set
-        markerSet.add(markerIds[i][0])
+            # add to the marker id set
+            markerSet.add(markerIds[i][0])
 
-        # adding data to the dictionary
-        if (markerIds[i][0] in robotData):
-            robotData[markerIds[i][0]][0] = conData[0]
-            robotData[markerIds[i][0]][1] = conData[1]
+            # adding data to the dictionary
+            if (markerIds[i][0] in robotData):
+                robotData[markerIds[i][0]][0] = conData[0]
+                robotData[markerIds[i][0]][1] = conData[1]
 
-            # adding data to the kalman obj
-            k_obj = robotData[markerIds[i][0]][2]       # grabbing the kalman object
-            kalVal = k_obj(conData[0][0], conData[0][1] , conData[1], True)    # calculating the kalman value
+                # adding data to the kalman obj
+                k_obj = robotData[markerIds[i][0]][2]       # grabbing the kalman object
+                kalVal = k_obj(conData[0][0], conData[0][1] , conData[1], True)    # calculating the kalman value
 
-        else:
-            # add new key to the set
-            robotDataSet.add(markerIds[i][0])
+            else:
+                # add new key to the set
+                robotDataSet.add(markerIds[i][0])
 
-            k_obj = kalman(0, 0, 0)            # creating the kalman object
-            kalVal = k_obj(conData[0][0], conData[0][1], conData[1], True) # adding data to the kalman object
-            robotData[markerIds[i][0]] = [0,0,0,0]
-            robotData[markerIds[i][0]][0] = conData[0]
-            robotData[markerIds[i][0]][1] = conData[1]
-            robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
+                k_obj = kalman(0, 0, 0)            # creating the kalman object
+                kalVal = k_obj(conData[0][0], conData[0][1], conData[1], True) # adding data to the kalman object
+                robotData[markerIds[i][0]] = [0,0,0,0]
+                robotData[markerIds[i][0]][0] = conData[0]
+                robotData[markerIds[i][0]][1] = conData[1]
+                robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
 
-        # adding data to be broadcasted
-        # TODO: destination have to be changed
-        broadcastPos[markerIds[i][0]] = positions(conData[0], conData[1], [0,0], 0)
+            # adding data to be broadcasted
+            # TODO: destination have to be changed
+            broadcastPos[int(markerIds[i][0])] = positions(conData[0], conData[1], [0,0], 0)
 
-    # updating the not detected objects through kalman algo
-    differentSet = robotDataSet - markerSet
-            
-    for id in differentSet:
-        k_obj = robotData[id][2]       # grabbing the kalman object
-        kalVal = k_obj(0,0,0,False)    # calculating the kalman value
+        # updating the not detected objects through kalman algo
+        differentSet = robotDataSet - markerSet
+                
+        for id in differentSet:
+            k_obj = robotData[id][2]       # grabbing the kalman object
+            kalVal = k_obj(0,0,0,False)    # calculating the kalman value
 
-        # setting data to the dataset
-        robotData[id][0][0] = kalVal[0]
-        robotData[id][0][1] = kalVal[1]
-        robotData[id][1] = kalVal[2]
+            # setting data to the dataset
+            robotData[id][0][0] = kalVal[0]
+            robotData[id][0][1] = kalVal[1]
+            robotData[id][1] = kalVal[2]
 
-        # adding data to be broadcasted
-        # TODO: destination have to be changed
-        broadcastPos[id] = positions([kalVal[0], kalVal[1]], kalVal[2], [0,0], 0)
+            # adding data to be broadcasted
+            # TODO: destination have to be changed
+            broadcastPos[id] = positions([kalVal[0], kalVal[1]], kalVal[2], [0,0], 0)
 
-    # print(robotData)
-    print(broadcastPos)
-    cv2.imshow('Cam', frame)
+        # print(robotData)
+        # json encoding data before send 
+        jsonEncodedData = json.dumps(broadcastPos)
+        #print(jsonEncodedData)
 
-    #saving to the file
-    #outVid.write(frame)
+        # addig to the shared variable
+        sharedData[0] = jsonEncodedData
 
-    if (cv2.waitKey(1) == ord('q')):
-        break
+        cv2.imshow('Cam', frame)
 
-cam.release()
-#outVid.release()
-cv2.destroyAllWindows()
+        #saving to the file
+        #outVid.write(frame)
+
+        if (cv2.waitKey(1) == ord('q')):
+            break
+
+    cam.release()
+    #outVid.release()
+    cv2.destroyAllWindows()
+
+# main programme
+if __name__ == '__main__':
+    # adding the cam process to the pool
+    p1 = Process(target=camProcess)
+    # reading recived data from the arduino
+    p2 = Process(target=readSerialData, args=(ser,sharedData))
+    # send data to the arduino
+    p3 = Process(target=serialAutoSend, args=(ser, sharedData))
+
+    p1.start()   
+    p2.start() 
+    p3.start()   
+
+    p1.join()   
+    p2.join() 
+    p3.join()

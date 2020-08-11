@@ -2,7 +2,10 @@ from math import atan, sqrt
 
 def positions(start_pos, start_angle, end_pos, end_angle):
     # calculate the required gradient
-    required_gradient = (end_pos[1] - start_pos[1]) / (end_pos[0] - start_pos[0])
+    if (end_pos[0] - start_pos[0] == 0):
+        required_gradient = float('inf')
+    else:
+        required_gradient = (end_pos[1] - start_pos[1]) / (end_pos[0] - start_pos[0])
     # calculate howmany degrees does the robot turn at the beginning
     start_turn = atan(required_gradient) - start_angle
     # calculate howfar does the robot should move
