@@ -3,7 +3,7 @@
 #include <ArduinoJson.h>    // json phrasing library
 
 // id of the bot
-String myID = "33";
+String myID = "1";
 
 // creating software serial object
 SoftwareSerial mySerial(6, 12);
@@ -79,9 +79,9 @@ void loop()
     Serial.write(mySerial.read());
     */
 
-  if (Serial.available() > 0)
+  if (mySerial.available() > 0)
   {
     // parsing the json string
-    parseJson(Serial.read());
+    parseJson(mySerial.read());
   }
 }

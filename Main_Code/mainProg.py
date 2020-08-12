@@ -16,7 +16,7 @@ sharedData = manager.list()
 sharedData.append("") # json string
 
 # com port of the device
-comPort = '/dev/ttyACM0'
+comPort = '/dev/ttyUSB0'
 
 # making the connection with the seral port
 ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
