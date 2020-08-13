@@ -22,7 +22,7 @@ comPort = '/dev/ttyUSB0'
 ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
 ser.flushInput()   
 
-cam = cv2.VideoCapture('http://192.168.1.104:8081/video') # video source to capture images
+cam = cv2.VideoCapture('http://172.20.10.11:8081/video') # video source to capture images
 
 # robot datas
 robotData = {} 
@@ -63,6 +63,11 @@ parameters =  cv2.aruco.DetectorParameters_create()
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
 
 def camProcess():
+
+    # destination point
+    desX = 400
+    desY = 50
+
     global sharedData
     print("Cam Process Started")
     while True:
@@ -108,8 +113,7 @@ def camProcess():
                 robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
 
             # adding data to be broadcasted
-            # TODO: destination have to be changed
-            broadcastPos[int(markerIds[i][0])] = positions(conData[0], conData[1], [0,0], 0)
+            broadcastPos[int(markerIds[i][0])] = positions(conData[0], conData[1], [desX,desY], 0)
 
         # updating the not detected objects through kalman algo
         differentSet = robotDataSet - markerSet
@@ -124,22 +128,24 @@ def camProcess():
             robotData[id][1] = kalVal[2]
 
             # adding data to be broadcasted
-            # TODO: destination have to be changed
-            broadcastPos[id] = positions([kalVal[0], kalVal[1]], kalVal[2], [0,0], 0)
+            broadcastPos[id] = positions([kalVal[0], kalVal[1]], kalVal[2], [desX, desY], 0)
 
         # print(robotData)
-        # json encoding data before send 
-        jsonEncodedData = json.dumps(broadcastPos)
 
         try:
-            print(broadcastPos[1][0])
+            print(broadcastPos[1][0], desX, desY)
+
+            # add destination
+            if (19 in robotData and True):
+                desX = robotData[19][0][0]
+                desY = robotData[19][0][1]
         except:
             pass
-        
+                
         #print(jsonEncodedData)
 
         # addig to the shared variable
-        sharedData[0] = jsonEncodedData
+        sharedData[0] = broadcastPos
 
         cv2.imshow('Cam', frame)
 
@@ -158,14 +164,14 @@ if __name__ == '__main__':
     # adding the cam process to the pool
     p1 = Process(target=camProcess)
     # reading recived data from the arduino
-    p2 = Process(target=readSerialData, args=(ser,sharedData))
+    # p2 = Process(target=readSerialData, args=(ser,sharedData))
     # send data to the arduino
     p3 = Process(target=serialAutoSend, args=(ser, sharedData))
 
     p1.start()   
-    p2.start() 
+    # p2.start() 
     p3.start()   
 
     p1.join()   
-    p2.join() 
+    # p2.join() 
     p3.join()
