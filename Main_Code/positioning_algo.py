@@ -1,35 +1,58 @@
-from math import atan, sqrt
+from math import atan, sqrt, acos, pi
 
-def positions(start_pos, start_angle, end_pos, end_angle):
-    # calculate the required gradient
-    if (end_pos[0] - start_pos[0] == 0):
-        required_gradient = float('inf')
-    else:
-        required_gradient = (end_pos[1] - start_pos[1]) / (end_pos[0] - start_pos[0])
 
-    # calculate the required angle
-    required_angle = atan(required_gradient)#3.14159 - atan(required_gradient) if (pow(start_pos[0], 2) + pow(start_pos[1], 2) 
-        #     < pow(end_pos[0], 2) + pow(end_pos[1], 2)) else atan(required_gradient)
+def dot_poduct(a, b):
+        return ((a[0] * b[0]) + (a[1] * b[1]))
+
+def modulus(a):
+        return sqrt(pow(a[0],2) + pow(a[1], 2))
+
+def angle(a, b):
+        return acos(abs(dot_poduct(a,b) / (modulus(a) * modulus(b)))) 
+
+def distance(p0, p1):
+        return sqrt(pow(p0[1] - p1[1], 2) + pow(p0[0] - p1[0], 2))
+
+
+def positions(start_pos, head_pos, end_pos, end_angle):
+        x0, y0 = start_pos[0], start_pos[1]
+        xd, yd = end_pos[0], end_pos[1]
+        xfl, yfl = head_pos[0][0], head_pos[0][1]
+        xfr, yfr = head_pos[1][0], head_pos[1][1]
+        xd, yd = end_pos[0], end_pos[1]
+        xf, yf = (xfr + xfl) / 2, (yfr + yfl) / 2
+
+        a = [xd - x0, yd - y0]
+        b = [xf - x0, yf - y0]
+
+        angle_s = angle(a, b)
+        angle_m = pi - angle_s
+
+        c = [x0 - xd, y0 - yd]
+        d = [xf - xd, yf - yd]
+
+        dist_A = distance(start_pos, end_pos) # to return 
+        dist_B = distance(end_pos, [xf, yf]) # karnaya
+        dist_C = distance(start_pos, [xf, yf])
+
+        if(dist_B**2 > (dist_A ** 2 + dist_C ** 2)):
+                start_turn = angle_m
         
-    # calculate howmany degrees does the robot turn at the beginning
-    start_turn = required_angle - start_angle
-    # calculate howfar does the robot should move
-    distance = sqrt(pow((end_pos[1] - start_pos[1]), 2) + pow((end_pos[0] - start_pos[0]), 2))
-    # calculate howmany degrees does the robot turn at the end
-    end_turn = end_angle - required_angle
+        else: start_turn = angle_s
 
-    # neglect the small angles
-    min_angle = 0.03491
-    min_distance = 10
+        if(distane([xfr, yfr], end_pos) < distance([xfl, yfl], end_pos)):
+                start_turn = - angle_s
+        elif(distane([xfr, yfr], end_pos) == distance([xfl, yfl], end_pos)):
+                if(distance([xf, yf], end_pos) == distance(start_pos, end_pos)):
+                        start_turn  = pi
 
-    start_angle = start_angle if end_pos[1] < start_pos[1] else 3.14159 - start_angle
-    
-    start_turn = start_turn if abs(start_turn) > min_angle else 0
-    end_turn = end_turn if abs(end_turn) > min_angle else 0
-    distance = distance if abs(distance) > min_distance else 0
+        # neglect the small angles
+        min_angle = 0.03491
+        min_distance = 10
 
+        start_turn = start_turn if abs(start_turn) > min_angle else 0
+        dist_A = dist_A if dist_A > min_distance else 0
 
-
-    return (round(start_turn, 4), round(distance, 4), round(end_turn, 4))
+        return (round(start_turn, 4), round(dist_A, 4), round(end_angle, 4))
 
 
