@@ -22,7 +22,8 @@ comPort = '/dev/ttyUSB0'
 ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
 ser.flushInput()   
 
-cam = cv2.VideoCapture('http://172.20.10.11:8081/video') # video source to capture images
+#cam = cv2.VideoCapture('http://192.168.1.101:8080/video') # video source to capture images
+cam = cv2.VideoCapture(0) # video source to capture images
 
 # robot datas
 robotData = {} 
@@ -88,6 +89,9 @@ def camProcess():
             # converting to center point
             conData = convert(markerCorners[i][0])
             frame = cv2.circle(frame, tuple(conData[0]), 1, (255,0,0), 2)
+
+            frame = cv2.circle(frame, tuple(markerCorners[i][0][1]), 1, (0,255,0), 2)
+            frame = cv2.circle(frame, tuple(markerCorners[i][0][2]), 1, (0,0,255), 2)
 
             # add to the marker id set
             markerSet.add(markerIds[i][0])

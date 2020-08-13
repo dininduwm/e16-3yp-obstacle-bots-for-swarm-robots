@@ -22,7 +22,7 @@ def positions(start_pos, start_angle, end_pos, end_angle):
     min_angle = 0.03491
     min_distance = 10
 
-    start_angle = start_angle if end_pos[1] < start_pos[1] else 180 - start_angle
+    start_angle = start_angle if end_pos[1] < start_pos[1] else 3.14159 - start_angle
     
     start_turn = start_turn if abs(start_turn) > min_angle else 0
     end_turn = end_turn if abs(end_turn) > min_angle else 0
