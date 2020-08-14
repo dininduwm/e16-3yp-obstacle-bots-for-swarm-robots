@@ -97,15 +97,15 @@ void loop()
   }
 
   // change the direction if the travelDis id increasing
-  if (prevDist < travelDis)
-  {
-    dirCorrection = -1;
-  }
-  else
-  {
-    dirCorrection = 1;
-  }
-  prevDist = travelDis;
+  // if (prevDist < travelDis)
+  // {
+  //   dirCorrection = -1;
+  // }
+  // else
+  // {
+  //   dirCorrection = 1;
+  // }
+  // prevDist = travelDis;
 
   // set the movingDone flag if the robo is at the destination
   if (travelDis < distThresh)
@@ -117,7 +117,7 @@ void loop()
 
   if ((tcount < 40) && turningDone && newData && !movingDone) //run motors with PID if conditions are satisfied 
   {
-    spd = dirCorrection * spd; 
+     
     Setpoint = 0; // set the gyro setpoint to 0
     updateGyro();
     Input = (double)angle;
