@@ -4,7 +4,7 @@
 #include <PID_v1.h>
 #include <Wire.h>
 
-#define EN_R 9  // right motor enable 
+#define EN_R 9  // right motor enable
 #define EN_L 10 // left motor enable
 
 #define ML_A1 5 // left motor in 1
@@ -12,19 +12,31 @@
 
 #define MR_A1 3 // right motor in 1
 #define MR_A2 2 // right motor in 2
-  
+
+void parseJson(char c);
 void calculate_IMU_error();
 void updateGyro();
 void MR(int val);
 void ML(int val);
+void turn();
+void mov(int spd);
 double radToDegree(double rads);
 
-const int MPU = 0x68; // MPU6050 I2C address
+const float turningThresh = 0.15; // threshold to stop turning
+const double distThresh = 50;     // threshold to stop moving
+const int MPU = 0x68;             // MPU6050 I2C address
 float GyroX, GyroY, GyroZ;
-float angle;
-float GyroErrorX;
-float elapsedTime, currentTime, previousTime;
+float angle;                                  // Gyro angle
+float GyroErrorX;                             // Gyro error
+float elapsedTime, currentTime, previousTime; // time stamps for gyro calculaions
 int c = 0;
+
+//json decoded
+double startAngle, endAngle, travelDis;
+
+//PID variables
+double Setpoint, Input, Output;
+bool newData = false;
 
 // id of the bot
 String myID = "1";
@@ -32,19 +44,12 @@ String myID = "1";
 // creating software serial object
 SoftwareSerial mySerial(6, 12);
 
-// variables after decoding
-double startAngle;
-double endAngle;
-double travelDis;
-double Setpoint, Input, Output;
-double mov_Setpoint, mov_Input, mov_Output;
-
 // variables to hold temp data
 String reciveStr = "";
 StaticJsonDocument<250> doc; // json Doc
-PID myPID(&Input, &Output, &Setpoint, 7, 0, 0.35, DIRECT);
-PID moving(&Input, &Output, &Setpoint, 2, 0, 0.3, DIRECT);
 
+//PID configuration
+PID myPID(&Input, &Output, &Setpoint, 7, 0, 0.35, DIRECT);
 
 void setup()
 {
@@ -59,86 +64,175 @@ void setup()
   mySerial.begin(9600); // Setting the baud rate of HC-12 Module
   Serial.begin(9600);   // Setting the baud rate of Serial Monitor (Arduino)
 
-  myPID.SetOutputLimits(-255, 255);
-  myPID.SetSampleTime(20);
+  myPID.SetOutputLimits(-255, 255); // limits of the PID output
+  myPID.SetSampleTime(20);          // refresh rate of the PID
   myPID.SetMode(AUTOMATIC);
   Setpoint = 0;
 
-  moving.SetOutputLimits(-255, 255);
-  moving.SetSampleTime(20);
-  moving.SetMode(AUTOMATIC);
-  Setpoint = 0;
-
-  calculate_IMU_error();
+  calculate_IMU_error();   // calculate the Gyro module error
   delay(20);
+  mySerial.println("Bot initiated");
 }
 
+bool turningDone = false; // flag true if tuning is done
+bool movingDone = false;  // flag true if robot at the destination
+double prvstartAngle = 0; // vaiable used to track start angle changes
+double spd = 100;       // speed of the movements: [-255, 255]
 
-bool flag = false;
-double prvstartAngle = 0;
+int tcount = 0;
+double dirCorrection = -1;
+double prevDist = 0;
+
 void loop()
 {
-  
-   if (mySerial.available() > 0)
+  if (mySerial.available() > 0)
   {
-    // parsing the json string
-    parseJson(mySerial.read());
+    parseJson(mySerial.read()); // parsing the json string
   }
 
-  if(prvstartAngle != startAngle){
-    Setpoint -= 1*radToDegree(startAngle);
+  // start turning process if the start angle is above the "turningThresh"
+  if ((-turningThresh > startAngle) || (turningThresh < startAngle))
+  {
+    turn();
   }
-  prvstartAngle = startAngle;
-  
-  updateGyro();
-  Input = (double)angle;
-  myPID.Compute();
 
-  ML(Output);
-  MR(-Output);
+  // change the direction if the travelDis id increasing
+  if (prevDist < travelDis)
+  {
+    dirCorrection = -1;
+  }
+  else
+  {
+    dirCorrection = 1;
+  }
+  prevDist = travelDis;
+
+  // set the movingDone flag if the robo is at the destination
+  if (travelDis < distThresh)
+  {
+    movingDone = true;
+  }else{
+    movingDone = false;
+  }
+
+  if ((tcount < 40) && turningDone && newData && !movingDone) //run motors with PID if conditions are satisfied 
+  {
+    spd = dirCorrection * spd; 
+    Setpoint = 0; // set the gyro setpoint to 0
+    updateGyro();
+    Input = (double)angle;
+    myPID.Compute();
+    ML(spd + Output);
+    MR(spd - Output);
+  }
+  else
+  {
+    newData = false;
+    ML(0);
+    MR(0);
+  }
+
+  tcount++;
+  delay(5);
+}
+
+void turn()
+{
+  turningDone = false; 
+  angle = 0;    //set the current angle to zer0
+  Setpoint = -1 * radToDegree(startAngle); // set the setpoint as the startAngle
+
+  prvstartAngle = startAngle; // update the prvstartAngle
+  mySerial.println("started turning PID");
   
+  while (!turningDone)
+  {
+    if (mySerial.available() > 0)
+    {
+
+      // parsing the json string
+      parseJson(mySerial.read());
+    }
+
+    if (prvstartAngle != startAngle) // if there any changes in startAngle, set the current angle to zero and set the set point
+    {
+      Setpoint = -1 * radToDegree(startAngle);
+      angle = 0;
+      prvstartAngle = startAngle;
+    }
+    updateGyro();
+    Input = (double)angle;
+    myPID.Compute();
+
+    ML(Output);
+    MR(-Output);
+    if ((-turningThresh < startAngle) && (turningThresh > startAngle))// exit form the loop if the startAngle is bounded in threshold 
+    {
+      mySerial.println("turning done");
+      turningDone = true;
+    }
+  }
+  angle = 0;
+  ML(0);
+  MR(0);
 }
 
 void ML(int val)
-{ // motor function left(val == speed value)
+{ // motor function left(val : speed value)
 
-  if (val > 0)// if the motor speed is positive
+  //handle overflow in val
+  if (val < -255)
+  {
+    val = -255;
+  }
+  else if (val > 255)
+  {
+    val = 255;
+  }
+
+  if (val > 0) // if the motor speed is positive
   {
     digitalWrite(ML_A2, HIGH); // set the motor control signals
     digitalWrite(ML_A1, LOW);
-    analogWrite(EN_L, val);    // give pwm signal to motor enable 
+    analogWrite(EN_L, val); // give pwm signal to motor enable
   }
   else
   {
     digitalWrite(ML_A2, LOW); // set the motor control signals
     digitalWrite(ML_A1, HIGH);
-    analogWrite(EN_L, abs(val)); // give pwm signal to motor enable 
+    analogWrite(EN_L, abs(val)); // give pwm signal to motor enable
   }
 }
 
 void MR(int val)
-{ // motor function right(val == speed value)
+{ // motor function right(val : speed value)
+  
+  //handle overflow in val
+  if (val < -255)
+  {
+    val = -255;
+  }
+  else if (val > 255)
+  {
+    val = 255;
+  }
 
-  if (val > 0)// if the motor speed is positive
+  if (val > 0) // if the motor speed is positive
   {
 
-    digitalWrite(MR_A1, HIGH);// set the motor control signals
+    digitalWrite(MR_A1, HIGH); // set the motor control signals
     digitalWrite(MR_A2, LOW);
-    analogWrite(EN_R, val);// give pwm signal to motor enable 
+    analogWrite(EN_R, val); // give pwm signal to motor enable
   }
   else
   {
     digitalWrite(MR_A1, LOW); // set the motor control signals
     digitalWrite(MR_A2, HIGH);
-    analogWrite(EN_R, abs(val)); // give pwm signal to motor enable 
+    analogWrite(EN_R, abs(val)); // give pwm signal to motor enable
   }
 }
 
-void movStraight(int spd)
-{
-  MR(spd);
-  ML(spd);
-}
+
 
 void updateGyro()
 {
@@ -156,7 +250,6 @@ void updateGyro()
   GyroX = GyroX - GyroErrorX; // GyroErrorX ~(-0.56)
 
   angle = angle + GyroX * elapsedTime; // deg/s * s = deg
-  Serial.println(angle);
 }
 
 double radToDegree(double rads)
@@ -171,8 +264,8 @@ void calculate_IMU_error()
   Wire.begin();                // Initialize comunication
   Wire.beginTransmission(MPU); // Start communication with MPU6050 // MPU=0x68
   Wire.write(0x6B);            // Talk to 0 register 6B
-  Wire.write(0x00);            // reset 
-  Wire.endTransmission(true);  
+  Wire.write(0x00);            // reset
+  Wire.endTransmission(true);
 
   Wire.beginTransmission(MPU);
   Wire.write(0x1B); // Talk to the GYRO_CONFIG register (1B hex)
@@ -202,14 +295,13 @@ void calculate_IMU_error()
   Serial.println(GyroErrorX);
 }
 
-int count = 0;//temp
+int count = 0; //temp
 
 // function to decode
 void parseJson(char c)
 {
   if (c == '\n')
   {
-    Serial.println(reciveStr);
     // declaring character array
     char char_array[reciveStr.length() + 1];
     // copying the contents of the
@@ -220,27 +312,26 @@ void parseJson(char c)
     DeserializationError error = deserializeJson(doc, char_array);
 
     // writing data to variables
-    if(count == 3){
-      startAngle = doc[myID][0];
-      count = 0;
-    }
-    count++;
-    endAngle = doc[myID][2];
-    travelDis = doc[myID][1];
 
-    // printing data
-    Serial.print("Start Angle = ");
-    Serial.print(startAngle);
-    Serial.print("; End Angle = ");
-    Serial.print(endAngle);
-    Serial.print("; Travel Dis = ");
-    Serial.println(travelDis);
+    JsonObject obj = doc.as<JsonObject>();
+
+    if (obj.containsKey(myID))
+    {
+      newData = true; // set the newdata flag
+      tcount = 0;   //when tcount < delay_constant the motor PID will start
+      startAngle = obj[myID][0];
+
+      mySerial.println(reciveStr + String(startAngle) + " , " + String(dirCorrection));
+
+      endAngle = obj[myID][2];
+      travelDis = obj[myID][1];
+    }
 
     // Test if parsing succeeds.
     if (error)
     {
-      Serial.print(F("deserializeJson() failed: "));
-      Serial.println(error.c_str());
+      mySerial.print(F("deserializeJson() failed: "));
+      mySerial.println(error.c_str());
     }
 
     // clearing the recieved Str
