@@ -31,6 +31,13 @@ float GyroErrorX;                             // Gyro error
 float elapsedTime, currentTime, previousTime; // time stamps for gyro calculaions
 int c = 0;
 
+bool idflag = false;
+String id = "";
+double arr[3]{}; // arr to hold startAngle, travelDis, endAngle
+int index = 0;  // index to track the arr index
+bool good = false; // bool to check the correct id
+
+
 //json decoded
 double startAngle, endAngle, travelDis;
 
@@ -109,7 +116,7 @@ void loop()
 
   // set the movingDone flag if the robo is at the destination
   if (travelDis < distThresh)
-  {
+  {s
     movingDone = true;
   }else{
     movingDone = false;
@@ -300,45 +307,38 @@ int count = 0; //temp
 // function to decode
 void parseJson(char c)
 {
-  if (c == '\n')
+  if (c == '\n') // if the endline char
   {
-    // declaring character array
-    char char_array[reciveStr.length() + 1];
-    // copying the contents of the
-    // string to char array
-    strcpy(char_array, reciveStr.c_str());
-
-    // Deserialize the JSON document
-    DeserializationError error = deserializeJson(doc, char_array);
-
-    // writing data to variables
-
-    JsonObject obj = doc.as<JsonObject>();
-
-    if (obj.containsKey(myID))
-    {
-      newData = true; // set the newdata flag
-      tcount = 0;   //when tcount < delay_constant the motor PID will start
-      startAngle = obj[myID][0];
-
-      mySerial.println(reciveStr + String(startAngle) + " , " + String(dirCorrection));
-
-      endAngle = obj[myID][2];
-      travelDis = obj[myID][1];
-    }
-
-    // Test if parsing succeeds.
-    if (error)
-    {
-      mySerial.print(F("deserializeJson() failed: "));
-      mySerial.println(error.c_str());
-    }
-
-    // clearing the recieved Str
-    reciveStr = "";
+    idflag = true; // start to read the id
+    good = false; // id is not good
   }
   else
   {
-    reciveStr += c; // add the new string to the total string
+    if (c == ',') // if comma found
+    {
+      if (good) // if id is good
+      {
+        arr[index] = id.toDouble(); // update the arr
+        if (index == 2) 
+        {
+          newData = true; // set the newdata flag
+          tcount = 0;   //when tcount < delay_constant the motor PID will start
+          
+          Serial.println("data recieved");
+          startAngle = arr[0]; // do what you want
+          endAngle = arr[2];
+          travelDis = arr[1];
+          mySerial.println("data:"+String(startAngle) + " , " + String(endAngle)+  " , " +  String(travelDis));
+        }
+        index = (index + 1) % 3; // increment the index
+      }
+      if (idflag) // if id is getting
+      {
+        if (id == myID) good = true; // id is good
+      }
+      id = ""; // reset the id
+      idflag = false; // id reading done`
+    }
+    else id += c; // append char to the id
   }
 }
