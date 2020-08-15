@@ -341,4 +341,9 @@ void parseJson(char c)
     }
     else id += c; // append char to the id
   }
+  if(mySerial.available()>0){
+    parseJson(mySerial.read());
+  }
+
+
 }
