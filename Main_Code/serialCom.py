@@ -1,4 +1,5 @@
 import time
+import json
 
 # function to read the data from the serial
 def readSerialData(ser, sharedData):   
@@ -18,12 +19,23 @@ def readSerialData(ser, sharedData):
 
 def sendToSerial(ser, data):
     # sending data throug the serial port
-    data = data + '\n'
+    data = data + "\n"
     ser.write(data.encode())
 
 # this function is triggered periodicaly to broadcast data
 def serialAutoSend(ser, sharedData):
-    frequency = 1   # frequency the data to be sent in seconds
+    interval = 0.15  # frequency the data to be sent in seconds
+
     while True:
-        sendToSerial(ser, sharedData[0])
-        time.sleep(frequency)
+        # sendToSerial(ser, sharedData[0])
+        for key in sharedData[0]:
+            #print(key, sharedData[0][key])
+
+            # creating a String
+            data = str(key) + ',' + ','.join(map(str, sharedData[0][key])) + ','
+            print(data)
+
+            # sending data through serial
+            sendToSerial(ser, data)
+
+            time.sleep(interval)

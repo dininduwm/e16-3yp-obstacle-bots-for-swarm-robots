@@ -22,7 +22,8 @@ comPort = '/dev/ttyUSB0'
 ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
 ser.flushInput()   
 
-cam = cv2.VideoCapture('http://192.168.1.104:8081/video') # video source to capture images
+cam = cv2.VideoCapture('http://192.168.1.100:8080/video') # video source to capture images
+#cam = cv2.VideoCapture(0) # video source to capture images
 
 # robot datas
 robotData = {} 
@@ -41,12 +42,8 @@ def convert(points):
 
     # calculating the center point
     center = [int((p1[0]+p2[0]+p3[0]+p4[0])/4), int((p1[1]+p2[1]+p3[1]+p4[1])/4)]
-    if (p1[0] - p2[0] == 0):
-        angle = atan(float('inf'))
-    else:
-        angle = atan((p1[1]-p2[1])/(p1[0]-p2[0]))
-
-    return [center, angle]
+    
+    return [center, [p2, p3]]
 
 # parameters for saving the video
 frameRate = 21
@@ -63,6 +60,11 @@ parameters =  cv2.aruco.DetectorParameters_create()
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
 
 def camProcess():
+
+    # destination point
+    desX = 400
+    desY = 50
+
     global sharedData
     print("Cam Process Started")
     while True:
@@ -84,6 +86,9 @@ def camProcess():
             conData = convert(markerCorners[i][0])
             frame = cv2.circle(frame, tuple(conData[0]), 1, (255,0,0), 2)
 
+            frame = cv2.circle(frame, tuple(markerCorners[i][0][1]), 1, (0,255,0), 2)
+            frame = cv2.circle(frame, tuple(markerCorners[i][0][2]), 1, (0,0,255), 2)
+
             # add to the marker id set
             markerSet.add(markerIds[i][0])
 
@@ -94,52 +99,54 @@ def camProcess():
 
                 # adding data to the kalman obj
                 k_obj = robotData[markerIds[i][0]][2]       # grabbing the kalman object
-                kalVal = k_obj(conData[0][0], conData[0][1] , conData[1], True)    # calculating the kalman value
+                kalVal = k_obj(conData[0], conData[1][0] , conData[1][1], True)    # calculating the kalman value
 
             else:
                 # add new key to the set
                 robotDataSet.add(markerIds[i][0])
 
-                k_obj = kalman(0, 0, 0)            # creating the kalman object
-                kalVal = k_obj(conData[0][0], conData[0][1], conData[1], True) # adding data to the kalman object
+                k_obj = kalman(conData[0], conData[1][0], conData[1][1])            # creating the kalman object                
                 robotData[markerIds[i][0]] = [0,0,0,0]
                 robotData[markerIds[i][0]][0] = conData[0]
                 robotData[markerIds[i][0]][1] = conData[1]
                 robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
 
             # adding data to be broadcasted
-            # TODO: destination have to be changed
-            broadcastPos[int(markerIds[i][0])] = positions(conData[0], conData[1], [0,0], 0)
+            # TODO Changed
+            broadcastPos[int(markerIds[i][0])] = positions(conData[0], [tuple(markerCorners[i][0][1]), tuple(markerCorners[i][0][2])], [desX,desY], 0)
 
         # updating the not detected objects through kalman algo
         differentSet = robotDataSet - markerSet
                 
         for id in differentSet:
             k_obj = robotData[id][2]       # grabbing the kalman object
-            kalVal = k_obj(0,0,0,False)    # calculating the kalman value
+            k_obj([0,0],[0,0],[0,0],False)    # calculating the kalman value
+
+            kalVal = k_obj.x.transpose()
 
             # setting data to the dataset
-            robotData[id][0][0] = kalVal[0]
-            robotData[id][0][1] = kalVal[1]
-            robotData[id][1] = kalVal[2]
+            robotData[id][0] = [kalVal[0], kalVal[1]]            
+            robotData[id][1] = [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]]
 
             # adding data to be broadcasted
-            # TODO: destination have to be changed
-            broadcastPos[id] = positions([kalVal[0], kalVal[1]], kalVal[2], [0,0], 0)
+            #broadcastPos[id] = positions([kalVal[0], kalVal[1]], [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]], [desX, desY], 0)
 
         # print(robotData)
-        # json encoding data before send 
-        jsonEncodedData = json.dumps(broadcastPos)
 
         try:
-            print(broadcastPos[1][0])
+            # print(broadcastPos[1][0], desX, desY)
+
+            # add destination
+            if (19 in robotData and True):
+                desX = robotData[19][0][0]
+                desY = robotData[19][0][1]
         except:
             pass
-        
+                
         #print(jsonEncodedData)
 
         # addig to the shared variable
-        sharedData[0] = jsonEncodedData
+        sharedData[0] = broadcastPos
 
         cv2.imshow('Cam', frame)
 
@@ -158,14 +165,14 @@ if __name__ == '__main__':
     # adding the cam process to the pool
     p1 = Process(target=camProcess)
     # reading recived data from the arduino
-    p2 = Process(target=readSerialData, args=(ser,sharedData))
+    # p2 = Process(target=readSerialData, args=(ser,sharedData))
     # send data to the arduino
     p3 = Process(target=serialAutoSend, args=(ser, sharedData))
 
     p1.start()   
-    p2.start() 
+    # p2.start() 
     p3.start()   
 
     p1.join()   
-    p2.join() 
+    # p2.join() 
     p3.join()
