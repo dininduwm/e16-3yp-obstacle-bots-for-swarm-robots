@@ -13,7 +13,7 @@
 #define MR_A1 3 // right motor in 1
 #define MR_A2 2 // right motor in 2
 
-void parseJson(char c);
+void dataDecoder(char c);
 void calculate_IMU_error();
 void updateGyro();
 void MR(int val);
@@ -94,7 +94,7 @@ void loop()
 {
   if (mySerial.available() > 0)
   {
-    parseJson(mySerial.read()); // parsing the json string
+    dataDecoder(mySerial.read()); // parsing the json string
   }
 
   // start turning process if the start angle is above the "turningThresh"
@@ -158,7 +158,7 @@ void turn()
     {
 
       // parsing the json string
-      parseJson(mySerial.read());
+      dataDecoder(mySerial.read());
     }
 
     if (prvstartAngle != startAngle) // if there any changes in startAngle, set the current angle to zero and set the set point
@@ -305,12 +305,13 @@ void calculate_IMU_error()
 int count = 0; //temp
 
 // function to decode
-void parseJson(char c)
+void dataDecoder(char c)
 {
   if (c == '\n') // if the endline char
   {
     idflag = true; // start to read the id
     good = false; // id is not good
+    index = 0;    // reset the index
   }
   else
   {
@@ -342,7 +343,7 @@ void parseJson(char c)
     else id += c; // append char to the id
   }
   if(mySerial.available()>0){
-    parseJson(mySerial.read());
+    dataDecoder(mySerial.read());
   }
 
 
