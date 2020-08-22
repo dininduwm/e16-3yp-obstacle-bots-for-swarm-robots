@@ -53,7 +53,6 @@ SoftwareSerial mySerial(6, 12);
 
 // variables to hold temp data
 String reciveStr = "";
-StaticJsonDocument<250> doc; // json Doc
 
 //PID configuration
 PID myPID(&Input, &Output, &Setpoint, 7, 0, 0.35, DIRECT);
@@ -116,7 +115,7 @@ void loop()
 
   // set the movingDone flag if the robo is at the destination
   if (travelDis < distThresh)
-  {s
+  {
     movingDone = true;
   }else{
     movingDone = false;
