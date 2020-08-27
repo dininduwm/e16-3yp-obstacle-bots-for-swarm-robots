@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key key}) : super(key: key);
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({Key key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   TextEditingController tpCon = TextEditingController(),
       passCon = TextEditingController();
 
@@ -89,8 +89,21 @@ class _LoginPageState extends State<LoginPage> {
                             child: Column(
                               children: <Widget>[
                                 SizedBox(
-                                  height: 20.0,
+                                  height: 15.0,
                                 ),
+                                TextField(
+                                  decoration: InputDecoration(
+                                    labelText: 'NAME',
+                                    labelStyle: TextStyle(
+                                        fontFamily: 'Montserrat',
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 15.0),
                                 TextField(
                                   decoration: InputDecoration(
                                     labelText: 'EMAIL',
@@ -103,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 20.0),
+                                SizedBox(height: 15.0),
                                 TextField(
                                   decoration: InputDecoration(
                                     labelText: 'PASSWORD',
@@ -117,28 +130,25 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   obscureText: true,
                                 ),
-                                SizedBox(height: 5.0),
-                                Container(
-                                  alignment: Alignment(1.0, 0.0),
-                                  padding:
-                                      EdgeInsets.only(top: 15.0, left: 20.0),
-                                  child: InkWell(
-                                    child: Text(
-                                      'Forgot Password',
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Montserrat',
-                                          decoration: TextDecoration.underline),
+                                SizedBox(height: 15.0),
+                                TextField(
+                                  decoration: InputDecoration(
+                                    labelText: 'CONFIRM PASSWORD',
+                                    labelStyle: TextStyle(
+                                        fontFamily: 'Montserrat',
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
+                                  obscureText: true,
                                 ),
-                                SizedBox(height: 40.0),
+                                SizedBox(height: 20.0),
                                 GestureDetector(
                                   onTap: () {
-                                    print("Login Clicked");
-                                  }
-                                  ,
+                                    print("Register clicked");
+                                  },
                                   child: Container(
                                     height: 40.0,
                                     child: Material(
@@ -148,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                                       elevation: 7.0,
                                       child: Center(
                                         child: Text(
-                                          'LOGIN',
+                                          'REGISTER',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -158,7 +168,6 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 20.0),
                               ],
                             ),
                           ),
@@ -167,16 +176,16 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                'New to Swarm Robot Platform ?',
+                                'Already a members ?',
                                 style: TextStyle(fontFamily: 'Montserrat'),
                               ),
                               SizedBox(width: 5.0),
                               InkWell(
                                 onTap: () {
-                                  Navigator.of(context).pushNamed('/signup');
+                                  Navigator.of(context).pushNamed('/login');
                                 },
                                 child: Text(
-                                  'Register',
+                                  'Sign In',
                                   style: TextStyle(
                                       color: Colors.blue,
                                       fontFamily: 'Montserrat',

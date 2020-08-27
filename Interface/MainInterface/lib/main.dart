@@ -1,5 +1,8 @@
+import 'dart:js';
+
+import 'package:MainInterface/pages/LoginPage.dart';
+import 'package:MainInterface/pages/SignUpPage.dart';
 import 'package:flutter/material.dart';
-import 'pages/LoginPage.dart';
 
 void main() => runApp(MaterialApp(
   title: 'Robo Platform',
@@ -10,5 +13,6 @@ void main() => runApp(MaterialApp(
 
   routes: {
     '/login': (context) => LoginPage(), 
+    '/signup': (context) => SignUpPage(),
   },
 ));
