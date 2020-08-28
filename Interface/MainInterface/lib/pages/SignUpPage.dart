@@ -34,7 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(10, 50.0, 100.0, 50.0),
                   child: Card(
-                    color: Colors.grey[200],
+                    color: Colors.white.withOpacity(0.6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                     ),
@@ -97,7 +97,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     labelStyle: TextStyle(
                                         fontFamily: 'Montserrat',
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.grey),
+                                        color: Colors.indigo),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
@@ -110,7 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     labelStyle: TextStyle(
                                         fontFamily: 'Montserrat',
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.grey),
+                                        color: Colors.indigo),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
@@ -123,7 +123,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     labelStyle: TextStyle(
                                         fontFamily: 'Montserrat',
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.grey),
+                                        color: Colors.indigo),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
@@ -137,7 +137,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     labelStyle: TextStyle(
                                         fontFamily: 'Montserrat',
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.grey),
+                                        color: Colors.indigo),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
@@ -154,7 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     child: Material(
                                       borderRadius: BorderRadius.circular(20.0),
                                       shadowColor: Colors.greenAccent,
-                                      color: Colors.blue,
+                                      color: Colors.indigo,
                                       elevation: 7.0,
                                       child: Center(
                                         child: Text(
@@ -187,7 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 child: Text(
                                   'Sign In',
                                   style: TextStyle(
-                                      color: Colors.blue,
+                                      color: Colors.indigo,
                                       fontFamily: 'Montserrat',
                                       fontWeight: FontWeight.bold,
                                       decoration: TextDecoration.underline),
