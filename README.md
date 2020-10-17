@@ -1,22 +1,21 @@
-# CO321_Project
-Swarm Robotics platform
+# Swarm Robotics platform
 
-# Group Members
+### Group Members
    * Thushara K A R         :: E/16/369 :: e16369@eng.pdn.ac.lk
    * Thilakarathna D M D U  :: E/16/366 :: e16366@eng.pdn.ac.lk
    * Dissanayake D M T H    :: E/16/088 :: e16088@eng.pdn.ac.lk
 
-# OVERVIEW
+### OVERVIEW
 
 In swarm robotics the major barrier is that the researchers have to do a lot of hardware implementation prior to their projects. In this particular project we are going to come up with obstacle bots for a swarm robotic arena which is a part of a swarm robots platform project which eventually solves the above mentioned problem. 
 
-# GOALS
+### GOALS
 
 * Automated obstacle bots monitored by an overhead camera setup.
 
 * Bots can move to the desired positions with a user friendly interface.
 
-# SPECIFICATIONS
+### SPECIFICATIONS
 
 * Obstacle robot swarm is capable of moving every individual obstacle robot to their own destination with the consideration of  collision  avoidance. 
 
@@ -28,5 +27,5 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 
 * Each robot has two independent wheels that can perform forward, backward and turning operations. With the help of inbuilt gyroscope robots can perform accurate turning operations.
 
-# DESIGN
+### DESIGN
 ![alt text](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_base_design.png?raw=true)
