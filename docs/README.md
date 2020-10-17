@@ -1,4 +1,4 @@
-# Swarm Robotics platform
+# Swarm Robotics Platform
 
 ### Group Members
    * Thushara K A R         :: E/16/369 :: e16369@eng.pdn.ac.lk
