@@ -29,3 +29,4 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 * Each robot has two independent wheels that can perform forward, backward and turning operations. With the help of inbuilt gyroscope robots can perform accurate turning operations.
 
 # DESIGN
+![alt text](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_base_design.png?raw=true)
