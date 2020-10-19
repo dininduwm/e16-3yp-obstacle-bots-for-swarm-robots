@@ -11,7 +11,7 @@ import math
 
 
 bots = list()
-BOT_COUNT = 10
+BOT_COUNT = 11
 RADI = 50
 dS = 3
 background = cv2.imread('/home/heshds/Academics/project/e16-3yp-obstacle-bots-for-swarm-robots/simulator/resources/grid.png')
