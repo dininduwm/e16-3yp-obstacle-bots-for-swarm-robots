@@ -10,7 +10,7 @@ def loadBackground(girdSize, WINDOW_SIZE):
     Orig = cv2.imread('/home/heshds/Academics/semester5/PROJECT/e16-3yp-obstacle-bots-for-swarm-robots/simulator/resources/simbot_back.jpg')
     limit = int(girdSize*Orig.shape[0]/30)
     cropped = Orig[:limit, :limit]
-    return cv2.resize(cropped, (WINDOW_SIZE, WINDOW_SIZE))
+    return WINDOW_SIZE, WINDOW_SIZE, cv2.resize(cropped, (WINDOW_SIZE, WINDOW_SIZE))
 
 
 def loadBotImgs(girdSize, WINDOW_SIZE):
@@ -21,7 +21,7 @@ def loadBotImgs(girdSize, WINDOW_SIZE):
         img = cv2.imread('simulator/resources/simbot_%s.png'%item, cv2.IMREAD_UNCHANGED)   
         img = cv2.resize(img, (bot_size, bot_size))
         imgs[item] = img
-    return imgs
+    return bot_size, bot_size, imgs
 
 
 def rotate_image(image, angle):
