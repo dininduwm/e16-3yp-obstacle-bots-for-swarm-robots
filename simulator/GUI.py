@@ -6,7 +6,7 @@ import imgFunctions as img
 
 
 bots = list()
-BOT_COUNT = 11
+BOT_COUNT = 50
 RADI = 50
 GRID_SIZE = 10
 dS = 3
@@ -18,7 +18,8 @@ backg_W = 0
 bot_H = 0
 bot_W = 0
 
-finalImg = 0 
+mouse_pos = [0,0]
+mouse_state = 0
 
 
 def update(bots):
@@ -53,7 +54,10 @@ def draw_bots(bots):
     return overlay
         
 def mosueEvent(event, x, y, flags, param):
-    print(param.shape)
+    global mouse_pos, mouse_state
+     
+    mouse_pos = [x, y]
+    mouse_state = event
 
 if __name__ == "__main__":
 
@@ -77,8 +81,21 @@ if __name__ == "__main__":
         masked_backg = cv2.bitwise_and(background, background, mask = cv2.bitwise_not(overlay[:,:,3])) 
         
         finalImg = cv2.add(overlay[:,:,:3], masked_backg)
+
+        cell_size = int(WINDOW_SIZE/GRID_SIZE)
+        x_cell = int(mouse_pos[0]/cell_size)*cell_size
+        y_cell = int(mouse_pos[1]/cell_size)*cell_size
+        color = (125,0,100) if mouse_state == cv2.EVENT_LBUTTONDOWN else (125,255,0)
+        cv2.rectangle(finalImg, (x_cell, y_cell),(x_cell+cell_size, y_cell+cell_size), color, 2)
+        
         cv2.imshow('image', finalImg)
         
         key = cv2.waitKey(5)
+        
         if key == 27:
             break
+        elif key == 32:
+            while(1):
+                key = cv2.waitKey(5)
+                if key == 32:
+                    break

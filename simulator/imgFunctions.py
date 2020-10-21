@@ -14,7 +14,7 @@ def loadBackground(girdSize, WINDOW_SIZE):
 
 
 def loadBotImgs(girdSize, WINDOW_SIZE):
-    imgs = {}
+    imgs = {} # dictionary which contains pngs related to following items
     items = ['bot', 'green', 'red', 'blue']
     bot_size = int(WINDOW_SIZE/girdSize)
     for item in items:
