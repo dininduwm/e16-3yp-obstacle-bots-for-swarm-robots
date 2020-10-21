@@ -7,9 +7,9 @@ import imgFunctions as img
 
 
 bots = list()
-BOT_COUNT = 50
+BOT_COUNT = 5
 RADI = 50
-GRID_SIZE = 20
+GRID_SIZE = 10
 dS = 3
 WINDOW_SIZE = 1000  # square window, height = width
 
@@ -26,11 +26,11 @@ mouse_state = 0
     
 #class to make a bot
 class Bot:
-    def __init__(self, x, y, angle, dest_x, dest_y, dest_angle):
+    def __init__(self, ID):
         
         # state = -1, 0, 1 (-1:stoped, 0:success, 1:moving)
-        self.state = 0 
-        
+        self.state = -1 
+        self.ID = ID
         # current position
         self.x = 0         
         self.y = 0
@@ -41,28 +41,55 @@ class Bot:
         self.dest_y = 0
         self.dest_angle = 0
 
-        self.update(x,y,angle)
 
-    def update(self, x, y, angle):
+    def setImgs(self, imgs):
+        self.bot_imgs = imgs
+
+    def setDest(self, x, y, angle):
+        self.dest_x = x 
+        self.dest_y = y
+        self.dest_angle = angle  
+
+    def setPos(self, x, y, angle):
         
         # check for the overflow of the x , y values over the backgrounf image
         self.x = bot_W/2 if (x<bot_W/2) else ((backg_W - bot_W/2) if x>(backg_W - bot_W/2) else x)
         self.y = bot_H/2 if (y<bot_H/2) else ((backg_H - bot_H/2) if y>(backg_H - bot_H/2) else y)
         self.angle = angle
 
+    
+    def getState(self, bots):
+        min = WINDOW_SIZE
+        for i,bot in enumerate(bots):
+            if self.ID != i:
+                dist = math.sqrt((self.x - bot.x)*(self.x - bot.x) + (self.y - bot.y)*(self.y - bot.y))
+                angle = math.atan((self.y - bot.y)/(self.x - bot.x))
+                if min > dist:
+                    min = dist
+                
         
-
+        if min < 100:
+            self.state = -1
+        else:
+            self.state = 0
+        
 
 def update(bots):
     if len(bots) == 0:
        for i in range(BOT_COUNT):
-           bots.append(Bot(random.randint(0, backg_H), random.randint(0, backg_H), random.randint(0, 360), 0, 0, 0))
+           imgs = bot_pngs.copy()
+           bot = Bot(i)
+           bot.setPos(random.randint(0, backg_H), random.randint(0, backg_H), random.randint(0, 360))
+           bot.setDest(0,0,0)
+           bot.setImgs(imgs)
+           bots.append(bot)
+           
     else:
         for bot in bots:
-            x = bot.x + dS*np.cos(bot.angle*math.pi/180)
-            y = bot.y + dS*np.sin(-bot.angle*math.pi/180)
+            x = bot.x + (bot.state+1)*dS*np.cos(bot.angle*math.pi/180)
+            y = bot.y + (bot.state+1)*dS*np.sin(-bot.angle*math.pi/180)
             angle = bot.angle + 0.8
-            bot.update(x,y,angle)
+            bot.setPos(x,y,angle)
 
 """ draw bot images in the overlay canvas
         return : overlay(4 dims with the alpha layer)"""
@@ -72,11 +99,18 @@ def draw_bots(bots):
         x = bot.x
         y = bot.y
         angle = bot.angle
-
         x_start = int(x - bot_W/2)
         y_start = int(y - bot_H/2)
 
-        bot_img = img.rotate_image(bot_png.copy(), angle)
+        bot.getState(bots)
+        # add the additional status color bar to the basic bot png
+        if bot.state == 0:
+            addon = bot.bot_imgs['blue']
+        else:
+            addon = bot.bot_imgs['red']
+
+        bot_img = cv2.add(bot.bot_imgs['bot'], addon)        
+        bot_img = img.rotate_image(bot_img, angle)
         roi = overlay[ y_start:y_start+bot_W, x_start:x_start+bot_W] # region of interest
         overlay[ y_start:y_start+bot_W, x_start:x_start+bot_W] = roi + bot_img
 
