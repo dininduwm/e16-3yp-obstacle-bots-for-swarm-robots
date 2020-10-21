@@ -7,9 +7,9 @@ import imgFunctions as img
 
 
 bots = list()
-BOT_COUNT = 5
+BOT_COUNT = 1000
 RADI = 50
-GRID_SIZE = 10
+GRID_SIZE = 30
 dS = 3
 WINDOW_SIZE = 1000  # square window, height = width
 
@@ -31,6 +31,7 @@ class Bot:
         # state = -1, 0, 1 (-1:stoped, 0:success, 1:moving)
         self.state = -1 
         self.ID = ID
+
         # current position
         self.x = 0         
         self.y = 0
@@ -63,7 +64,7 @@ class Bot:
         for i,bot in enumerate(bots):
             if self.ID != i:
                 dist = math.sqrt((self.x - bot.x)*(self.x - bot.x) + (self.y - bot.y)*(self.y - bot.y))
-                angle = math.atan((self.y - bot.y)/(self.x - bot.x))
+                # angle = math.atan((self.y - bot.y)/(self.x - bot.x))
                 if min > dist:
                     min = dist
                 
@@ -86,8 +87,8 @@ def update(bots):
            
     else:
         for bot in bots:
-            x = bot.x + (bot.state+1)*dS*np.cos(bot.angle*math.pi/180)
-            y = bot.y + (bot.state+1)*dS*np.sin(-bot.angle*math.pi/180)
+            x = bot.x + dS*np.cos(bot.angle*math.pi/180)
+            y = bot.y + dS*np.sin(-bot.angle*math.pi/180)
             angle = bot.angle + 0.8
             bot.setPos(x,y,angle)
 
