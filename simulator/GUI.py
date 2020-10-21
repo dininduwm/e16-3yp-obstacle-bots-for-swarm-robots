@@ -2,30 +2,23 @@ import cv2
 import numpy as np
 import random
 import math
-# postions and the angle data of robots
-# bots = [[120, 500, 10],
-#         [200, 600, 15],
-#         [400, 202, 60],
-#         [300, 100, 30],
-#         [700, 300, 80]]
+import imgFunctions as img
 
 
 bots = list()
 BOT_COUNT = 11
 RADI = 50
+GRID_SIZE = 10
 dS = 3
-background = cv2.imread('/home/heshds/Academics/project/e16-3yp-obstacle-bots-for-swarm-robots/simulator/resources/grid.png')
-bot_png = cv2.imread('/home/heshds/Academics/project/e16-3yp-obstacle-bots-for-swarm-robots/simulator/resources/logo.png',cv2.IMREAD_UNCHANGED)
+WINDOW_SIZE = 1000  # square window, height = width
 
 
-background = cv2.resize(background, (1000, 1000))
-bot_png = cv2.resize(bot_png, (70,70))
+backg_H = 0
+backg_W = 0 
+bot_H = 0
+bot_W = 0
 
-backg_H, backg_W, _ = background.shape
-bot_H, bot_W, _ = bot_png.shape
-
-print(backg_H, backg_W)
-print(bot_H, bot_W)
+finalImg = 0 
 
 
 def update(bots):
@@ -40,15 +33,9 @@ def update(bots):
                 
 
 
-def rotate_image(image, angle):
-    image_center = tuple(np.array(image.shape[1::-1]) / 2)
-    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
-    return result
 
 def draw_bots(bots):
     overlay = np.zeros((backg_H, backg_W,4), dtype="uint8")
-    circles = np.zeros((backg_H, backg_W,3), dtype="uint8")
     for bot in bots:
         x = bot[0]
         y = bot[1]
@@ -59,22 +46,39 @@ def draw_bots(bots):
         x_start = 0 if (x_start<0) else ((backg_W - bot_W) if x_start>(backg_W - bot_W) else x_start)
         y_start = 0 if (y_start<0) else ((backg_H - bot_H) if y_start>(backg_H - bot_H) else y_start)
 
-        bot_img = rotate_image(bot_png.copy(), angle)
-        overlay[ y_start:y_start+bot_W, x_start:x_start+bot_W] = bot_img
-        cv2.circle(overlay, (int(x_start+ bot_W/2), int(y_start+ bot_H/2)), RADI, (255,255,0,255),1)
+        bot_img = img.rotate_image(bot_png.copy(), angle)
+        roi = overlay[ y_start:y_start+bot_W, x_start:x_start+bot_W] # region of interest
+        overlay[ y_start:y_start+bot_W, x_start:x_start+bot_W] = roi + bot_img
 
     return overlay
         
-while True:
-    update(bots)
-    overlay = draw_bots(bots)
-    masked_backg = cv2.bitwise_and(background, background, mask = cv2.bitwise_not(overlay[:,:,3])) 
+def mosueEvent(event, x, y, flags, param):
+    print(param.shape)
+
+if __name__ == "__main__":
+
+    background = img.loadBackground(GRID_SIZE, WINDOW_SIZE) #load backgroug image according to the grid size
+    bot_pngs = img.loadBotImgs(GRID_SIZE, WINDOW_SIZE)# load all pngs of the bot to a dict
+    bot_png = bot_pngs['bot'] # get the bot image 
     
-    out = cv2.add(overlay[:,:,:3], masked_backg)
-    cv2.imshow('test', out)
+    backg_H, backg_W, _ = background.shape
+    bot_H, bot_W, _ = bot_png.shape
     
-    key = cv2.waitKey(5)
-    if key == 27:
-        break
+    print(backg_H, backg_W)
+    print(bot_H, bot_W)
+    
+    cv2.namedWindow("image")
+    cv2.setMouseCallback("image", mosueEvent)
 
 
+    while True:
+        update(bots)
+        overlay = draw_bots(bots)
+        masked_backg = cv2.bitwise_and(background, background, mask = cv2.bitwise_not(overlay[:,:,3])) 
+        
+        finalImg = cv2.add(overlay[:,:,:3], masked_backg)
+        cv2.imshow('image', finalImg)
+        
+        key = cv2.waitKey(5)
+        if key == 27:
+            break
