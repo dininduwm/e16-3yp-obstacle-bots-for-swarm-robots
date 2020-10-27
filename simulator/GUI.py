@@ -11,7 +11,7 @@ RADI = 50
 GRID_SIZE = 10
 dS = 0.1
 WINDOW_SIZE = 1000  # square window, height = width
-
+CELL_SIZE = 100 
 
 backg_H = 0
 backg_W = 0
@@ -131,10 +131,14 @@ def draw_bots(bots):
         else:
             addon = bot.bot_imgs['red']
 
-        # ---------------------Draw destinatio lines -----------------------
+        # ---------------------Draw destination lines and rectangles -----------------------
         if bot.dest_x != -1:
             cv2.line(overlay, (int(bot.x), int(bot.y)),
                      (bot.dest_x, bot.dest_y), (0, 200, 200, 255), 2)
+
+
+            cv2.rectangle(overlay, (bot.dest_x-int(CELL_SIZE/2), bot.dest_y-int(CELL_SIZE/2)),
+                      (bot.dest_x+int(CELL_SIZE/2), bot.dest_y+int(CELL_SIZE/2)), color, 2)
 
         bot_img = cv2.add(bot.bot_imgs['bot'], addon)
         bot_img = img.rotate_image(bot_img, angle)
@@ -166,9 +170,9 @@ def mosueEvent(event, x, y, flags, param):
                 bot.clicked = False
 
                 # convert the mouse point to the center clicked cell
-                cell_size = int(WINDOW_SIZE/GRID_SIZE)
-                x_cell = int(x/cell_size)*cell_size + int(cell_size/2)
-                y_cell = int(y/cell_size)*cell_size + int(cell_size/2)
+                x_cell, y_cell, cell_size = getCell(x,y)
+                x_cell = x_cell + int(cell_size/2)
+                y_cell = y_cell + int(cell_size/2)
 
                 bot.setDest(x_cell, y_cell, 0)
                 set_dest = False
@@ -203,17 +207,16 @@ if __name__ == "__main__":
         # get a overlay that contains the vector with aplha which has the current orientation of bots
         overlay = draw_bots(bots)
         # mask the background with the overlay
-        masked_backg = cv2.bitwise_and(
-            background, background, mask=cv2.bitwise_not(overlay[:, :, 3]))
+        masked_backg = cv2.bitwise_and(background, background, mask=cv2.bitwise_not(overlay[:, :, 3]))
         # add the overlay and the background
         finalImg = cv2.add(overlay[:, :, :3], masked_backg)
 
         # ------------Draw rect on selected cell --------------
-        x_cell, y_cell, cell_size = getCell(mouse_pos[0], mouse_pos[1])
-        color = (125, 0, 100) if mouse_state == cv2.EVENT_LBUTTONDOWN else (
-            125, 255, 0)
+        x_cell, y_cell, CELL_SIZE = getCell(mouse_pos[0], mouse_pos[1])
+        
+        color = (125, 0, 100) if mouse_state == cv2.EVENT_LBUTTONDOWN else (125, 255, 0)
         cv2.rectangle(finalImg, (x_cell, y_cell),
-                      (x_cell+cell_size, y_cell+cell_size), color, 2)
+                      (x_cell+CELL_SIZE, y_cell+CELL_SIZE), color, 2)
 
         cv2.imshow('image', finalImg)
 
