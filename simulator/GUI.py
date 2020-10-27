@@ -6,9 +6,9 @@ import imgFunctions as img
 
 
 bots = list()
-BOT_COUNT = 20
+BOT_COUNT = 50
 RADI = 50
-GRID_SIZE = 10
+GRID_SIZE = 20
 dS = 0.1
 WINDOW_SIZE = 1000  # square window, height = width
 CELL_SIZE = 100 
