@@ -7,7 +7,7 @@ import numpy as np
 """ loads the back ground image with the desired grid size """
 def loadBackground(girdSize, WINDOW_SIZE):
     # TODO - handle errors
-    Orig = cv2.imread('/home/heshds/Academics/semester5/PROJECT/e16-3yp-obstacle-bots-for-swarm-robots/simulator/resources/simbot_back.jpg')
+    Orig = cv2.imread('simulator/resources/simbot_back.jpg')
     limit = int(girdSize*Orig.shape[0]/30)
     cropped = Orig[:limit, :limit]
     return WINDOW_SIZE, WINDOW_SIZE, cv2.resize(cropped, (WINDOW_SIZE, WINDOW_SIZE))

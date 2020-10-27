@@ -3,14 +3,11 @@ import cv2
 
 
 class ex:
-    s = 3
-    def __init__(self):
-        pass
-
-
-print(ex.s)
-a = ex()
-b = ex()
-a.s = 4
-
-print(np)
+  
+    def __init__(self,a,b):
+        self.a = a
+        self.b = b
+l = list()
+for i in range(10):
+    l.append(ex(i, i+3))
+print([s.a  for s in l])
