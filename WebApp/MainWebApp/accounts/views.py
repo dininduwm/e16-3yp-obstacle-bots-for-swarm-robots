@@ -12,7 +12,7 @@ def signup_view(request):
         user.save()
         # loggin in the user
         login(request, user)
-        return HttpResponse('signup')
+        return redirect('home')
     return render(request, 'accounts/signup.html')
 
 def login_view(request):
@@ -26,10 +26,15 @@ def login_view(request):
             if (user[0].check_password(request.POST['pass'])):
                 # logging in the user
                 login(request, user[0])
-                return HttpResponse('successfully loged in')
+
+                # checking the next field is in the redirect
+                if 'next' in request.POST:
+                    return redirect(request.POST['next'])
+                else:
+                    return redirect('home')
             else:
                 return HttpResponse('invalid user name password combination')
-        return HttpResponse('login')
+        
     return render(request, 'accounts/login.html')
 
 

@@ -21,6 +21,7 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),        
     re_path(r'^accounts/', include('accounts.urls')),
+    re_path(r'^swarm/', include('swarm_interface.urls')),
     re_path(r'^$', views.home_view, name='home'),
 ]
 
