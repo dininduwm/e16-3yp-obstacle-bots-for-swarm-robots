@@ -1,0 +1,14 @@
+{
+  "name": "resource-ssh",
+  "version": "0.4.2",
+  "description": "ssh interface resource",
+  "keywords": [
+    "big.vc",
+    "resource",
+    "resources"
+  ],
+  "main": "./index.js",
+  "dependencies": {
+    "resource": "0.4.x"
+  }
+}

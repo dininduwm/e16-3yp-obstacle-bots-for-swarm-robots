@@ -1,0 +1,19 @@
+{
+  "name": "3D_Interface",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "parcel index.html",
+    "build": "parcel build index.html --public-url ./"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "examples": "^0.1.0",
+    "parcel": "^1.12.4",
+    "resources": "^0.4.3",
+    "three": "^0.122.0"
+  }
+}
