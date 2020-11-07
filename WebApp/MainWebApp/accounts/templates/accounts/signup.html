@@ -34,7 +34,7 @@
         <div class="login100-pic js-tilt" data-tilt>
           <img src="/static/signup_login/images/img-01.png" alt="IMG">
         </div>
-        <form class="login100-form validate-form" method="POST" action="/accounts/signup/">
+        <form class="login100-form validate-form" method="POST" action="{% url 'accounts:signup' %}">
           {% csrf_token %}
           <span class="login100-form-title">
             SignUp
@@ -67,7 +67,7 @@
           </div>
           
           <div class="text-center p-t-136">
-            <a class="txt2" href="/accounts/login/">
+            <a class="txt2" href="{% url 'accounts:login' %}">
               Already have an account
               <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
             </a>
