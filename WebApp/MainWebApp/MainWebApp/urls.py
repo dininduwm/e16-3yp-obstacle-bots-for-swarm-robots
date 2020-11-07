@@ -16,10 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),        
     re_path(r'^accounts/', include('accounts.urls')),
+    re_path(r'^$', views.home_view, name='home'),
 ]
 
 # adding static locations for the debug purpose
