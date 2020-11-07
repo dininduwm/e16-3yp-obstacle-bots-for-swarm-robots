@@ -4,9 +4,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3JS_interface</title>
 </head>
+
+<style>
+    .view{
+        float: left;
+        width: 1000px;
+        height: 900px;
+    }
+    .controlPad{
+        float: right;
+        width: 20%;
+    }
+</style>
+
 <body>
-    <button id = "button" >click here</button>
-    <div id = "root"/>
+
+    <table>
+        <tr>
+            <td>
+                <div class = "view", id = "root"/>
+            </td>
+            <td>
+                <div class="controlPad">
+                    <button id = "CameraReset" >Reset Camera</button>
+                    <button id = "CameraTopView" >Top View</button>
+                </div>
+            </td>
+        </tr>
+    </table>
 </body>
 <script src="./app.js"></script>
 </html>

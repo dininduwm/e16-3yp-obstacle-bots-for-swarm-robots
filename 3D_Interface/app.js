@@ -1,10 +1,16 @@
 import * as THREE from "three";
-import { AxesHelper, Loader } from "three";
+import { AxesHelper, Loader, Scene, Vector3 } from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";   
 import arenaImg from "./resources/images/simbot_back.jpg";
+import TWEEN, { Tween } from "tween";
 
-let scene, renderer, camera, root, controls, pointLight
-const AREANA_DIM = 30
+let scene, renderer, camera, root, controls, pointLight, rayCaster, mouse, plane, b, mouse2;
+const AREANA_DIM = 30 // width or height of the arena
+const WINDOW_HEIGHT = 900//window.innerHeight; 
+const WINDOW_WIDTH = 1000//window.innerWidth;
+
+console.log(WINDOW_HEIGHT);
+const camSpeed = 2 // speed constant fo the camera transit
 
 function init(){
     //initalte a scene 
@@ -13,10 +19,25 @@ function init(){
 
     //initate a rendering object and set domentions
     renderer = new THREE.WebGLRenderer({antialias : true});
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    
+    //initalize a raycaster
+    rayCaster = new THREE.Raycaster();
+    mouse =  new THREE.Vector2();
+    mouse2 =  new THREE.Vector2();
+
+    //add the mouse moveEvent listner to get the ray casted cordinates
+    window.addEventListener("mousemove", (event)=>{
+        mouse.x = ( event.clientX / WINDOW_WIDTH ) * 2 - 1;
+        mouse.y = - ( event.clientY / WINDOW_HEIGHT ) * 2 + 1;
+
+        mouse2.x = event.clientX;
+        mouse2.y = event.clientY;
+    })
+
    
     //initate a camera object 
-    camera = new THREE.PerspectiveCamera(30, innerWidth/innerHeight, 1, 1000);
+    camera = new THREE.PerspectiveCamera(30, WINDOW_WIDTH/WINDOW_HEIGHT, 0.1, 1000);
     camera.position.set(100,100,100);
 
     // append the rendering element to the html by the id of "root"
@@ -27,51 +48,90 @@ function init(){
     controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
     
-    
-    //add a light
-    let ambientLight = new THREE.AmbientLight(0xffffff, 2);
-	scene.add(ambientLight);
-
+    //add a point light
+    const light = new THREE.PointLight( 0xffffff, 1, 1000);
+    light.position.set( 10, 100, 0);
+    scene.add(light);
 
     // create the arena 
     let loader = new THREE.TextureLoader();
     let s = loader.load(arenaImg, function(texture){
         
         //create the geometry and the materila for the arena
+        let planeMat = new THREE.MeshPhongMaterial({map:texture, lightMap:texture});//{map:texture, normalMap:texture});
         let PlaneGeo = new THREE.PlaneGeometry(AREANA_DIM, AREANA_DIM,10,10);
-        let planeMat = new THREE.MeshPhongMaterial({map:texture, normalMap:texture});
-        let plane = new THREE.Mesh(PlaneGeo, planeMat);
+        plane = new THREE.Mesh(PlaneGeo, planeMat);
         plane.receiveShadow = true;
-
-        console.log("ss");
+        plane.name = "arena";
         plane.rotateX(-Math.PI/2);
         plane.position.set(0, 0, 0);
         scene.add(plane);
     });
-    
     //
     scene.add(new AxesHelper(50));
     renderer.render(scene, camera);
+
+
+    //create a temp box 
+    let g = new THREE.BoxGeometry(2,2,2);
+    let m = new THREE.MeshPhongMaterial({color:0x02f7ca});
+    b = new THREE.Mesh(g,m);
+    b.position.set(0,1,0);
+    scene.add(b);
+
+    //add thw event listner
+    addEventListeners()
 
     // start animating the GUI
     animate();
 }
 
-function createPlane(dim_x, dim_y, pos_x, pos_y, pos_z, texture){
+function animate(){
 
-    const plane = new THREE.Mesh(new THREE.PlaneGeometry(dim_x, dim_y) , new THREE.MeshPhongMaterial());
-    plane.rotateX(-Math.PI/2);
-    plane.position.set(pos_x, pos_y, pos_z);
-    return plane;
+    //update the raycaster
+    rayCaster.setFromCamera(mouse, camera)
+    console.log(mouse2);
+    // get the intersetions
+    const intersects = rayCaster.intersectObjects(scene.children);
+    for(let i = 0; i<intersects.length; i++){
+        if(intersects[i].object.name == "arena"){
+            let x = intersects[i].uv.x*AREANA_DIM - (AREANA_DIM/2);
+            let z = intersects[i].uv.y*AREANA_DIM - (AREANA_DIM/2); 
+            console.log(mouse);
+            b.position.set(x, 1, -z);
+        }
+    }
 
-
+    renderer.render(scene,camera);
+    //update tween animator    
+    TWEEN.update();
+    requestAnimationFrame(animate);
 }
+
+
+//add Event listners
+function addEventListeners(){
+
+    // TODO - handle the target resriing problem of the camera
+
+    // camera reset listner
+    document.getElementById("CameraReset").addEventListener("click", ()=>{
+        new TWEEN.Tween(camera.position).to({x:50, y:50, z:50},1000).onUpdate(()=>{
+            controls.update()
+        }).easing(TWEEN.Easing.Exponential.Out).start();
+    });
+    
+    //camera top view listner
+    document.getElementById("CameraTopView").addEventListener("click", ()=>{
+        //get the camera to the position of x = 0 
+        new TWEEN.Tween(camera.position).to({x:0, y:camera.position.y, z:camera.position.z},100).onUpdate(()=>{
+            controls.update()
+        }).start().onComplete(()=>{// after the x = 0 is done set the camera to the top view 
+            new TWEEN.Tween(camera.position).to({x:0, y:70, z:0},1000).onUpdate(()=>{controls.update()}).easing(TWEEN.Easing.Exponential.Out).start() });
+    });
+
+    
+}
+
 
 init();
-
-
-function animate(){
-    controls.update();
-    requestAnimationFrame(animate);
-    renderer.render(scene,camera);
-}
