@@ -6,11 +6,16 @@ import {STLLoader} from "three/examples/jsm/loaders/STLLoader.js";
 import arenaImg from "./resources/images/simbot_back.jpg";
 import botSTL from "./resources/3DModels/Cover.STL"
 import TWEEN, { Tween } from "tween";
+import { Clock } from "three/build/three.module";
 
-let scene, renderer, camera, root, controls, pointLight, rayCaster, mouse, plane, b, mouse2;
+let scene, renderer, camera, root, controls, pointLight, rayCaster, mouse, plane, b;
+
+let bots = [];// an array to hold the collection of Bot instances
+let botCount = 10; //this must be removed after implementing the communication protocal with the server
+
 const AREANA_DIM = 30 // width or height of the arena
 const WINDOW_HEIGHT = 900//window.innerHeight; 
-const WINDOW_WIDTH = 1000//window.innerWidth;
+const WINDOW_WIDTH = 1500//window.innerWidth;
 const BOT_DIM = 1 // width or height of the bot
 
 console.log(WINDOW_HEIGHT);
@@ -28,7 +33,6 @@ function init(){
     //initalize a raycaster
     rayCaster = new THREE.Raycaster();
     mouse =  new THREE.Vector2();
-    mouse2 =  new THREE.Vector2();
     //add the mouse moveEvent listner to get the ray casted cordinates
     window.addEventListener("mousemove", (event)=>{
 
@@ -79,41 +83,96 @@ function init(){
     let m = new THREE.MeshPhongMaterial({color:0x02f7ca});
     b = new THREE.Mesh(g,m);
     b.position.set(0,1,0);
-    scene.add(b);
+    // scene.add(b);
 
 
-    //load the STL object to the scene
-    let sltloader = new STLLoader();
-    sltloader.load(botSTL, robotLoader, undefined,function(error){
-        console.log(error);
-    } );
-
+    setTimeout(updateBots, 5000);
+    
+    //initiate robots
+    initRobots();
 
     //add thw event listner
     addEventListeners()
 
     // start animating the GUI
     animate();
+
+
 }
+
+//class for creating a robot
+class Bot{ 
+    constructor(type){
+        this.type = type;
+        this.pos ={x:0, y:0};// denotes the position in the arena by a 0-1 value
+        this.mesh = null;
+    }
+    setMesh(mesh){
+        this.mesh = mesh;
+    }
+    setPos(pos){
+        if(this.mesh != null){
+            this.pos = pos;
+            // set the pos.x --> mesh.position.x
+            //         pos.y --> mesh.position.z
+            this.mesh.position.set((pos.x-0.5)*AREANA_DIM, -0.3, (pos.y-0.5)*AREANA_DIM); 
+        }else{
+            console.log("No mesh assigned with this instance")
+        }
+    }
+}
+
+function initRobots(){
+    //load the STL object to the scene
+    let sltloader = new STLLoader();
+    sltloader.load(botSTL, robotsLoader, undefined,function(error){
+        console.log("Error loading STL file");
+    } );
+      
+}
+
 
 
 // function for loaging the slt, adding material ,creating the mesh, scale the model to proper dimentions 
-function robotLoader(stl){
-    let bot = new Mesh(stl, new THREE.MeshPhongMaterial({ 
+function robotsLoader(stl){
+    let material = new THREE.MeshPhongMaterial({ 
         color: 0xff5533, 
         specular: 100, 
-        shininess: 100 }));
-    
-    // the loaded stl file must be scaled down to fit the gloable scene,
-    bot.geometry.computeBoundingBox(); // calculate the bounding box of the loaded bot
-    let boundings = bot.geometry.boundingBox;
-    let ratio = Math.abs(BOT_DIM/ (boundings.max.x -  boundings.min.x)); 
-    bot.scale.set(ratio,ratio,ratio);   
-    scene.add(bot);
+        shininess: 100 });
+        
+        // create the robot collection and create Bot instances
+        // TODO -- convert this into a web request, rather than creating them with a random initila position
+        for(let i = 0; i<botCount; i++){
+            let bot = new Bot("obstacle")
+            //set the model parameter with new Mesh instance
+            bot.setMesh(new Mesh(stl, material));
+
+            // set a random position on the arena  float:0 - 1
+            bot.setPos({x:Math.random(), y:Math.random()})
+            // the loaded stl file must be scaled down to fit the global scene,
+            bot.mesh.geometry.computeBoundingBox(); // calculate the bounding box of the loaded bot
+            let boundings = bot.mesh.geometry.boundingBox;
+            // get the scaling ratio to scale the imported STL model to fit in the arena
+            let ratio = Math.abs(BOT_DIM/ (boundings.max.x -  boundings.min.x)); 
+            bot.mesh.scale.set(ratio,ratio,ratio);               
+            scene.add(bot.mesh);
+        
+            // push the bot mesh to an array
+            bots.push(bot);    
+        }
+
 }
 
-
-
+//this is tempory funtion to simulate a robot movement
+function updateBots(){
+    console.log("dasd");
+    for(let i =0; i<bots.length; i++){
+        let pos = {x:Math.random(), y:Math.random()};
+        bots[i].mesh.lookAt((pos.x-0.5)*AREANA_DIM, -0.3, (pos.y-0.5)*AREANA_DIM);
+        new TWEEN.Tween(bots[i].mesh.position).to({x:(pos.x-0.5)*AREANA_DIM, y:-0.3, z:(pos.y-0.5)*AREANA_DIM}).easeing(TWEEN.Easing.B).start();
+    }
+    setTimeout(updateBots, 2000);
+}
 
 function animate(){
 
@@ -161,6 +220,5 @@ function addEventListeners(){
 
     
 }
-
 
 init();

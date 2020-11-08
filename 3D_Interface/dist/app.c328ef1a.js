@@ -38438,18 +38438,30 @@ var _Cover = _interopRequireDefault(require("./resources/3DModels/Cover.STL"));
 
 var _tween = _interopRequireWildcard(require("tween"));
 
+var _three2 = require("three/build/three.module");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var scene, renderer, camera, root, controls, pointLight, rayCaster, mouse, plane, b, mouse2;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var scene, renderer, camera, root, controls, pointLight, rayCaster, mouse, plane, b;
+var bots = []; // an array to hold the collection of Bot instances
+
+var botCount = 10; //this must be removed after implementing the communication protocal with the server
+
 var AREANA_DIM = 30; // width or height of the arena
 
 var WINDOW_HEIGHT = 900; //window.innerHeight; 
 
-var WINDOW_WIDTH = 1000; //window.innerWidth;
+var WINDOW_WIDTH = 1500; //window.innerWidth;
 
 var BOT_DIM = 1; // width or height of the bot
 
@@ -38467,8 +38479,7 @@ function init() {
   renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT); //initalize a raycaster
 
   rayCaster = new THREE.Raycaster();
-  mouse = new THREE.Vector2();
-  mouse2 = new THREE.Vector2(); //add the mouse moveEvent listner to get the ray casted cordinates
+  mouse = new THREE.Vector2(); //add the mouse moveEvent listner to get the ray casted cordinates
 
   window.addEventListener("mousemove", function (event) {
     var rect = event.target.getBoundingClientRect();
@@ -38516,33 +38527,110 @@ function init() {
     color: 0x02f7ca
   });
   b = new THREE.Mesh(g, m);
-  b.position.set(0, 1, 0);
-  scene.add(b); //load the STL object to the scene
+  b.position.set(0, 1, 0); // scene.add(b);
 
-  var sltloader = new _STLLoader.STLLoader();
-  sltloader.load(_Cover.default, robotLoader, undefined, function (error) {
-    console.log(error);
-  }); //add thw event listner
+  setTimeout(updateBots, 5000); //initiate robots
+
+  initRobots(); //add thw event listner
 
   addEventListeners(); // start animating the GUI
 
   animate();
+} //class for creating a robot
+
+
+var Bot = /*#__PURE__*/function () {
+  function Bot(type) {
+    _classCallCheck(this, Bot);
+
+    this.type = type;
+    this.pos = {
+      x: 0,
+      y: 0
+    }; // denotes the position in the arena by a 0-1 value
+
+    this.mesh = null;
+  }
+
+  _createClass(Bot, [{
+    key: "setMesh",
+    value: function setMesh(mesh) {
+      this.mesh = mesh;
+    }
+  }, {
+    key: "setPos",
+    value: function setPos(pos) {
+      if (this.mesh != null) {
+        this.pos = pos; // set the pos.x --> mesh.position.x
+        //         pos.y --> mesh.position.z
+
+        this.mesh.position.set((pos.x - 0.5) * AREANA_DIM, -0.3, (pos.y - 0.5) * AREANA_DIM);
+      } else {
+        console.log("No mesh assigned with this instance");
+      }
+    }
+  }]);
+
+  return Bot;
+}();
+
+function initRobots() {
+  //load the STL object to the scene
+  var sltloader = new _STLLoader.STLLoader();
+  sltloader.load(_Cover.default, robotsLoader, undefined, function (error) {
+    console.log("Error loading STL file");
+  });
 } // function for loaging the slt, adding material ,creating the mesh, scale the model to proper dimentions 
 
 
-function robotLoader(stl) {
-  var bot = new THREE.Mesh(stl, new THREE.MeshPhongMaterial({
+function robotsLoader(stl) {
+  var material = new THREE.MeshPhongMaterial({
     color: 0xff5533,
     specular: 100,
     shininess: 100
-  })); // the loaded stl file must be scaled down to fit the gloable scene,
+  }); // create the robot collection and create Bot instances
+  // TODO -- convert this into a web request, rather than creating them with a random initila position
 
-  bot.geometry.computeBoundingBox(); // calculate the bounding box of the loaded bot
+  for (var i = 0; i < botCount; i++) {
+    var bot = new Bot("obstacle"); //set the model parameter with new Mesh instance
 
-  var boundings = bot.geometry.boundingBox;
-  var ratio = Math.abs(BOT_DIM / (boundings.max.x - boundings.min.x));
-  bot.scale.set(ratio, ratio, ratio);
-  scene.add(bot);
+    bot.setMesh(new THREE.Mesh(stl, material)); // set a random position on the arena  float:0 - 1
+
+    bot.setPos({
+      x: Math.random(),
+      y: Math.random()
+    }); // the loaded stl file must be scaled down to fit the global scene,
+
+    bot.mesh.geometry.computeBoundingBox(); // calculate the bounding box of the loaded bot
+
+    var boundings = bot.mesh.geometry.boundingBox; // get the scaling ratio to scale the imported STL model to fit in the arena
+
+    var ratio = Math.abs(BOT_DIM / (boundings.max.x - boundings.min.x));
+    bot.mesh.scale.set(ratio, ratio, ratio);
+    scene.add(bot.mesh); // push the bot mesh to an array
+
+    bots.push(bot);
+  }
+} //this is tempory funtion to simulate a robot movement
+
+
+function updateBots() {
+  console.log("dasd");
+
+  for (var i = 0; i < bots.length; i++) {
+    var pos = {
+      x: Math.random(),
+      y: Math.random()
+    };
+    bots[i].mesh.lookAt((pos.x - 0.5) * AREANA_DIM, -0.3, (pos.y - 0.5) * AREANA_DIM);
+    new _tween.default.Tween(bots[i].mesh.position).to({
+      x: (pos.x - 0.5) * AREANA_DIM,
+      y: -0.3,
+      z: (pos.y - 0.5) * AREANA_DIM
+    }).easeing(_tween.default.Easing.B).start();
+  }
+
+  setTimeout(updateBots, 2000);
 }
 
 function animate() {
@@ -38603,7 +38691,7 @@ function addEventListeners() {
 }
 
 init();
-},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/controls/OrbitControls.js":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/STLLoader.js":"node_modules/three/examples/jsm/loaders/STLLoader.js","./resources/images/simbot_back.jpg":"resources/images/simbot_back.jpg","./resources/3DModels/Cover.STL":"resources/3DModels/Cover.STL","tween":"node_modules/tween/tween.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/controls/OrbitControls.js":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/STLLoader.js":"node_modules/three/examples/jsm/loaders/STLLoader.js","./resources/images/simbot_back.jpg":"resources/images/simbot_back.jpg","./resources/3DModels/Cover.STL":"resources/3DModels/Cover.STL","tween":"node_modules/tween/tween.js","three/build/three.module":"node_modules/three/build/three.module.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
