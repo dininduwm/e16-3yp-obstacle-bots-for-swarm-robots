@@ -29,6 +29,9 @@ function init(){
     //initate a rendering object and set domentions
     renderer = new THREE.WebGLRenderer({antialias : true});
     renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    // Enable Shadows in the Renderer
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+	renderer.shadowMap.enabled = true;
     
     //initalize a raycaster
     rayCaster = new THREE.Raycaster();
@@ -55,9 +58,16 @@ function init(){
     controls.update();
     
     //add a point light
-    const light = new THREE.PointLight( 0xffffff, 1, 1000);
-    light.position.set( 10, 100, 0);
-    scene.add(light);
+    const light1 = new THREE.PointLight( 0xffffff, 1, 1000);
+    light1.position.set( -15, 10, -15);
+    light1.shadow.bias = 0.0001
+    light1.shadow.mapSize.width = 1024*10;
+    light1.shadow.mapSize.height = 1024*10;
+    light1.shadow.camera.near = 0.1;
+    light1.shadow.camera.far = 500;
+    light1.castShadow = true; 
+    scene.add(light1);
+
 
     // create the arena 
     let loader = new THREE.TextureLoader();
@@ -68,6 +78,7 @@ function init(){
         let PlaneGeo = new THREE.PlaneGeometry(AREANA_DIM, AREANA_DIM,10,10);
         plane = new THREE.Mesh(PlaneGeo, planeMat);
         plane.receiveShadow = true;
+        plane.castShadow = true;
         plane.name = "arena";
         plane.rotateX(-Math.PI/2);
         plane.position.set(0, 0, 0);
@@ -82,11 +93,12 @@ function init(){
     let g = new THREE.BoxGeometry(2,2,2);
     let m = new THREE.MeshPhongMaterial({color:0x02f7ca});
     b = new THREE.Mesh(g,m);
-    b.position.set(0,1,0);
-    // scene.add(b);
+    b.castShadow = true;
+    b.position.set(0,5,0);
+    scene.add(b);
 
+    setTimeout(updateBots, 1000);
 
-    setTimeout(updateBots, 5000);
     
     //initiate robots
     initRobots();
@@ -154,7 +166,8 @@ function robotsLoader(stl){
             let boundings = bot.mesh.geometry.boundingBox;
             // get the scaling ratio to scale the imported STL model to fit in the arena
             let ratio = Math.abs(BOT_DIM/ (boundings.max.x -  boundings.min.x)); 
-            bot.mesh.scale.set(ratio,ratio,ratio);               
+            bot.mesh.scale.set(ratio,ratio,ratio); 
+            bot.mesh.castShadow = true;              
             scene.add(bot.mesh);
         
             // push the bot mesh to an array
@@ -169,7 +182,7 @@ function updateBots(){
     for(let i =0; i<bots.length; i++){
         let pos = {x:Math.random(), y:Math.random()};
         bots[i].mesh.lookAt((pos.x-0.5)*AREANA_DIM, -0.3, (pos.y-0.5)*AREANA_DIM);
-        new TWEEN.Tween(bots[i].mesh.position).to({x:(pos.x-0.5)*AREANA_DIM, y:-0.3, z:(pos.y-0.5)*AREANA_DIM}).easeing(TWEEN.Easing.B).start();
+        new TWEEN.Tween(bots[i].mesh.position).to({x:(pos.x-0.5)*AREANA_DIM, y:-0.3, z:(pos.y-0.5)*AREANA_DIM}).easing(TWEEN.Easing.Elastic.Out).start();
     }
     setTimeout(updateBots, 2000);
 }
@@ -186,7 +199,7 @@ function animate(){
             let x = intersects[i].uv.x*AREANA_DIM - (AREANA_DIM/2);
             let z = intersects[i].uv.y*AREANA_DIM - (AREANA_DIM/2); 
             // console.log(mouse);
-            b.position.set(x, 1, -z);
+            b.position.set(x, 2, -z);
         }
     }
 

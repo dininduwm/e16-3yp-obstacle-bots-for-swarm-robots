@@ -38476,7 +38476,10 @@ function init() {
   renderer = new THREE.WebGLRenderer({
     antialias: true
   });
-  renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT); //initalize a raycaster
+  renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT); // Enable Shadows in the Renderer
+
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.enabled = true; //initalize a raycaster
 
   rayCaster = new THREE.Raycaster();
   mouse = new THREE.Vector2(); //add the mouse moveEvent listner to get the ray casted cordinates
@@ -38496,9 +38499,15 @@ function init() {
   controls = new _OrbitControls.OrbitControls(camera, renderer.domElement);
   controls.update(); //add a point light
 
-  var light = new THREE.PointLight(0xffffff, 1, 1000);
-  light.position.set(10, 100, 0);
-  scene.add(light); // create the arena 
+  var light1 = new THREE.PointLight(0xffffff, 1, 1000);
+  light1.position.set(-15, 10, -15);
+  light1.shadow.bias = 0.0001;
+  light1.shadow.mapSize.width = 1024 * 10;
+  light1.shadow.mapSize.height = 1024 * 10;
+  light1.shadow.camera.near = 0.1;
+  light1.shadow.camera.far = 500;
+  light1.castShadow = true;
+  scene.add(light1); // create the arena 
 
   var loader = new THREE.TextureLoader();
   var s = loader.load(_simbot_back.default, function (texture) {
@@ -38513,6 +38522,7 @@ function init() {
     var PlaneGeo = new THREE.PlaneGeometry(AREANA_DIM, AREANA_DIM, 10, 10);
     plane = new THREE.Mesh(PlaneGeo, planeMat);
     plane.receiveShadow = true;
+    plane.castShadow = true;
     plane.name = "arena";
     plane.rotateX(-Math.PI / 2);
     plane.position.set(0, 0, 0);
@@ -38527,9 +38537,10 @@ function init() {
     color: 0x02f7ca
   });
   b = new THREE.Mesh(g, m);
-  b.position.set(0, 1, 0); // scene.add(b);
-
-  setTimeout(updateBots, 5000); //initiate robots
+  b.castShadow = true;
+  b.position.set(0, 5, 0);
+  scene.add(b);
+  setTimeout(updateBots, 1000); //initiate robots
 
   initRobots(); //add thw event listner
 
@@ -38607,6 +38618,7 @@ function robotsLoader(stl) {
 
     var ratio = Math.abs(BOT_DIM / (boundings.max.x - boundings.min.x));
     bot.mesh.scale.set(ratio, ratio, ratio);
+    bot.mesh.castShadow = true;
     scene.add(bot.mesh); // push the bot mesh to an array
 
     bots.push(bot);
@@ -38627,7 +38639,7 @@ function updateBots() {
       x: (pos.x - 0.5) * AREANA_DIM,
       y: -0.3,
       z: (pos.y - 0.5) * AREANA_DIM
-    }).easeing(_tween.default.Easing.B).start();
+    }).easing(_tween.default.Easing.Elastic.Out).start();
   }
 
   setTimeout(updateBots, 2000);
@@ -38644,7 +38656,7 @@ function animate() {
       var x = intersects[i].uv.x * AREANA_DIM - AREANA_DIM / 2;
       var z = intersects[i].uv.y * AREANA_DIM - AREANA_DIM / 2; // console.log(mouse);
 
-      b.position.set(x, 1, -z);
+      b.position.set(x, 2, -z);
     }
   }
 
@@ -38719,7 +38731,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44237" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42749" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
