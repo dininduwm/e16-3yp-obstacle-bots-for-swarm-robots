@@ -1,0 +1,118 @@
+#!/usr/bin/env sh
+
+#
+#  ubuntu-12.04
+#
+#  bootstraps a fresh ubuntu-12.04 image with stable node.js and big
+#
+#
+
+# update apt-get
+apt-get -y update
+
+# install git
+apt-get -y install git-core
+
+# get latest stable node as tar
+wget https://github.com/joyent/node/tarball/v0.8.11
+
+# extract latest node
+tar xf v0.8.11
+
+# change directory into node
+cd joyent-node-0984ce9
+
+# install some missing deps
+apt-get -y install g++ curl libssl-dev apache2-utils
+
+# install some useful tools
+apt-get -y install members
+
+# configure
+./configure
+
+# install make
+apt-get -y install make
+
+# make
+sudo make
+
+# install
+sudo make install
+
+# back to home
+cd ..
+
+# remove the update-motd
+# rm -rf /etc/update-motd.d/*.*
+
+# clone big from github
+git clone git://github.com/bigcompany/big.git
+
+# clone resource from github
+git clone git://github.com/bigcompany/resource.git
+
+# clone resources from github
+git clone git://github.com/bigcompany/resources.git
+
+
+# mon
+git clone https://github.com/visionmedia/mon.git
+cd mon
+make install
+
+cd ..
+
+# change directory into resource
+cd resource
+
+# install npm deps
+npm install
+
+# link locally with npm
+npm link
+
+#
+# TODO: CLEANUP FOLLOWING BLOCK / FIX DEPS
+#
+cd ..
+cd resources
+npm link resource
+npm link
+npm install -g
+
+cd ..
+cd resource
+npm link resources
+npm install -g
+
+#
+# TODO: remove the following manual npm installs
+#
+cd /root/resource/node_modules/jugglingdb/
+npm install nosqlite
+npm install -g
+
+cd /root/resources/ssh/
+npm install -g
+
+cd /root/big
+npm link resource
+npm install -g
+
+cd /root/big
+
+# needed for couchdb jugglingdb adapter
+npm install cradle -g
+
+# run once to install deps
+# node bin/big
+# big
+
+# start big replicator
+# node bin/big system groupadd --name big-users
+# node bin/big system useradd --user marak --group big-users
+# node bin/big system passwd --user marak --password b1gPPuol1
+
+# start the web admin
+node apps/admin

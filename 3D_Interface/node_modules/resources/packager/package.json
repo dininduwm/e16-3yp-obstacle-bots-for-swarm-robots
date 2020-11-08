@@ -1,0 +1,14 @@
+{
+  "name": "resource-packager",
+  "version": "0.4.2",
+  "description": "for generating packager files",
+  "keywords": [
+    "big.vc",
+    "resource",
+    "resources"
+  ],
+  "main": "./index.js",
+  "dependencies": {
+    "resource": "0.4.x"
+  }
+}
