@@ -1,13 +1,17 @@
 import * as THREE from "three";
-import { AxesHelper, Loader, Scene, Vector3 } from "three";
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";   
+import { AxesHelper, Loader, Mesh, Scene, Vector3 } from "three";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
+import {STLLoader} from "three/examples/jsm/loaders/STLLoader.js";
+
 import arenaImg from "./resources/images/simbot_back.jpg";
+import botSTL from "./resources/3DModels/Cover.STL"
 import TWEEN, { Tween } from "tween";
 
 let scene, renderer, camera, root, controls, pointLight, rayCaster, mouse, plane, b, mouse2;
 const AREANA_DIM = 30 // width or height of the arena
 const WINDOW_HEIGHT = 900//window.innerHeight; 
 const WINDOW_WIDTH = 1000//window.innerWidth;
+const BOT_DIM = 1 // width or height of the bot
 
 console.log(WINDOW_HEIGHT);
 const camSpeed = 2 // speed constant fo the camera transit
@@ -25,14 +29,12 @@ function init(){
     rayCaster = new THREE.Raycaster();
     mouse =  new THREE.Vector2();
     mouse2 =  new THREE.Vector2();
-
     //add the mouse moveEvent listner to get the ray casted cordinates
     window.addEventListener("mousemove", (event)=>{
-        mouse.x = ( event.clientX / WINDOW_WIDTH ) * 2 - 1;
-        mouse.y = - ( event.clientY / WINDOW_HEIGHT ) * 2 + 1;
 
-        mouse2.x = event.clientX;
-        mouse2.y = event.clientY;
+        var rect = event.target.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left)/ WINDOW_WIDTH ) * 2 - 1;
+        mouse.y = - ( (event.clientY - rect.top) / WINDOW_HEIGHT ) * 2 + 1;
     })
 
    
@@ -58,7 +60,7 @@ function init(){
     let s = loader.load(arenaImg, function(texture){
         
         //create the geometry and the materila for the arena
-        let planeMat = new THREE.MeshPhongMaterial({map:texture, lightMap:texture});//{map:texture, normalMap:texture});
+        let planeMat = new THREE.MeshPhongMaterial({map:texture, lightMap:texture, specular: 5, shininess: 100 });//{map:texture, normalMap:texture});
         let PlaneGeo = new THREE.PlaneGeometry(AREANA_DIM, AREANA_DIM,10,10);
         plane = new THREE.Mesh(PlaneGeo, planeMat);
         plane.receiveShadow = true;
@@ -79,6 +81,14 @@ function init(){
     b.position.set(0,1,0);
     scene.add(b);
 
+
+    //load the STL object to the scene
+    let sltloader = new STLLoader();
+    sltloader.load(botSTL, robotLoader, undefined,function(error){
+        console.log(error);
+    } );
+
+
     //add thw event listner
     addEventListeners()
 
@@ -86,18 +96,37 @@ function init(){
     animate();
 }
 
+
+// function for loaging the slt, adding material ,creating the mesh, scale the model to proper dimentions 
+function robotLoader(stl){
+    let bot = new Mesh(stl, new THREE.MeshPhongMaterial({ 
+        color: 0xff5533, 
+        specular: 100, 
+        shininess: 100 }));
+    
+    // the loaded stl file must be scaled down to fit the gloable scene,
+    bot.geometry.computeBoundingBox(); // calculate the bounding box of the loaded bot
+    let boundings = bot.geometry.boundingBox;
+    let ratio = Math.abs(BOT_DIM/ (boundings.max.x -  boundings.min.x)); 
+    bot.scale.set(ratio,ratio,ratio);   
+    scene.add(bot);
+}
+
+
+
+
 function animate(){
 
     //update the raycaster
     rayCaster.setFromCamera(mouse, camera)
-    console.log(mouse2);
+
     // get the intersetions
     const intersects = rayCaster.intersectObjects(scene.children);
     for(let i = 0; i<intersects.length; i++){
         if(intersects[i].object.name == "arena"){
             let x = intersects[i].uv.x*AREANA_DIM - (AREANA_DIM/2);
             let z = intersects[i].uv.y*AREANA_DIM - (AREANA_DIM/2); 
-            console.log(mouse);
+            // console.log(mouse);
             b.position.set(x, 1, -z);
         }
     }
