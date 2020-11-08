@@ -30,7 +30,10 @@
         <nav id="menu">
             <ul class="links">
                 <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'accounts:login' %}">Login</a></li>
+                <li><a href="javascript:{}" onclick="document.getElementById('my_form').submit();">Logout</a></li>
+                <form id="my_form" method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}            				
+                </form>
             </ul>
         </nav>
     <script src = "/static/swarm/three.min.js"></script>

@@ -42,4 +42,4 @@ def logout_view(request):
     if (request.method == 'POST'):
         # loging out the user
         logout(request)
-        return HttpResponse("Logged out")
+        return redirect('home')

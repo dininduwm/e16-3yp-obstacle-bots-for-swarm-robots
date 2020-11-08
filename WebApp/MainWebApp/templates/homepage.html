@@ -28,8 +28,15 @@
 				<ul class="links">
 					<li><a href="{% url 'home' %}">Home</a></li>
 					<li><a href="{% url 'swarm:swarm_interface' %}">Swarm Dashboard</a></li>
-					<li><a href="{% url 'accounts:login' %}">Login</a></li>
-					<li><a href="{% url 'accounts:signup' %}">Signup</a></li>
+					{% if user.is_authenticated %}						
+						<li><a href="javascript:{}" onclick="document.getElementById('my_form').submit();">Logout</a></li>
+						<form id="my_form" method="post" action="{% url 'accounts:logout' %}">
+							{% csrf_token %}            				
+						</form>
+					{% else %}
+						<li><a href="{% url 'accounts:login' %}">Login</a></li>
+						<li><a href="{% url 'accounts:signup' %}">Signup</a></li>
+					{% endif %}
 				</ul>
 			</nav>
 
