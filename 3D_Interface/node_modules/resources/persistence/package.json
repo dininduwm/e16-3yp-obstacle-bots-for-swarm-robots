@@ -1,0 +1,16 @@
+{
+  "name": "resource-persistence",
+  "version": "0.4.2",
+  "description": "enables persistence for resources",
+  "keywords": [
+    "big.vc",
+    "resource",
+    "resources"
+  ],
+  "main": "./index.js",
+  "dependencies": {
+    "node-uuid": "*",
+    "async": "*",
+    "resource": "0.4.x"
+  }
+}
