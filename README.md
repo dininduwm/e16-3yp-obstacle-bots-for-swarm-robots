@@ -53,11 +53,11 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
     
 * #### PCB DESIGN
 
+  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/schemetic.png?raw=true)
+
   ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/PCB.png?raw=true)
   
-  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/schemetic.png?raw=true)
-  
-  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/schemetic.png?raw=true)
+  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Capture4.PNG?raw=true)
   
   
 ### SOFTWARE
