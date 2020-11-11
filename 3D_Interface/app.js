@@ -1,4 +1,7 @@
+import MQTT from 'paho-mqtt';
+
 import * as THREE from "three";
+import {mqttClient} from "./mqttClient.js";
 import { AxesHelper, Loader, Mesh, Scene, Vector3 } from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {STLLoader} from "three/examples/jsm/loaders/STLLoader.js";
@@ -10,10 +13,13 @@ import botSTL from "./resources/3DModels/Cover.STL"
 import TWEEN, { Tween } from "tween";
 import { Clock } from "three/build/three.module";
 
-let scene, renderer, camera, root, controls, pointLight, rayCaster, mouse, plane, cursor, botLight, controlsAtWork;
-
+let scene, renderer, camera, root, controls, pointLight, rayCaster, mouse;
+let plane, cursor, botLight, controlsAtWork, mouse_arena_cordinates, click = false;
+let mqtt;
 let bots = [];// an array to hold the collection of Bot instances
 let botCount = 10; //this must be removed after implementing the communication protocal with the server
+
+let client;
 
 const AREANA_DIM = 30 // width or height of the arena
 const WINDOW_HEIGHT = 900//window.innerHeight; 
@@ -24,8 +30,12 @@ console.log(WINDOW_HEIGHT);
 const camSpeed = 2 // speed constant fo the camera transit
 
 function init(){
+    //create a mqttClient
+    mqtt = mqttClient();
+    
+
     //initalte a scene 
-    scene = new THREE.Scene()
+    scene = new THREE.Scene();
     scene.background = (new THREE.Color(0xf0f5f5));
 
     //initate a rendering object and set domentions
@@ -38,15 +48,7 @@ function init(){
     //initalize a raycaster
     rayCaster = new THREE.Raycaster();
     mouse =  new THREE.Vector2();
-    //add the mouse moveEvent listner to get the ray casted cordinates
-    window.addEventListener("mousemove", (event)=>{
-
-        var rect = event.target.getBoundingClientRect();
-        mouse.x = ((event.clientX - rect.left)/ WINDOW_WIDTH ) * 2 - 1;
-        mouse.y = - ( (event.clientY - rect.top) / WINDOW_HEIGHT ) * 2 + 1;
-    })
-
-   
+    
     //initate a camera object 
     camera = new THREE.PerspectiveCamera(30, WINDOW_WIDTH/WINDOW_HEIGHT, 0.1, 1000);
     camera.position.set(30,30,30);
@@ -74,7 +76,7 @@ function init(){
     // create the arena 
     let texture = new THREE.TextureLoader().load(arenaImg);
     //create the geometry and the materila for the arena
-    let planeMat = new THREE.MeshPhongMaterial({map:texture, lightMap:texture, specular: 100, shininess: 10 });//{map:texture, normalMap:texture});
+    let planeMat = new THREE.MeshPhongMaterial({map:texture, lightMap:texture, emissiveMap:texture, specular: 100, shininess: 10 });//{map:texture, normalMap:texture});
     let PlaneGeo = new THREE.PlaneGeometry(AREANA_DIM, AREANA_DIM,10,10);
     plane = new THREE.Mesh(PlaneGeo, planeMat);
     plane.receiveShadow = true;
@@ -91,12 +93,9 @@ function init(){
     botLight.position.set(0,1.5,0);
     botLight.shadow.bias = 0.00001;
     // scene.add(botLight);
-
-
    
     scene.add(new AxesHelper(50));
     renderer.render(scene, camera);
-
 
     //create a temp box 
     let g = new THREE.BoxGeometry(1,0.1,1);
@@ -124,6 +123,12 @@ function init(){
 
 
 }
+
+
+
+
+
+
 
 //class for creating a robot
 class Bot{ 
@@ -198,7 +203,6 @@ function robotsLoader(stl){
 
 //this is tempory funtion to simulate a robot movement
 function updateBots(){
-    console.log("dasd");
     for(let i =0; i<bots.length; i++){
         let pos = {x:Math.random(), y:Math.random()};
         bots[i].mesh.lookAt((pos.x-0.5)*AREANA_DIM, -0.3, (pos.y-0.5)*AREANA_DIM);
@@ -212,6 +216,7 @@ function updateBots(){
 
 function animate(){
 
+    
     //mouse interactions
     mouseInteractions();
 
@@ -248,9 +253,10 @@ function mouseInteractions(){
                 let x = intersects[i].uv.x*AREANA_DIM - (AREANA_DIM/2);
                 let z = intersects[i].uv.y*AREANA_DIM - (AREANA_DIM/2); 
                 cursor.position.set(Math.ceil(x)-0.5, 0.01, Math.ceil(-z)-0.5);
-
-                // botLight.position.x = Math.ceil(x)+0.5;
-                // botLight.position.z = Math.ceil(-z)+0.5;
+                
+                mouse_arena_cordinates = {x:Math.ceil(x)-0.5, y: Math.ceil(-z)-0.5};
+                
+                
             }
 
             //handle the interactions with bots
@@ -271,8 +277,17 @@ function addEventListeners(){
     
     // these two event listner are needed to update a flag that denotes the orbitcontrols is at action
     // this flag is used to prevent unwanted mouse events while orbitcontrols are working 
-    controls.addEventListener("start", ()=>{controlsAtWork = true});
-    controls.addEventListener("end", ()=>{controlsAtWork = false});
+    controls.addEventListener("start", ()=>{click = true;});
+    controls.addEventListener("change", ()=>{controlsAtWork = true; click = false;}); // if the mouse draged it click = false
+    controls.addEventListener("end", ()=>{controlsAtWork = false;});
+
+    //add the mouse moveEvent listner to get the ray casted cordinates
+    window.addEventListener("mousemove", (event)=>{
+
+        var rect = event.target.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left)/ WINDOW_WIDTH ) * 2 - 1;
+        mouse.y = - ( (event.clientY - rect.top) / WINDOW_HEIGHT ) * 2 + 1;
+    })
 
     // camera reset listner
     document.getElementById("CameraReset").addEventListener("click", ()=>{
