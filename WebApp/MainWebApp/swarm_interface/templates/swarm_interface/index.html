@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3JS_interface
-    </title>
+    <link rel="stylesheet" href="/static/home_template/assets/css/main.css" />
+    <title>3JS_interface</title>
 </head>
 <style>
     .view {
@@ -16,21 +16,82 @@
     .controlPad {
         float: right
     }
+    
+    .btn-group .button {
+        background-color: #033b2e;
+        border: none;
+        color: #fff;
+        padding: 16px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: .1s;
+        cursor: pointer;
+        display: block
+    }
+    
+    .button:hover {
+        background-color: #009ffc;
+        color: #fff
+    }
+    
+    .btn-group .button:not(:last-child) {
+        border-bottom: none
+    }
+    
+    .btn-group .button:hover {
+        background-color: #009ffc
+    }
 </style>
 
 <body>
+    <!-- Header -->
+    <header id="header">
+        <a class="logo" href="index.html">Swarm Robotics</a>
+        <nav>
+            <a href="#menu">Menu</a>
+        </nav>
+    </header>
+
+    <!-- Nav -->
+    <nav id="menu">
+        <ul class="links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="javascript:{}" onclick="document.getElementById('my_form').submit();">Logout</a></li>
+            <form id="my_form" method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+            </form>
+            {% else %}
+            <li><a href="{% url 'accounts:login' %}">Login</a></li>
+            <li><a href="{% url 'accounts:signup' %}">Signup</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
     <table>
         <tr>
             <td>
                 <div class="view" ,="" id="root"> </div>
             </td>
             <td>
-                <div class="controlPad"> <button id="CameraReset">Reset Camera</button> <button id="CameraTopView">Top
-                        View</button> </div>
+                <div class="btn-group">
+                    <button class="button" id="CameraReset">Reset Camera</button>
+                    <button class="button" id="CameraTopView">Top View</button>
+                </div>
             </td>
         </tr>
     </table>
+
+    <script src="/static/home_template/assets/js/jquery.min.js"></script>
+    <script src="/static/home_template/assets/js/browser.min.js"></script>
+    <script src="/static/home_template/assets/js/breakpoints.min.js"></script>
+    <script src="/static/home_template/assets/js/util.js"></script>
+    <script src="/static/home_template/assets/js/main.js"></script>
 </body>
-<script src="/static/swarm_new/app.e33b1960.js"></script>
+<script src="/static/swarm_new/app.7221c2f7.js"></script>
+
 
 </html>
