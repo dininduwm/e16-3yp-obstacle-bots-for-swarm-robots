@@ -27,9 +27,44 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 
 * Each robot has two independent wheels that can perform forward, backward and turning operations. With the help of inbuilt gyroscope robots can perform accurate turning operations.
 
-### DESIGN
-![alt text](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_base_design.png?raw=true)
+### HIGH LEVEL DIAGRAM
+  Those individual robots will be on the arena as follows
+    
+![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/High_Lvl.jpg?raw=true)
 
-Those individual robots will be on the arena as follows
+### HARDWARE
 
-![alt text](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_arena.png?raw=true)
+ * #### REAL HARDWARE
+ 
+     ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Bot_Real_01.png?raw=true)
+
+    ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Bot_Real_02.jpg?raw=true)
+
+ * #### 3D MODEL
+ 
+     ![robot_base_design](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_base_design.png?raw=true)
+
+   ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Capture.PNG?raw=true)
+
+    ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Capture1.PNG?raw=true)
+    
+    ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Capture3.PNG?raw=true)
+    
+* #### PCB DESIGN
+
+  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/PCB.png?raw=true)
+  
+  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/schemetic.png?raw=true)
+  
+  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/schemetic.png?raw=true)
+  
+  
+### SOFTWARE
+
+
+
+### ADVISORS
+
+* Mr. Isuru Navinna
+* Mr. Ziyan Marikkar
+
