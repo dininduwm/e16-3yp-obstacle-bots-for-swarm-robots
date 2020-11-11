@@ -1,25 +1,40 @@
-import MQTT from 'paho-mqtt';
 
+import MQTT from 'paho-mqtt';
 import * as THREE from "three";
-import {mqttClient} from "./mqttClient.js";
+// import {mqttClient, publish} from "./mqttClient.js";
 import { AxesHelper, Loader, Mesh, Scene, Vector3 } from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {STLLoader} from "three/examples/jsm/loaders/STLLoader.js";
 
-import arenaImg from "./resources/images/simbot_back.jpg";
-import normalMap from "./resources/images/normal.jpg";
+import arenaImg from "./resources/images/simbot_back-02.jpg";
+import lightMap from "./resources/images/simbot_back_lightmap-02.jpg";
 import botSTL from "./resources/3DModels/Cover.STL"
 
 import TWEEN, { Tween } from "tween";
-import { Clock } from "three/build/three.module";
+
+
+//this part should be moved to the mqttClient.js
+//////////////////////////////////////////////
+const TOPIC_BOT_POS = 'swarm/0/currentPos';
+const mqtt_server =  "broker.mqttdashboard.com";
+const mqtt_port = 8000;
+let mqtt_client;
+
+var messages = require('./protobuf/MQTT_msg_pb.js');
+var message = new messages.BotPositionArr()
+///////////////////////////////////////////////
+
+
+
 
 let scene, renderer, camera, root, controls, pointLight, rayCaster, mouse;
-let plane, cursor, botLight, controlsAtWork, mouse_arena_cordinates, click = false;
+let plane, cursor, botLight, controlsAtWork, mouse_arena_cordinates, click = false, newData = false;
 let mqtt;
 let bots = [];// an array to hold the collection of Bot instances
-let botCount = 10; //this must be removed after implementing the communication protocal with the server
-
-let client;
+let botCount = 20; //this must be removed after implementing the communication protocal with the server
+let destinations = {}; // this dictionary keeps x cordinates as keys and a dictionary of y values as the value  
+                        //
+let mqtt_data = []; // tempory variable
 
 const AREANA_DIM = 30 // width or height of the arena
 const WINDOW_HEIGHT = 900//window.innerHeight; 
@@ -29,9 +44,12 @@ const BOT_DIM = 1 // width or height of the bot
 console.log(WINDOW_HEIGHT);
 const camSpeed = 2 // speed constant fo the camera transit
 
+
+
 function init(){
     //create a mqttClient
     mqtt = mqttClient();
+    
     
 
     //initalte a scene 
@@ -75,8 +93,9 @@ function init(){
 
     // create the arena 
     let texture = new THREE.TextureLoader().load(arenaImg);
+    let lightmap =  new THREE.TextureLoader().load(lightMap);
     //create the geometry and the materila for the arena
-    let planeMat = new THREE.MeshPhongMaterial({map:texture, lightMap:texture, emissiveMap:texture, specular: 100, shininess: 10 });//{map:texture, normalMap:texture});
+    let planeMat = new THREE.MeshPhongMaterial({map:texture, lightMap:lightmap, shininess: 20});//{map:texture, normalMap:texture});
     let PlaneGeo = new THREE.PlaneGeometry(AREANA_DIM, AREANA_DIM,10,10);
     plane = new THREE.Mesh(PlaneGeo, planeMat);
     plane.receiveShadow = true;
@@ -125,14 +144,10 @@ function init(){
 }
 
 
-
-
-
-
-
 //class for creating a robot
 class Bot{ 
     constructor(type){
+        this.id = null;
         this.type = type;
         this.pos ={x:0, y:0};// denotes the position in the arena by a 0-1 value
         this.mesh = null;
@@ -174,9 +189,9 @@ function robotsLoader(stl){
             //set the model parameter with new Mesh instance
             let material = new THREE.MeshPhongMaterial({ 
                 color: 0xff5533, 
-                specular: 100, 
+                // specular: 100, 
                 shininess: 500,
-                opacity:0 });
+                });
 
             bot.setMesh(new Mesh(stl, material));
 
@@ -195,18 +210,26 @@ function robotsLoader(stl){
 
             bot.tween = new TWEEN.Tween(bot.mesh.position);
             scene.add(bot.mesh);
+            bots.push(bot)
             // push the bot mesh to an array
-            bots.push(bot);    
+            
         }
 
 }
 
 //this is tempory funtion to simulate a robot movement
 function updateBots(){
-    for(let i =0; i<bots.length; i++){
-        let pos = {x:Math.random(), y:Math.random()};
-        bots[i].mesh.lookAt((pos.x-0.5)*AREANA_DIM, -0.3, (pos.y-0.5)*AREANA_DIM);
-        bots[i].tween.to({x:(pos.x-0.5)*AREANA_DIM, y:-0.3, z:(pos.y-0.5)*AREANA_DIM},3000).start();
+    //if new data is available
+    if(newData){
+        for(let i =0; i<bots.length; i++){
+            let pos = {x:mqtt_data[i].getXCod() - (AREANA_DIM/2) , y:mqtt_data[i].getYCod()-(AREANA_DIM/2)};
+            console.log(pos);
+            console.log(mqtt_data[5].getXCod());
+    
+            bots[i].mesh.lookAt((pos.x-0.5), -0.3, (pos.y-0.5));
+            bots[i].tween.to({x:(pos.x-0.5), y:-0.3, z:(pos.y-0.5)},3000).start();
+        }
+        newData = false;
     }
     // setTimeout(updateBots, 1000);
 }
@@ -216,7 +239,7 @@ function updateBots(){
 
 function animate(){
 
-    
+    updateBots();
     //mouse interactions
     mouseInteractions();
 
@@ -318,3 +341,67 @@ function animateCamera(pos, duration, easing){
 }
 
 init();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// remove this code
+////////////////////////////////////////////////
+function mqttClient(){
+
+    //generate a random id for the client
+    const client_id = 'client_' + Math.random().toString(36).substring(2, 15); // create a random client Id
+    // connect to the broker
+    mqtt_client = new MQTT.Client(mqtt_server, mqtt_port, client_id);
+    mqtt_client.connect({reconnect: true, onSuccess: onConnect, onFailure:onFailure});
+    
+    return mqtt_client;
+}
+
+function onConnect(){
+
+    console.log('MQTT: connected');
+
+    // Subscribe to topics
+    mqtt_client.subscribe(TOPIC_BOT_POS);
+
+    mqtt_client.onMessageArrived = onMessageArrived;
+    mqtt_client.onConnectionLost = onConnectionLost;
+
+}
+
+function onFailure(){
+    console.log('MQTT: connection failed');
+}
+
+function onMessageArrived(message_){
+    let s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
+    mqtt_data = s.getPositionsList()
+    newData = true;
+    console.log("recieved")
+    
+} 
+
+function onConnectionLost(response){
+    console.log(response.errorMessage);
+}
+
+function publish(topic, message) {
+    var payload = new MQTT.Message(message);
+    payload.destinationName = topic;
+    mqtt_client.send(payload);
+    console.log('MQTT: published');
+}
+
+
+////////////////////////////////////////

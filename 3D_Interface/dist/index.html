@@ -12,6 +12,34 @@
     }
     .controlPad{
         float: right;
+    }
+    .btn-group .button {
+        background-color: #033b2e; /* Green */
+        border: none;
+        color: white;
+
+        padding: 16px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: 0.1s;
+        cursor: pointer;
+        display: block;
+      }
+    .button:hover {
+        background-color: #009ffc;
+        color: white;
+      }
+
+
+    .btn-group .button:not(:last-child) {
+    border-bottom: none; /* Prevent double borders */
+    }
+    
+    .btn-group .button:hover {
+    background-color: #009ffc;
     }</style>
 
 <body>
@@ -22,9 +50,9 @@
                 <div class="view" ,="" id="root">
             </div></td>
             <td>
-                <div class="controlPad">
-                    <button id="CameraReset">Reset Camera</button>
-                    <button id="CameraTopView">Top View</button>
+                <div class="btn-group">
+                    <button class="button" id="CameraReset">Reset Camera</button>
+                    <button class="button" id="CameraTopView">Top View</button>
                 </div>
             </td>
         </tr>

@@ -1,9 +1,14 @@
 import MQTT from 'paho-mqtt';
 
-const TOPIC_BOT_POS = 'a';
-const mqtt_server =  "0.0.0.0";
-const mqtt_port = 9001;
+
+
+const TOPIC_BOT_POS = 'swarm/0/currentPos';
+const mqtt_server =  "broker.mqttdashboard.com";
+const mqtt_port = 8000;
 let mqtt_client;
+
+var messages = require('./protobuf/MQTT_msg_pb.js');
+var message = new messages.BotPositionArr()
 
 export function mqttClient(){
 
@@ -26,14 +31,14 @@ export function onConnect(){
     mqtt_client.onMessageArrived = onMessageArrived;
     mqtt_client.onConnectionLost = onConnectionLost;
 
-    
+    publish('a','asdasd')
 }
 export function onFailure(){
     console.log('MQTT: connection failed');
 }
 
-export function onMessageArrived(message){
-    console.log(message.payloadString);
+export function onMessageArrived(message_){
+    console.log(messages.BotPositionArr.deserializeBinary(message_.payloadBytes));
 } 
 export function onConnectionLost(response){
     console.log(response.errorMessage);
