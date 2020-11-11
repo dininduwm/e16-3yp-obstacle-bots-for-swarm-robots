@@ -33,3 +33,8 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 Those individual robots will be on the arena as follows
 
 ![alt text](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_arena.png?raw=true)
+
+### ADVISORS
+
+Mr. Isuru Navinna
+Mr. Ziyan Marikkar
