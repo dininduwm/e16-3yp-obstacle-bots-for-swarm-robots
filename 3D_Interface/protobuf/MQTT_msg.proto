@@ -1,0 +1,16 @@
+syntax = 'proto3';
+
+message BotPosition {
+    // id of the bot
+    int32 bot_id = 1;
+
+    // current positions of the bot
+    int32 x_cod = 2;
+    int32 y_cod = 3;
+    float angle = 4;
+}
+
+message BotPositionArr {
+    // array current bot positions
+    repeated BotPosition positions = 1;
+}
