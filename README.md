@@ -1,6 +1,7 @@
 # Swarm Robotics platform
-[Web Application Home Page](http://54.163.154.240/)
-[Swarm Dash Board](http://54.163.154.240/swarm/)
+- [Web Application Home Page](http://54.163.154.240/)
+
+- [Swarm Dash Board](http://54.163.154.240/swarm/)
 
 ### Group Members
    * Thushara K A R         :: E/16/369 :: [e16369@eng.pdn.ac.lk](e16369@eng.pdn.ac.lk)
