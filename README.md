@@ -1,9 +1,11 @@
 # Swarm Robotics platform
+[Web Application Home Page](http://54.163.154.240/)
+[Swarm Dash Board](http://54.163.154.240/swarm/)
 
 ### Group Members
-   * Thushara K A R         :: E/16/369 :: e16369@eng.pdn.ac.lk
-   * Thilakarathna D M D U  :: E/16/366 :: e16366@eng.pdn.ac.lk
-   * Dissanayake D M T H    :: E/16/088 :: e16088@eng.pdn.ac.lk
+   * Thushara K A R         :: E/16/369 :: [e16369@eng.pdn.ac.lk](e16369@eng.pdn.ac.lk)
+   * Thilakarathna D M D U  :: E/16/366 :: [e16366@eng.pdn.ac.lk](e16366@eng.pdn.ac.lk)
+   * Dissanayake D M T H    :: E/16/088 :: [e16088@eng.pdn.ac.lk](e16088@eng.pdn.ac.lk)
 
 ### OVERVIEW
 
@@ -31,7 +33,7 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 
   Those individual robots will be on the arena as follows
     
-   ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/High_Lvl.jpg?raw=true)
+   ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/highlvl.jpg?raw=true)
 
 ### HARDWARE
 
@@ -45,24 +47,20 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
  
      ![robot_base_design](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_base_design.png?raw=true)
 
-   ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Capture.PNG?raw=true)
+   ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/solid.jpg?raw=true)
 
-    ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Capture1.PNG?raw=true)
-    
-    ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Capture3.PNG?raw=true)
     
 * #### PCB DESIGN
 
   ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/schemetic.png?raw=true)
 
-  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/PCB.png?raw=true)
+  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/pcb1.jpg?raw=true)
   
-  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Capture4.PNG?raw=true)
   
   
 ### SOFTWARE
 
-
+  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/web_interface.png?raw=true)
 
 ### ADVISORS
 
