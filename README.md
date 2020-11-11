@@ -1,4 +1,4 @@
-# Swarm Robotics platform
+# Swarm Robotics Platform
 - [Web Application Home Page](http://54.163.154.240/)
 
 - [Swarm Dash Board](http://54.163.154.240/swarm/)
@@ -31,14 +31,12 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 * Each robot has two independent wheels that can perform forward, backward and turning operations. With the help of inbuilt gyroscope robots can perform accurate turning operations.
 
 ### HIGH LEVEL DIAGRAM
-
-  Those individual robots will be on the arena as follows
     
    ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/highlvl.jpg?raw=true)
 
 ### HARDWARE
 
- * #### REAL HARDWARE
+ * #### PROTOTYPE
  
      ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Bot_Real_01.png?raw=true)
 
