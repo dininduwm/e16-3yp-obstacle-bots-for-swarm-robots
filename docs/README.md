@@ -63,6 +63,6 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 
 ### ADVISORS
 
-* Mr. Isuru Navinna
+* Dr. Isuru Navinna
 * Mr. Ziyan Marikkar
 
