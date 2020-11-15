@@ -84,7 +84,7 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/web_interface.png?raw=true)
 
 ### TESTING
-  [![Watch the video]https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/VideoThumb.png)](https://drive.google.com/file/d/1ObHcwEYGeDP1fNFbdbTpTihoFugFnTEj/view?usp=drivesdk)
+  [![Watch the video](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/VideoThumb.png)](https://drive.google.com/file/d/1ObHcwEYGeDP1fNFbdbTpTihoFugFnTEj/view?usp=drivesdk)
   
 ### BUDGET
   ![BUDGET](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/budget.png?raw=true)
