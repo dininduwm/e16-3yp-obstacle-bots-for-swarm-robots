@@ -13,6 +13,22 @@
    * [Department website](http://www.ce.pdn.ac.lk/)
    * [Web Application Home Page](http://54.163.154.240/)
    * [Swarm Dash Board](http://54.163.154.240/swarm/)
+ 
+### IMAGE
+    ![image](https://raw.githubusercontent.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/master/docs/img/Bot_Real_02.jpg?raw=true)
+
+### TABLE OF CONTENT
+
+1. >[OVERVIEW](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#overview)
+2. >[GOALS](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#goals)
+3. >[SPECIFICATIONS](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#specifications)
+4. >[SOLUTION ARCHITECTURE](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#solution-architecture)
+5. >[HARDWARE](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#hardware)
+6. >[SOFTWARE](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#software)
+7. >[TESTING](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#testing)
+8. >[BUDGET](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#budget)
+
+
 
 ### OVERVIEW
 
@@ -36,7 +52,7 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 
 * Each robot has two independent wheels that can perform forward, backward and turning operations. With the help of inbuilt gyroscope robots can perform accurate turning operations.
 
-### HIGH LEVEL DIAGRAM
+### SOLUTION ARCHITECTURE
     
    ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/highlvl.jpg?raw=true)
 
@@ -67,3 +83,7 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 
   ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/web_interface.png?raw=true)
 
+### TESTING
+  [![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/vt5fpE0bzSY)
+  
+### BUDGET
