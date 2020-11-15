@@ -15,7 +15,7 @@
    * [Swarm Dash Board](http://54.163.154.240/swarm/)
  
 ### IMAGE
-    ![image](https://raw.githubusercontent.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/master/docs/img/Bot_Real_02.jpg?raw=true)
+   ![image](https://raw.githubusercontent.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/master/docs/img/Bot_Real_02.jpg?raw=true)
 
 ### TABLE OF CONTENT
 
