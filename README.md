@@ -2,22 +2,17 @@
 
 ### Team
 * Members
-   * Thushara K A R         :: E/16/369 :: e16369@eng.pdn.ac.lk
-   * Thilakarathna D M D U  :: E/16/366 :: e16366@eng.pdn.ac.lk
-   * Dissanayake D M T H    :: E/16/088 :: e16088@eng.pdn.ac.lk
-* Supervisor
-   * Mr. Isuru Navinna
-   * Mr. Ziyan Marikkar
-* Related links
-   * [faculty website](http://eng.pdn.ac.lk/)
-   * [department website](http://www.ce.pdn.ac.lk/)
-   * [Web Application Home Page](http://54.163.154.240/)
-   * [Swarm Dash Board](http://54.163.154.240/swarm/)
-
-### Group Members
    * Thushara K A R         :: E/16/369 :: [e16369@eng.pdn.ac.lk](e16369@eng.pdn.ac.lk)
    * Thilakarathna D M D U  :: E/16/366 :: [e16366@eng.pdn.ac.lk](e16366@eng.pdn.ac.lk)
    * Dissanayake D M T H    :: E/16/088 :: [e16088@eng.pdn.ac.lk](e16088@eng.pdn.ac.lk)
+* Supervisor
+   * Dr. Isuru Navinna
+   * Mr. Ziyan Marikkar
+* Related links
+   * [Faculty website](http://eng.pdn.ac.lk/)
+   * [Department website](http://www.ce.pdn.ac.lk/)
+   * [Web Application Home Page](http://54.163.154.240/)
+   * [Swarm Dash Board](http://54.163.154.240/swarm/)
 
 ### OVERVIEW
 
