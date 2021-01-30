@@ -18,7 +18,7 @@ export class Item{
             this.pos = pos;
             // set the pos.x --> mesh.position.x
             //         pos.y --> mesh.position.z
-            this.mesh.position.set((pos.x-0.5)*config.AREANA_DIM, -0.3, (pos.y-0.5)*config.AREANA_DIM); 
+            this.mesh.position.set((pos.x-0.5)*config.AREANA_DIM, 0.3, (pos.y-0.5)*config.AREANA_DIM); 
         }else{
             console.log("No mesh assigned with this instance")
         }

@@ -49,13 +49,12 @@ export function onMessageArrived(message_) {
     if (message_.topic == TOPIC_SEVER_BOT_POS) {
         let s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
         mqtt_data = s.getPositionsList()
-        console.log(mqtt_data)
         newData = true;
     } else {
         let messageString = message_.payloadString.split(';')
         if (messageString[0] == "server_name_response") {
             serverList.push(messageString[1])
-            console.log("Server name recieved; " + messageString[2])
+            // console.log("Server name recieved; " + messageString[2])
 
             connenctToServer(0);
         }

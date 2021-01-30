@@ -22,6 +22,7 @@ let mqtt;
 let bots = [];// an array to hold the collection of Bot instances
 let destinations = null // this dictionary keeps destination objects with the reference of UUID 
 let bots_initialized = false;
+let botGroundClearence = 0.3
 
 let WINDOW_HEIGHT = document.getElementById("root").getBoundingClientRect().height;
 let WINDOW_WIDTH = document.getElementById("root").getBoundingClientRect().width;
@@ -140,7 +141,8 @@ function initRobots() {
 // function for loaging the slt, adding material ,creating the mesh, scale the model to proper dimentions 
 function robotsLoader(stl) {
     // create the robot collection and create Bot instances
-    // TODO -- convert this into a web request, rather than creating them with a random initila position
+    // TODO -- convert this into a web request, rather than creating them with a random initila 
+    stl.center()
     for (let i = 0; i < serverData.bot_count; i++) {
         let bot = new Item("obstacle")
         //set the model parameter with new Mesh instance
@@ -155,11 +157,14 @@ function robotsLoader(stl) {
         bot.setPos({ x: Math.random(), y: Math.random() })
         // the loaded stl file must be scaled down to fit the global scene,
         bot.mesh.geometry.computeBoundingBox(); // calculate the bounding box of the loaded bot
+       
+        
         let boundings = bot.mesh.geometry.boundingBox;
         // get the scaling ratio to scale the imported STL model to fit in the arena
         let ratio = Math.abs(config.BOT_DIM / (boundings.max.x - boundings.min.x));
 
         bot.mesh.scale.set(ratio, ratio, ratio);
+        
         bot.mesh.castShadow = true;
         bot.mesh.receiveShadow = true;
         bot.mesh.name = "obstacle";
@@ -190,8 +195,8 @@ function updateBots() {
         if (newData) {
             for (let i = 0; i < bots.length; i++) {
                 let pos = { x: mqtt_data[i].getXCod() - (config.AREANA_DIM / 2), y: mqtt_data[i].getYCod() - (config.AREANA_DIM / 2) };
-                bots[i].mesh.lookAt((pos.x - 0.5), -0.3, (pos.y - 0.5));
-                bots[i].tweens["position"].to({ x: (pos.x - 0.5), y: -0.3, z: (pos.y - 0.5) }, 3000).start();
+                bots[i].mesh.lookAt((pos.x - 0.5), botGroundClearence, (pos.y - 0.5));
+                bots[i].tweens["position"].to({ x: (pos.x - 0.5), y: botGroundClearence, z: (pos.y - 0.5) }, 500).start();
             }
             setNewDataState(false);
         }
@@ -347,6 +352,7 @@ function addEventListeners() {
     document.getElementById("setDestination").addEventListener("click", () => {
 
         if (!setDestMode) {
+            // starting the destination setting mode
             prevCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
             // if its initiating the  setDestMode ,set the camera to the top view
             animateCamera({ x: 0.01, y: camera.position.y, z: 30 }, 100, TWEEN.Easing.Linear.None).onComplete(() => {
@@ -354,9 +360,12 @@ function addEventListeners() {
             });
             controls.rotateSpeed = 0;
         } else {
+            // ending the destination setting 
             controls.rotateSpeed = 1;
-            console.log(prevCameraPos)
+            console.log(destinations)
             animateCamera({ x: prevCameraPos.x, y: prevCameraPos.y, z: prevCameraPos.z }, 1000, TWEEN.Easing.Exponential.Out)
+
+            
         }
 
 

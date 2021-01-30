@@ -178,7 +178,7 @@ var Item = /*#__PURE__*/function () {
         this.pos = pos; // set the pos.x --> mesh.position.x
         //         pos.y --> mesh.position.z
 
-        this.mesh.position.set((pos.x - 0.5) * _config.default.AREANA_DIM, -0.3, (pos.y - 0.5) * _config.default.AREANA_DIM);
+        this.mesh.position.set((pos.x - 0.5) * _config.default.AREANA_DIM, 0.3, (pos.y - 0.5) * _config.default.AREANA_DIM);
       } else {
         console.log("No mesh assigned with this instance");
       }
@@ -5222,8 +5222,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
     var f,
         obj = {
       botId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-      xCod: jspb.Message.getFieldWithDefault(msg, 2, 0),
-      yCod: jspb.Message.getFieldWithDefault(msg, 3, 0),
+      xCod: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
+      yCod: +jspb.Message.getFieldWithDefault(msg, 3, 0.0),
       angle: +jspb.Message.getFieldWithDefault(msg, 4, 0.0)
     };
 
@@ -5274,14 +5274,14 @@ proto.BotPosition.deserializeBinaryFromReader = function (msg, reader) {
       case 2:
         var value =
         /** @type {number} */
-        reader.readInt32();
+        reader.readFloat();
         msg.setXCod(value);
         break;
 
       case 3:
         var value =
         /** @type {number} */
-        reader.readInt32();
+        reader.readFloat();
         msg.setYCod(value);
         break;
 
@@ -5330,14 +5330,14 @@ proto.BotPosition.serializeBinaryToWriter = function (message, writer) {
 
   f = message.getXCod();
 
-  if (f !== 0) {
-    writer.writeInt32(2, f);
+  if (f !== 0.0) {
+    writer.writeFloat(2, f);
   }
 
   f = message.getYCod();
 
-  if (f !== 0) {
-    writer.writeInt32(3, f);
+  if (f !== 0.0) {
+    writer.writeFloat(3, f);
   }
 
   f = message.getAngle();
@@ -5365,7 +5365,7 @@ proto.BotPosition.prototype.setBotId = function (value) {
   jspb.Message.setProto3IntField(this, 1, value);
 };
 /**
- * optional int32 x_cod = 2;
+ * optional float x_cod = 2;
  * @return {number}
  */
 
@@ -5373,17 +5373,17 @@ proto.BotPosition.prototype.setBotId = function (value) {
 proto.BotPosition.prototype.getXCod = function () {
   return (
     /** @type {number} */
-    jspb.Message.getFieldWithDefault(this, 2, 0)
+    +jspb.Message.getFieldWithDefault(this, 2, 0.0)
   );
 };
 /** @param {number} value */
 
 
 proto.BotPosition.prototype.setXCod = function (value) {
-  jspb.Message.setProto3IntField(this, 2, value);
+  jspb.Message.setProto3FloatField(this, 2, value);
 };
 /**
- * optional int32 y_cod = 3;
+ * optional float y_cod = 3;
  * @return {number}
  */
 
@@ -5391,14 +5391,14 @@ proto.BotPosition.prototype.setXCod = function (value) {
 proto.BotPosition.prototype.getYCod = function () {
   return (
     /** @type {number} */
-    jspb.Message.getFieldWithDefault(this, 3, 0)
+    +jspb.Message.getFieldWithDefault(this, 3, 0.0)
   );
 };
 /** @param {number} value */
 
 
 proto.BotPosition.prototype.setYCod = function (value) {
-  jspb.Message.setProto3IntField(this, 3, value);
+  jspb.Message.setProto3FloatField(this, 3, value);
 };
 /**
  * optional float angle = 4;
@@ -5666,14 +5666,13 @@ function onMessageArrived(message_) {
   if (message_.topic == TOPIC_SEVER_BOT_POS) {
     var s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
     exports.mqtt_data = mqtt_data = s.getPositionsList();
-    console.log(mqtt_data);
     exports.newData = newData = true;
   } else {
     var messageString = message_.payloadString.split(';');
 
     if (messageString[0] == "server_name_response") {
-      serverList.push(messageString[1]);
-      console.log("Server name recieved; " + messageString[2]);
+      serverList.push(messageString[1]); // console.log("Server name recieved; " + messageString[2])
+
       connenctToServer(0);
     }
 
@@ -44087,6 +44086,7 @@ var bots = []; // an array to hold the collection of Bot instances
 var destinations = null; // this dictionary keeps destination objects with the reference of UUID 
 
 var bots_initialized = false;
+var botGroundClearence = 0.3;
 var WINDOW_HEIGHT = document.getElementById("root").getBoundingClientRect().height;
 var WINDOW_WIDTH = document.getElementById("root").getBoundingClientRect().width;
 
@@ -44193,7 +44193,9 @@ function initRobots() {
 
 function robotsLoader(stl) {
   // create the robot collection and create Bot instances
-  // TODO -- convert this into a web request, rather than creating them with a random initila position
+  // TODO -- convert this into a web request, rather than creating them with a random initila 
+  stl.center();
+
   for (var i = 0; i < _mqttClient.serverData.bot_count; i++) {
     var bot = new _Item.Item("obstacle"); //set the model parameter with new Mesh instance
 
@@ -44244,12 +44246,12 @@ function updateBots() {
           x: _mqttClient.mqtt_data[i].getXCod() - _config.default.AREANA_DIM / 2,
           y: _mqttClient.mqtt_data[i].getYCod() - _config.default.AREANA_DIM / 2
         };
-        bots[i].mesh.lookAt(pos.x - 0.5, -0.3, pos.y - 0.5);
+        bots[i].mesh.lookAt(pos.x - 0.5, botGroundClearence, pos.y - 0.5);
         bots[i].tweens["position"].to({
           x: pos.x - 0.5,
-          y: -0.3,
+          y: botGroundClearence,
           z: pos.y - 0.5
-        }, 3000).start();
+        }, 500).start();
       }
 
       (0, _mqttClient.setNewDataState)(false);
@@ -44389,6 +44391,7 @@ function addEventListeners() {
 
   document.getElementById("setDestination").addEventListener("click", function () {
     if (!setDestMode) {
+      // starting the destination setting mode
       prevCameraPos = {
         x: camera.position.x,
         y: camera.position.y,
@@ -44408,8 +44411,9 @@ function addEventListeners() {
       });
       controls.rotateSpeed = 0;
     } else {
+      // ending the destination setting 
       controls.rotateSpeed = 1;
-      console.log(prevCameraPos);
+      console.log(destinations);
       animateCamera({
         x: prevCameraPos.x,
         y: prevCameraPos.y,
@@ -44499,7 +44503,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44387" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33185" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
