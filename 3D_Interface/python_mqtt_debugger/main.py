@@ -47,6 +47,11 @@ def setDestinations(destinations):
         if (botId)<BOT_COUNT:
             robots_data[botId].des_pos = (dest[1]['x'], dest[1]['y'])
 
+def battStat():
+    batt_lvls = {}
+    for i in range(BOT_COUNT):
+        batt_lvls[i] =  random.randint(0,100)
+    return json.dumps(batt_lvls)
 
 # on message function
 def on_message(client, userdata, message):
@@ -72,6 +77,9 @@ def on_message(client, userdata, message):
 
             if messageString[1] == 'ping':
                 client.publish(TOPIC_SEVER_COM, 'ping')
+            
+            if messageString[1] == 'battStat':
+                client.publish(TOPIC_SEVER_COM, 'battStat;' + battStat())
     except :
         print("message format error")
 # brocker ip address (this brokeris running inside our aws server)

@@ -5607,6 +5607,7 @@ exports.onMessageArrived = onMessageArrived;
 exports.connenctToServer = connenctToServer;
 exports.searchServers = searchServers;
 exports.ping = ping;
+exports.battStat = battStat;
 exports.resetServerData = resetServerData;
 exports.onConnectionLost = onConnectionLost;
 exports.publish = publish;
@@ -5630,6 +5631,7 @@ var mqtt_port = 8000;
 var mqtt_client;
 var client_id = null;
 var connected = false;
+var battStat_callback = null;
 
 var messages = require('./protobuf/MQTT_msg_pb.js');
 
@@ -5700,6 +5702,10 @@ function onMessageArrived(message_) {
       if (messageString[0] == "ping") {
         exports.pingAck = pingAck = true;
       }
+
+      if (messageString[0] == "battStat") {
+        battStat_callback(messageString[1]);
+      }
     }
   }
 } // this functions id used to connect to a specific server
@@ -5722,6 +5728,11 @@ function searchServers() {
 
 function ping() {
   publish(TOPIC_SEVER_COM, client_id + ";ping");
+}
+
+function battStat(callback) {
+  battStat_callback = callback;
+  publish(TOPIC_SEVER_COM, client_id + ";battStat");
 }
 
 function resetServerData() {
@@ -43495,12 +43506,14 @@ Object.defineProperty(exports, "__esModule", {
 exports.drawLable = drawLable;
 exports.createLable = createLable;
 exports.setBatteryLevel = setBatteryLevel;
+exports.hideAll_BattStat = hideAll_BattStat;
+exports.show_BattStat = show_BattStat;
+exports.callback = callback;
 
-var THREE = _interopRequireWildcard(require("three"));
+var _mqttClient = require("./mqttClient.js");
 
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+var isShowing = false;
+var bots = null;
 
 function drawLable(width, height, bots, camera) {
   bots.forEach(function (bot) {
@@ -43558,7 +43571,9 @@ function setBatteryLevel(bot, level, fullview) {
   var green = String(level * 0.01 * 255);
   var color = 'rgba(' + red + ',' + green + ', 20, 0.966)';
   var text = label.children[0];
-  var batteryBar = label.children[1].children[0];
+  var batteryBar = label.children[1].children[0]; //make visible the battery label
+
+  label.style.opacity = 1;
 
   if (fullview) {
     text.style.opacity = 1;
@@ -43574,8 +43589,43 @@ function setBatteryLevel(bot, level, fullview) {
 
   batteryBar.style.width = String(level) + '%';
   batteryBar.style.backgroundColor = color;
+} // hides all the battery stats
+
+
+function hideAll_BattStat(bots) {
+  bots.forEach(function (bot) {
+    bot.screenLable.style.opacity = 0;
+  });
+} // handles the show and hide functionality,
+// battery state buttons onclick is handled by this function
+
+
+function show_BattStat(_bots) {
+  if (_bots.length != 0) {
+    if (isShowing) {
+      hideAll_BattStat(_bots);
+    } else {
+      bots = _bots; //publish a battery level request to the server
+
+      (0, _mqttClient.battStat)(callback);
+    }
+
+    isShowing = !isShowing;
+  }
 }
-},{"three":"node_modules/three/build/three.module.js"}],"resources/images/simbot_back-02.jpg":[function(require,module,exports) {
+
+function callback(data) {
+  data = JSON.parse(data);
+  console.log(data);
+
+  if (bots != null) {
+    bots.forEach(function (bot) {
+      setBatteryLevel(bot, data[bot.id], true);
+      console.log(data[bot.id]);
+    });
+  }
+}
+},{"./mqttClient.js":"mqttClient.js"}],"resources/images/simbot_back-02.jpg":[function(require,module,exports) {
 module.exports = "/simbot_back-02.cf5aadff.jpg";
 },{}],"resources/images/simbot_back_lightmap-02.jpg":[function(require,module,exports) {
 module.exports = "/simbot_back_lightmap-02.873c499f.jpg";
@@ -44645,6 +44695,10 @@ function addEventListeners() {
     }
 
     setDestMode = !setDestMode;
+  }); // show battery status
+
+  document.getElementById("batStat").addEventListener("click", function () {
+    (0, _screenLables.show_BattStat)(bots);
   }); //add delete all destinations listener
 
   document.getElementById("deleteAllDestinations").addEventListener("click", function () {

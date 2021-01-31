@@ -12,6 +12,7 @@ let mqtt_client;
 let client_id = null;
 let connected = false
 
+let battStat_callback = null
 
 var messages = require('./protobuf/MQTT_msg_pb.js');
 var message = new messages.BotPositionArr()
@@ -74,6 +75,10 @@ export function onMessageArrived(message_) {
             if(messageString[0] == "ping"){
                 pingAck = true
             }
+
+            if(messageString[0] == "battStat"){
+                battStat_callback(messageString[1])
+            }
         }
     }
 
@@ -102,6 +107,11 @@ export function searchServers(){
 
 export function ping(){
     publish(TOPIC_SEVER_COM, client_id + ";ping");
+}
+
+export function battStat(callback){
+    battStat_callback = callback
+    publish(TOPIC_SEVER_COM, client_id + ";battStat");
 }
 
 export function resetServerData(){
