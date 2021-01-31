@@ -164,6 +164,8 @@ var Item = /*#__PURE__*/function () {
 
     this.discarded = false;
     this.light = null;
+    this.status = "Idle";
+    this.screenLable = null; //the lable that shown in the screen
   }
 
   _createClass(Item, [{
@@ -5603,10 +5605,15 @@ exports.onConnect = onConnect;
 exports.onFailure = onFailure;
 exports.onMessageArrived = onMessageArrived;
 exports.connenctToServer = connenctToServer;
+exports.searchServers = searchServers;
+exports.ping = ping;
+exports.resetServerData = resetServerData;
 exports.onConnectionLost = onConnectionLost;
 exports.publish = publish;
 exports.setNewDataState = setNewDataState;
-exports.serverData = exports.serverList = exports.newData = exports.mqtt_data = void 0;
+exports.setPingAck = setPingAck;
+exports.sendDestinations = sendDestinations;
+exports.pingAck = exports.serverData = exports.serverList = exports.newData = exports.mqtt_data = void 0;
 
 var _pahoMqtt = _interopRequireDefault(require("paho-mqtt"));
 
@@ -5621,15 +5628,18 @@ var TOPIC_COM = 'swarm/common'; // common data line for all the clients and serv
 var mqtt_server = "broker.mqttdashboard.com";
 var mqtt_port = 8000;
 var mqtt_client;
-var client_id;
+var client_id = null;
+var connected = false;
 
 var messages = require('./protobuf/MQTT_msg_pb.js');
 
 var message = new messages.BotPositionArr();
 var mqtt_data,
     newData = false,
-    serverList = [],
-    serverData;
+    serverList = {},
+    serverData = null,
+    pingAck = true;
+exports.pingAck = pingAck;
 exports.serverData = serverData;
 exports.serverList = serverList;
 exports.newData = newData;
@@ -5650,12 +5660,12 @@ function mqttClient() {
 }
 
 function onConnect() {
+  connected = true;
   console.log('MQTT: connected');
   mqtt_client.onMessageArrived = onMessageArrived;
   mqtt_client.onConnectionLost = onConnectionLost; // Subscribe to topics
 
   mqtt_client.subscribe(TOPIC_COM);
-  publish(TOPIC_COM, client_id + ";get_servers"); // request for platform pc names
 }
 
 function onFailure() {
@@ -5670,10 +5680,10 @@ function onMessageArrived(message_) {
   } else {
     var messageString = message_.payloadString.split(';');
 
-    if (messageString[0] == "server_name_response") {
-      serverList.push(messageString[1]); // console.log("Server name recieved; " + messageString[2])
-
-      connenctToServer(0);
+    if (message_.topic == TOPIC_COM) {
+      if (messageString[0] == "server_name_response") {
+        serverList[messageString[1]] = [messageString[1], messageString[2]];
+      }
     }
 
     if (message_.topic == TOPIC_SEVER_COM) {
@@ -5682,8 +5692,13 @@ function onMessageArrived(message_) {
           console.log("server connecion success", messageString[2]);
           exports.serverData = serverData = JSON.parse(messageString[2]);
         } else {
+          exports.serverData = serverData = null;
           console.log("server connecion refused");
         }
+      }
+
+      if (messageString[0] == "ping") {
+        exports.pingAck = pingAck = true;
       }
     }
   }
@@ -5691,14 +5706,26 @@ function onMessageArrived(message_) {
 
 
 function connenctToServer(serverIdx) {
-  if (serverList.length != 0) {
-    TOPIC_SEVER_BOT_POS = 'swarm/' + serverList[serverIdx] + '/bot_pos';
-    TOPIC_SEVER_COM = 'swarm/' + serverList[serverIdx] + '/com';
+  if (Object.keys(serverList).length != 0) {
+    TOPIC_SEVER_BOT_POS = 'swarm/' + serverList[serverIdx][0] + '/bot_pos';
+    TOPIC_SEVER_COM = 'swarm/' + serverList[serverIdx][0] + '/com';
     mqtt_client.subscribe(TOPIC_SEVER_BOT_POS);
     mqtt_client.subscribe(TOPIC_SEVER_COM);
-    console.log("subscribed to server: " + serverList[serverIdx]);
+    console.log("subscribed to server: " + serverList[serverIdx][0] + ' name: ' + serverList[serverIdx][1]);
     publish(TOPIC_SEVER_COM, client_id + ";connection_req");
   }
+}
+
+function searchServers() {
+  publish(TOPIC_COM, client_id + ";get_servers"); // request for platform pc names
+}
+
+function ping() {
+  publish(TOPIC_SEVER_COM, client_id + ";ping");
+}
+
+function resetServerData() {
+  exports.serverData = serverData = null;
 }
 
 function onConnectionLost(response) {
@@ -5706,14 +5733,33 @@ function onConnectionLost(response) {
 }
 
 function publish(topic, message) {
-  var payload = new _pahoMqtt.default.Message(message);
-  payload.destinationName = topic;
-  mqtt_client.send(payload);
-  console.log('MQTT: published');
+  if (connected) {
+    var payload = new _pahoMqtt.default.Message(message);
+    payload.destinationName = topic;
+    mqtt_client.send(payload);
+  }
 }
 
 function setNewDataState(state) {
   exports.newData = newData = false;
+}
+
+function setPingAck(state) {
+  exports.pingAck = pingAck = state;
+}
+
+function sendDestinations(destinations) {
+  if (serverData != null && destinations != null) {
+    var dest = [];
+    destinations.forEach(function (element) {
+      dest.push({
+        x: element.mesh.position.x + 0.5 + serverData.areana_dim / 2,
+        y: element.mesh.position.z + 0.5 + serverData.areana_dim / 2
+      });
+    });
+    publish(TOPIC_SEVER_COM, client_id + ";set_dest;" + JSON.stringify(dest));
+    console.log(dest);
+  }
 }
 },{"paho-mqtt":"node_modules/paho-mqtt/paho-mqtt.js","./protobuf/MQTT_msg_pb.js":"protobuf/MQTT_msg_pb.js"}],"node_modules/three/build/three.module.js":[function(require,module,exports) {
 "use strict";
@@ -43359,25 +43405,177 @@ STLLoader.prototype = Object.assign(Object.create(_threeModule.Loader.prototype)
     return isBinary(binData) ? parseBinary(binData) : parseASCII(ensureString(data));
   }
 });
-},{"../../../build/three.module.js":"node_modules/three/build/three.module.js"}],"functions.js":[function(require,module,exports) {
+},{"../../../build/three.module.js":"node_modules/three/build/three.module.js"}],"servers.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.animateInternetIcon = animateInternetIcon;
+exports.setOnline = setOnline;
+exports.findServer = findServer;
+
+var _mqttClient = require("./mqttClient");
+
 var icons = ['fas fa-globe-americas', 'fas fa-globe-europe', 'fas fa-globe-africa', 'fas fa-globe-asia'];
 var count = 0;
+var online = false;
+var serverIdx = 0; //the index of the server that needed to be connected
 
 function animateInternetIcon() {
-  setTimeout(function () {
-    document.getElementById("InternetIcon").className = icons[count];
-    count++;
-    count = count % 4;
-    animateInternetIcon();
-  }, 1000);
+  if (online) {
+    setTimeout(function () {
+      document.getElementById('InternetIcon').style.color = '#21f873';
+      document.getElementById("online").style.color = '#21f873';
+      document.getElementById("online").textContent = "online";
+      document.getElementById("InternetIcon").className = icons[count];
+      count++;
+      count = count % 4;
+      animateInternetIcon();
+    }, 1000);
+  } else {
+    document.getElementById('InternetIcon').style.color = '#9da7a1';
+    document.getElementById("online").style.color = '#9da7a1';
+    document.getElementById("online").textContent = "offline";
+  }
 }
-},{}],"resources/images/simbot_back-02.jpg":[function(require,module,exports) {
+
+function setOnline() {}
+
+function findServer() {
+  //search for available servers
+  if (Object.keys(_mqttClient.serverList).length == 0) {
+    console.log("Searching servers");
+    (0, _mqttClient.searchServers)();
+    document.getElementById('serverName').textContent = 'Searching servers...';
+    setTimeout(findServer, 2000);
+  } else {
+    if (_mqttClient.serverData != null) {
+      // if there are any online servers
+      document.getElementById('serverName').textContent = _mqttClient.serverList[serverIdx][1];
+      online = true;
+      pingServer();
+      animateInternetIcon();
+    } else {
+      // connect to a specified server by the index, following is set to "0" for now
+      (0, _mqttClient.connenctToServer)(serverIdx);
+      console.log("Trying to connect: " + _mqttClient.serverList[serverIdx][1]);
+      setTimeout(findServer, 2000);
+    }
+  }
+} // ping the server
+
+
+function pingServer() {
+  if (online) {
+    setTimeout(function () {
+      online = _mqttClient.pingAck;
+      (0, _mqttClient.setPingAck)(false); //set the pingAck = false to detect if it will be true after pinging the server
+
+      (0, _mqttClient.ping)(); // ping the server 
+
+      pingServer(); // recurse the function
+    }, 1000);
+  } else {
+    //this block run in a disconnection 
+    (0, _mqttClient.setPingAck)(true); // pingAck should be true to initiate the pinging 
+
+    document.getElementById('serverName').textContent = "Reconnecting...";
+    (0, _mqttClient.resetServerData)(); // server data is set to null to force the findServer() function to call connectToServer() function
+
+    findServer();
+  }
+}
+},{"./mqttClient":"mqttClient.js"}],"screenLables.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.drawLable = drawLable;
+exports.createLable = createLable;
+exports.setBatteryLevel = setBatteryLevel;
+
+var THREE = _interopRequireWildcard(require("three"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function drawLable(width, height, bots, camera) {
+  bots.forEach(function (bot) {
+    var object = bot.mesh;
+    var widthHalf = width / 2,
+        heightHalf = height / 2;
+    var pos = object.position.clone();
+    pos.project(camera);
+    pos.x = pos.x * widthHalf + widthHalf;
+    pos.y = -(pos.y * heightHalf) + heightHalf;
+    bot.screenLable.style.left = pos.x;
+    bot.screenLable.style.top = pos.y - 10;
+  }); // console.log(pos.x, pos.y)
+} // return a HTML lable 
+
+
+function createLable(id) {
+  var parent = document.getElementById('root');
+  var lableContainer = document.createElement('div');
+  lableContainer.id = "lableContainer" + String(id);
+  lableContainer.className = "lableContainer";
+  lableContainer.appendChild(lableText(id)); // create a HTML text element
+
+  lableContainer.appendChild(battryBar(id)); // create a HTML batteryBar
+
+  parent.insertBefore(lableContainer, parent.firstChild);
+  return lableContainer;
+} //return a HTML label
+
+
+function lableText(id) {
+  var text = document.createElement('label');
+  text.id = 'labelText' + String(id);
+  text.className = "labelText";
+  text.textContent = '100%';
+  return text;
+} //return the HTML baterry bar
+
+
+function battryBar(id) {
+  var batterybar = document.createElement('div');
+  batterybar.id = 'batteryBar' + String(id);
+  batterybar.className = 'batterybar';
+  var batterybarChild = document.createElement('div');
+  batterybarChild.className = 'batterybarChild';
+  batterybar.appendChild(batterybarChild);
+  return batterybar;
+} //this function sets the baterry level of a specific bot
+
+
+function setBatteryLevel(bot, level, fullview) {
+  var label = bot.screenLable; //set the color
+
+  var red = String((100 - level) * 0.01 * 255);
+  var green = String(level * 0.01 * 255);
+  var color = 'rgba(' + red + ',' + green + ', 20, 0.966)';
+  var text = label.children[0];
+  var batteryBar = label.children[1].children[0];
+
+  if (fullview) {
+    text.style.opacity = 1;
+    label.style.backgroundColor = 'rgba(0, 8, 8, 0.185);'; //sets the text label to the value of the level
+
+    text.textContent = String(level) + '%';
+    text.style.color = color;
+  } else {
+    text.style.opacity = 0;
+    label.style.backgroundColor = 'rgba(0, 8, 8, 0)';
+  } //set the battery level bar 
+
+
+  batteryBar.style.width = String(level) + '%';
+  batteryBar.style.backgroundColor = color;
+}
+},{"three":"node_modules/three/build/three.module.js"}],"resources/images/simbot_back-02.jpg":[function(require,module,exports) {
 module.exports = "/simbot_back-02.cf5aadff.jpg";
 },{}],"resources/images/simbot_back_lightmap-02.jpg":[function(require,module,exports) {
 module.exports = "/simbot_back_lightmap-02.873c499f.jpg";
@@ -44056,7 +44254,9 @@ var _OrbitControls = require("three/examples/jsm/controls/OrbitControls.js");
 
 var _STLLoader = require("three/examples/jsm/loaders/STLLoader.js");
 
-var _functions = require("./functions.js");
+var _servers = require("./servers.js");
+
+var _screenLables = require("./screenLables.js");
 
 var _simbot_back = _interopRequireDefault(require("./resources/images/simbot_back-02.jpg"));
 
@@ -44167,7 +44367,9 @@ function init() {
   cursor.position.set(0, 0.3, 0);
   console.log(cursor.layers);
   scene.add(cursor);
-  setTimeout(updateBots, 1000); //add thw event listner
+  setTimeout(updateBots, 1000); //handles the connection with the server
+
+  (0, _servers.findServer)(); //add thw event listner
 
   addEventListeners(); //camera intro anomation
 
@@ -44179,7 +44381,7 @@ function init() {
 
   animate(); // start the animation of the internet Icon
 
-  (0, _functions.animateInternetIcon)();
+  (0, _servers.animateInternetIcon)();
 }
 
 function initRobots() {
@@ -44197,7 +44399,8 @@ function robotsLoader(stl) {
   stl.center();
 
   for (var i = 0; i < _mqttClient.serverData.bot_count; i++) {
-    var bot = new _Item.Item("obstacle"); //set the model parameter with new Mesh instance
+    var bot = new _Item.Item("obstacle");
+    bot.id = bots.length; //set the model parameter with new Mesh instance
 
     var material = new THREE.MeshPhongMaterial({
       color: 0xff5533,
@@ -44224,6 +44427,7 @@ function robotsLoader(stl) {
 
     bot.tweens["position"] = new _tween.default.Tween(bot.mesh.position);
     scene.add(bot.mesh);
+    bot.screenLable = (0, _screenLables.createLable)(bot.id);
     bots.push(bot); // push the bot mesh to an array
   }
 } //this is tempory funtion to simulate a robot movement
@@ -44240,6 +44444,8 @@ function updateBots() {
       initRobots();
     }
   } else {
+    (0, _screenLables.drawLable)(WINDOW_WIDTH, WINDOW_HEIGHT, bots, camera); // draw the lables above bots
+
     if (_mqttClient.newData) {
       for (var i = 0; i < bots.length; i++) {
         var pos = {
@@ -44287,37 +44493,69 @@ function createDestination(x, z) {
     destinationTween.start();
   }
 
-  var dest = new _Item.Item("destination");
-  var mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 2), new THREE.MeshBasicMaterial({
-    color: 0x00ff91,
-    specular: 30,
-    shininess: 100,
-    opacity: 1
-  }));
-  mesh.material.transparent = true;
-  mesh.name = "destination";
-  mesh.layers.enable(1);
-  mesh.position.set(x, 0.1, z);
-  dest.mesh = mesh;
-  scene.add(mesh);
-  new _tween.default.Tween(mesh.scale).to({
-    x: 0.5,
-    y: 0.5,
-    z: 0.5
-  }, 800).easing(_tween.default.Easing.Elastic.Out).onComplete(function () {
+  if (destinations.size < _mqttClient.serverData.bot_count) {
+    var dest = new _Item.Item("destination");
+    var mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 2), new THREE.MeshBasicMaterial({
+      color: 0x00ff91,
+      specular: 30,
+      shininess: 100,
+      opacity: 1
+    }));
+    mesh.material.transparent = true;
+    mesh.name = "destination";
+    mesh.layers.enable(1);
+    mesh.position.set(x, 0.1, z);
+    dest.mesh = mesh;
+
+    try {
+      bots.forEach(function (bot) {
+        if (bot.status == "Idle") {
+          console.log(bot.id);
+          dest.id = bot.id;
+          bot.status = "Busy";
+          throw BreakException;
+        }
+      });
+    } catch (_unused) {}
+
+    scene.add(mesh);
     destinations.set(mesh.uuid, dest); // stores the destination object with the reference of mesh UUID 
-  }).start();
+
+    new _tween.default.Tween(mesh.scale).to({
+      x: 0.5,
+      y: 0.5,
+      z: 0.5
+    }, 800).easing(_tween.default.Easing.Elastic.Out).start();
+  } else {
+    console.log("All bots are occupied");
+  }
+}
+
+function deleteDestination(object) {
+  scene.remove(object); //release the bot from destination
+
+  bots.forEach(function (bot) {
+    try {
+      if (bot.id == destinations.get(object.uuid).id) {
+        bot.status = "Idle";
+        console.log("bot released: ", bot.id);
+        throw BreakException;
+      }
+    } catch (_unused2) {}
+  });
+  destinations.delete(object.uuid);
 }
 
 function animate() {
-  controls.update();
+  controls.update(); //updates bots
+
   updateBots(); //mouse interactions
 
-  mouseInteractions();
-  renderer.render(scene, camera); //update tween animator    
+  mouseInteractions(); //update tween animator    
 
   _tween.default.update();
 
+  renderer.render(scene, camera);
   requestAnimationFrame(animate);
 } // get actions for mouse interactions
 
@@ -44355,12 +44593,12 @@ function mouseInteractions() {
 
     if (intersects[0].object.name == "obstacle") {
       intersects[0].object.material.color.set(0x05ffa3);
+      (0, _screenLables.setBatteryLevel)(bots[0], 60, true);
     } //handle the interactions with destinations
 
 
     if (intersects[0].object.name == "destination" & click) {
-      scene.remove(intersects[0].object);
-      destinations.delete(intersects[0].object.uuid);
+      deleteDestination(intersects[0].object);
       click = false;
     }
   }
@@ -44392,33 +44630,18 @@ function addEventListeners() {
   document.getElementById("setDestination").addEventListener("click", function () {
     if (!setDestMode) {
       // starting the destination setting mode
-      prevCameraPos = {
-        x: camera.position.x,
-        y: camera.position.y,
-        z: camera.position.z
-      }; // if its initiating the  setDestMode ,set the camera to the top view
-
-      animateCamera({
-        x: 0.01,
-        y: camera.position.y,
-        z: 30
-      }, 100, _tween.default.Easing.Linear.None).onComplete(function () {
-        animateCamera({
-          x: 0,
-          y: 70,
-          z: 0
-        }, 1000, _tween.default.Easing.Exponential.Out);
-      });
+      // prevCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+      // // if its initiating the  setDestMode ,set the camera to the top view
+      // animateCamera({ x: 0.01, y: camera.position.y, z: 30 }, 100, TWEEN.Easing.Linear.None).onComplete(() => {
+      //     animateCamera({ x: 0, y: 70, z: 0 }, 1000, TWEEN.Easing.Exponential.Out)
+      // });
       controls.rotateSpeed = 0;
     } else {
       // ending the destination setting 
-      controls.rotateSpeed = 1;
-      console.log(destinations);
-      animateCamera({
-        x: prevCameraPos.x,
-        y: prevCameraPos.y,
-        z: prevCameraPos.z
-      }, 1000, _tween.default.Easing.Exponential.Out);
+      controls.rotateSpeed = 1; // animateCamera({ x: prevCameraPos.x, y: prevCameraPos.y, z: prevCameraPos.z }, 1000, TWEEN.Easing.Exponential.Out)
+      // send the destinaion to the server
+
+      (0, _mqttClient.sendDestinations)(destinations);
     }
 
     setDestMode = !setDestMode;
@@ -44475,7 +44698,7 @@ function animateCamera(pos, duration, easing) {
 }
 
 init();
-},{"./Item.js":"Item.js","./mqttClient.js":"mqttClient.js","three":"node_modules/three/build/three.module.js","./config.js":"config.js","three/examples/jsm/controls/OrbitControls.js":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/STLLoader.js":"node_modules/three/examples/jsm/loaders/STLLoader.js","./functions.js":"functions.js","./resources/images/simbot_back-02.jpg":"resources/images/simbot_back-02.jpg","./resources/images/simbot_back_lightmap-02.jpg":"resources/images/simbot_back_lightmap-02.jpg","./resources/3DModels/Cover.STL":"resources/3DModels/Cover.STL","tween":"node_modules/tween/tween.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./Item.js":"Item.js","./mqttClient.js":"mqttClient.js","three":"node_modules/three/build/three.module.js","./config.js":"config.js","three/examples/jsm/controls/OrbitControls.js":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/STLLoader.js":"node_modules/three/examples/jsm/loaders/STLLoader.js","./servers.js":"servers.js","./screenLables.js":"screenLables.js","./resources/images/simbot_back-02.jpg":"resources/images/simbot_back-02.jpg","./resources/images/simbot_back_lightmap-02.jpg":"resources/images/simbot_back_lightmap-02.jpg","./resources/3DModels/Cover.STL":"resources/3DModels/Cover.STL","tween":"node_modules/tween/tween.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -44503,7 +44726,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33185" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36513" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

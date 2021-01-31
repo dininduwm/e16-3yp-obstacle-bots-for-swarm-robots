@@ -97,11 +97,38 @@
     width : 16%;
     font-size: 200%;
     border-radius: 10px;
-    color: #07c948;
+    color: #9da7a1;
     border-bottom-left-radius: 35px;
     border-top-left-radius: 35px;
     background-color: rgba(10, 10, 10, 0.8);
 }
+
+.Container.batt{
+
+    position:absolute;
+    grid-template-rows: auto ;
+    grid-template-columns:  auto;
+    left: 83%;
+    top: 80%;
+    height: 5%;
+    width : 7%;
+    transform: translate(-50%, -50%);
+    font-size: 100%;
+    border-radius: 50px;
+    color: #9da7a1;
+    background-color: rgba(10, 10, 10, 0.8);
+    transition-duration: 20ms;
+}
+.Container.batt:hover{
+    
+    background-color: rgba(26, 27, 27, 0.8);
+}
+.Container.batt.active{
+    color: #23cf68;
+    height: 6%;
+    width : 8%;
+}
+
 
 .camera:hover{
     height:150px;
@@ -172,5 +199,49 @@
 .online{
     justify-self: start;
     font-size: 50%;
-    color: #21f873;
+    color: #9da7a1;
+}
+
+
+
+
+.lableContainer{
+    display: grid;
+    position:absolute;
+    grid-template-rows:  70% 30%;
+    left: 500px;
+    top: 500px;
+    height: 4%;
+    width : 4%;
+    font-size: 200%;
+    border-radius: 5px;
+    color: #e8ecea;
+    transform: translate(-50%, -120%);
+    background-color: rgba(0, 8, 8, 0.185);
+    z-index: 2;
+    pointer-events: none;
+    align-items: center;
+    transition: 50ms;
+    opacity: 01
+}
+
+
+.labelText{
+    font-size: 60%;
+    color:#38fa99
+}
+.batterybar{
+    display: grid;
+    grid-template-rows: auto;
+    height:100%;
+    background-color: rgba(230, 223, 223, 0.966);
+    border-radius: 100px;
+    align-items: center;
+}   
+
+.batterybarChild{
+    height: 80%;
+    width: 50%;    
+    border-radius: 100px;
+    background-color: rgba(85, 248, 35, 0.966);
 }

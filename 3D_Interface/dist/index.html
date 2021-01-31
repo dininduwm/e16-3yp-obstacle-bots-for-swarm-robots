@@ -21,11 +21,15 @@
                 <i title="Set Destination" id="setDestination" class="fas fa-map-marker-alt" onclick="this.classList.toggle('active')"></i>
                 <i id="deleteAllDestinations" class="fas fa-backspace"></i>
             </div>
-
+           
+            <div class="Container batt" style="z-index: 2" onclick="this.classList.toggle('active')">
+               Battery State
+            </div>
+            
             <div class="Container pc" style="z-index: 2">
                 <i id="InternetIcon" class="fas fa-globe-americas"></i>
-                <label class="text1"> Platform PC UOP</label>
-                <label class="online"> online</label>
+                <label id="serverName" class="text1"> Platform PC UOP</label>
+                <label id="online" class="online"> offline</label>
             </div>
 
         </div>

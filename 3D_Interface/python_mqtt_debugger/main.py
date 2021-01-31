@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt #import the client1
 import movements
 from robot import robot
+from roboArrangement import  arrageBot
 import random 
 import math
 import time
@@ -13,7 +14,7 @@ from MQTT_msg_pb2 import *
 # swarm id
 SWARM_ID = 0;
 swarm_name = "platformPC UOP"
-BOT_COUNT = 200;
+BOT_COUNT = 10;
 ARENA_DIM = 30;
 
 TOPIC_COM = 'swarm/common'
@@ -37,9 +38,14 @@ def initialize():
                 0
             )
         )
-
+    arrageBot(robots_data, [])
     
         
+def setDestinations(destinations):
+    for dest in destinations:
+        botId = int(dest[0])        
+        if (botId)<BOT_COUNT:
+            robots_data[botId].des_pos = (dest[1]['x'], dest[1]['y'])
 
 
 # on message function
@@ -47,21 +53,27 @@ def on_message(client, userdata, message):
     # newBotDecode = BotPositionArr.FromString(message.payload)
     messageString = message.payload.decode('utf-8').split(';')
     
-    if message.topic == TOPIC_COM:
-        if messageString[1] == 'get_servers':
-            print('client requests server name')
-            client.publish(TOPIC_COM, 'server_name_response;'+str(SWARM_ID)+';'+swarm_name)
-    
-    if message.topic == TOPIC_SEVER_COM:
-        if messageString[1] == 'connection_req':
-            print('client requests connection')
-            client.publish(TOPIC_SEVER_COM, 'server_response;success;'+ json.dumps({'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM}))
+    try:
+        if message.topic == TOPIC_COM:
+            if messageString[1] == 'get_servers':
+                print('client requests server name')
+                client.publish(TOPIC_COM, 'server_name_response;'+str(SWARM_ID)+';'+swarm_name)
+        
+        if message.topic == TOPIC_SEVER_COM:
+            if messageString[1] == 'connection_req':
+                print('client requests connection')
+                client.publish(TOPIC_SEVER_COM, 'server_response;success;'+ json.dumps({'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM}))
 
-        if messageString[1] == 'set_dest':
-            print("Destination reset")
-            destinations = json.loads(messageString[2])
-            print(destinations)
+            if messageString[1] == 'set_dest':
+                print("Destination reset")
+                destinations = json.loads(messageString[2])
+                print(destinations)
+                arrageBot(robots_data , destinations)
 
+            if messageString[1] == 'ping':
+                client.publish(TOPIC_SEVER_COM, 'ping')
+    except :
+        print("message format error")
 # brocker ip address (this brokeris running inside our aws server)
 broker_address= "broker.mqttdashboard.com"
 print("creating new instance")
@@ -89,7 +101,7 @@ flagFirst = True
 stableCount = 0
 while(True):
     maxForce = 0
-    # time.sleep(0.02)
+    time.sleep(0.2)
     
     
     if stableCount<20:
@@ -104,6 +116,7 @@ while(True):
 
             dx = F*math.cos((Dir/180*math.pi))
             dy = F*math.sin((Dir/180*math.pi))
+            
             robots_data[i].init_pos = (robots_data[i].init_pos[0] + dx, robots_data[i].init_pos[1] + dy)
 
             newBot = BotPosition()
@@ -136,7 +149,7 @@ while(True):
         client.publish(TOPIC_SEVER_BOT_POS, data)
     
     
-    if maxForce < 1e-02:
+    if maxForce < 1e-20:
         stableCount = stableCount + 1       
 
     if flagFirst:

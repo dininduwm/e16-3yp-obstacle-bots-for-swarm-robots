@@ -1,12 +1,13 @@
 import { Item } from "./Item.js"
-import { mqttClient, mqtt_data, newData, setNewDataState, serverData } from "./mqttClient.js";
+import { mqttClient, mqtt_data, newData, setNewDataState, serverData, sendDestinations, connenctToServer } from "./mqttClient.js";
 import * as THREE from "three";
 import config from "./config.js";
 
 import { AxesHelper, Loader, Mesh, Scene, Vector3 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
-import { animateInternetIcon } from "./functions.js"
+import { animateInternetIcon, findServer } from "./servers.js"
+import {drawLable, createLable, setBatteryLevel} from "./screenLables.js"
 
 import arenaImg from "./resources/images/simbot_back-02.jpg";
 import lightMap from "./resources/images/simbot_back_lightmap-02.jpg";
@@ -31,7 +32,6 @@ let WINDOW_WIDTH = document.getElementById("root").getBoundingClientRect().width
 function init() {
     //create a mqttClient
     mqtt = mqttClient();
-
     //initalte a scene 
     scene = new THREE.Scene();
     scene.background = (new THREE.Color(0xccdbd8));
@@ -112,7 +112,8 @@ function init() {
     setTimeout(updateBots, 1000);
 
 
-
+    //handles the connection with the server
+    findServer();
 
     //add thw event listner
     addEventListeners()
@@ -125,6 +126,8 @@ function init() {
 
     // start the animation of the internet Icon
     animateInternetIcon()
+
+    
 }
 
 
@@ -145,32 +148,38 @@ function robotsLoader(stl) {
     stl.center()
     for (let i = 0; i < serverData.bot_count; i++) {
         let bot = new Item("obstacle")
+        bot.id = bots.length
         //set the model parameter with new Mesh instance
         let material = new THREE.MeshPhongMaterial({
             color: 0xff5533,
             // specular: 100, 
             shininess: 500,
         });
+
+        
         bot.setMesh(new Mesh(stl, material));
 
         // set a random position on the arena  float:0 - 1
         bot.setPos({ x: Math.random(), y: Math.random() })
         // the loaded stl file must be scaled down to fit the global scene,
         bot.mesh.geometry.computeBoundingBox(); // calculate the bounding box of the loaded bot
-       
-        
+
+
         let boundings = bot.mesh.geometry.boundingBox;
         // get the scaling ratio to scale the imported STL model to fit in the arena
         let ratio = Math.abs(config.BOT_DIM / (boundings.max.x - boundings.min.x));
 
         bot.mesh.scale.set(ratio, ratio, ratio);
-        
+
         bot.mesh.castShadow = true;
         bot.mesh.receiveShadow = true;
         bot.mesh.name = "obstacle";
         bot.mesh.layers.enable(1); // enable in layer 1 to get raycasted    
         bot.tweens["position"] = new TWEEN.Tween(bot.mesh.position);
         scene.add(bot.mesh);
+        
+        bot.screenLable = createLable(bot.id)
+        
         bots.push(bot)
         // push the bot mesh to an array
 
@@ -183,14 +192,18 @@ function updateBots() {
 
     //if new data is available
     if (!bots_initialized) {
+
+        
         //initiate robots
         // server data will be available when the connection to the server is established
         if (serverData != undefined) {
-            console.log(serverData.bot_count )
+            console.log(serverData.bot_count)
             bots_initialized = true
             initRobots();
         }
     } else {
+        
+        drawLable(WINDOW_WIDTH, WINDOW_HEIGHT, bots, camera); // draw the lables above bots
 
         if (newData) {
             for (let i = 0; i < bots.length; i++) {
@@ -233,39 +246,75 @@ function createDestination(x, z) {
         destinationTween.start();
     }
 
-    let dest = new Item("destination");
-    let mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 2),
-        new THREE.MeshBasicMaterial({ color: 0x00ff91, specular: 30, shininess: 100, opacity: 1 }));
+    if (destinations.size < serverData.bot_count) {
+        let dest = new Item("destination");
+        let mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 2),
+            new THREE.MeshBasicMaterial({ color: 0x00ff91, specular: 30, shininess: 100, opacity: 1 }));
 
-    mesh.material.transparent = true;
-    mesh.name = "destination";
-    mesh.layers.enable(1);
-    mesh.position.set(x, 0.1, z);
-    dest.mesh = mesh;
-    scene.add(mesh);
+        mesh.material.transparent = true;
+        mesh.name = "destination";
+        mesh.layers.enable(1);
+        mesh.position.set(x, 0.1, z);
+        dest.mesh = mesh;
 
-    new TWEEN.Tween(mesh.scale).to({ x: 0.5, y: 0.5, z: 0.5 }, 800).easing(TWEEN.Easing.Elastic.Out).onComplete(() => {
+        try {
+            bots.forEach((bot) => {
+                if (bot.status == "Idle") {
+                    console.log(bot.id)
+                    dest.id = bot.id
+                    bot.status = "Busy"
+                    throw BreakException;
+                }
+            })
+        } catch {
+
+        }
+
+
+        scene.add(mesh);
         destinations.set(mesh.uuid, dest); // stores the destination object with the reference of mesh UUID 
 
-    }).start()
+        new TWEEN.Tween(mesh.scale).to({ x: 0.5, y: 0.5, z: 0.5 }, 800).easing(TWEEN.Easing.Elastic.Out).start()
 
+    } else {
+        console.log("All bots are occupied")
+    }
 }
+
+function deleteDestination(object) {
+    scene.remove(object)
+    //release the bot from destination
+
+    bots.forEach((bot) => {
+        try {
+            if (bot.id == destinations.get(object.uuid).id) {
+                bot.status = "Idle"
+                console.log("bot released: ", bot.id)
+                throw BreakException
+            }
+        } catch { }
+    })
+
+    destinations.delete(object.uuid)
+}
+
 
 
 
 function animate() {
 
     controls.update();
+    //updates bots
     updateBots();
     //mouse interactions
     mouseInteractions();
 
 
-    renderer.render(scene, camera);
-
     //update tween animator    
     TWEEN.update();
+    renderer.render(scene, camera);
     requestAnimationFrame(animate);
+    
 }
 
 
@@ -312,11 +361,13 @@ function mouseInteractions() {
         //handle the interactions with bots
         if (intersects[0].object.name == "obstacle") {
             intersects[0].object.material.color.set(0x05ffa3);
+
+            setBatteryLevel(bots[0], 60, true)
+            
         }
         //handle the interactions with destinations
         if ((intersects[0].object.name == "destination") & click) {
-            scene.remove(intersects[0].object)
-            destinations.delete(intersects[0].object.uuid)
+            deleteDestination(intersects[0].object)
             click = false;
         }
 
@@ -324,6 +375,7 @@ function mouseInteractions() {
     }
 
 }
+
 
 
 
@@ -353,19 +405,19 @@ function addEventListeners() {
 
         if (!setDestMode) {
             // starting the destination setting mode
-            prevCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
-            // if its initiating the  setDestMode ,set the camera to the top view
-            animateCamera({ x: 0.01, y: camera.position.y, z: 30 }, 100, TWEEN.Easing.Linear.None).onComplete(() => {
-                animateCamera({ x: 0, y: 70, z: 0 }, 1000, TWEEN.Easing.Exponential.Out)
-            });
+            // prevCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+            // // if its initiating the  setDestMode ,set the camera to the top view
+            // animateCamera({ x: 0.01, y: camera.position.y, z: 30 }, 100, TWEEN.Easing.Linear.None).onComplete(() => {
+            //     animateCamera({ x: 0, y: 70, z: 0 }, 1000, TWEEN.Easing.Exponential.Out)
+            // });
             controls.rotateSpeed = 0;
         } else {
             // ending the destination setting 
             controls.rotateSpeed = 1;
-            console.log(destinations)
-            animateCamera({ x: prevCameraPos.x, y: prevCameraPos.y, z: prevCameraPos.z }, 1000, TWEEN.Easing.Exponential.Out)
+            // animateCamera({ x: prevCameraPos.x, y: prevCameraPos.y, z: prevCameraPos.z }, 1000, TWEEN.Easing.Exponential.Out)
 
-            
+            // send the destinaion to the server
+            sendDestinations(destinations);
         }
 
 

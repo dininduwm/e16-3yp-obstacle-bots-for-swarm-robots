@@ -9,6 +9,8 @@ export class Item{
         this.tweens = {}; // hold the dictionary of tweens for this item
         this.discarded = false;
         this.light = null;
+        this.status = "Idle";
+        this.screenLable = null; //the lable that shown in the screen
     }
     setMesh(mesh){
         this.mesh = mesh;
