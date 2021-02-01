@@ -36,7 +36,7 @@ def getForce(robot1, robot2, dest_flag = False, k = 15):
     if dest_flag:
         force = (dist) / k if (dist) else 0
     else:
-        force = 1 / (k * ((dist) ** 1)) if (dist) else 0
+        force = 1 / (k * ((dist) ** 5)) if (dist) else 0
     
     # calculate the angle
     if (x1 == x2): return [force, 90.00]

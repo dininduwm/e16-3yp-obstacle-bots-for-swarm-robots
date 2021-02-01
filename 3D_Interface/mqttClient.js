@@ -50,6 +50,7 @@ export function onMessageArrived(message_) {
 
     if (message_.topic == TOPIC_SEVER_BOT_POS) {
         let s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
+        console.log("binary: ", message_.payloadBytes)
         mqtt_data = s.getPositionsList()
         newData = true;
     } else {

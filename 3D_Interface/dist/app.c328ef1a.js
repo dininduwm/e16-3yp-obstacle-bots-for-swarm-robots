@@ -5677,6 +5677,7 @@ function onFailure() {
 function onMessageArrived(message_) {
   if (message_.topic == TOPIC_SEVER_BOT_POS) {
     var s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
+    console.log("binary: ", message_.payloadBytes);
     exports.mqtt_data = mqtt_data = s.getPositionsList();
     exports.newData = newData = true;
   } else {
@@ -44643,7 +44644,7 @@ function mouseInteractions() {
 
     if (intersects[0].object.name == "obstacle") {
       intersects[0].object.material.color.set(0x05ffa3);
-      (0, _screenLables.setBatteryLevel)(bots[0], 60, true);
+      setBatteryLevel(bots[0], 60, true);
     } //handle the interactions with destinations
 
 

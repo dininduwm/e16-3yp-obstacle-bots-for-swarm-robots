@@ -7,7 +7,7 @@ import { AxesHelper, Loader, Mesh, Scene, Vector3 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { animateInternetIcon, findServer } from "./servers.js"
-import {drawLable, createLable, setBatteryLevel, show_BattStat} from "./screenLables.js"
+import {drawLable, createLable, show_BattStat} from "./screenLables.js"
 
 import arenaImg from "./resources/images/simbot_back-02.jpg";
 import lightMap from "./resources/images/simbot_back_lightmap-02.jpg";
