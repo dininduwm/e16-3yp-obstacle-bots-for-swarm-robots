@@ -1,5 +1,6 @@
 import MQTT from 'paho-mqtt';
-import { serverList} from './servers.js'
+import { serverList } from './servers.js'
+import { decryptString, decrypt, encryptString } from './encrypt.js'
 
 
 
@@ -49,41 +50,57 @@ export function onFailure() {
 
 export function onMessageArrived(message_) {
 
-    if (message_.topic == TOPIC_SEVER_BOT_POS) {
-        let s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
-        mqtt_data = s.getPositionsList()
-        newData = true;
-    } else {
-        let messageString = message_.payloadString.split(';')
+    //message recieve tesing ----------------------------------------------------
 
-        // if (message_.topic == TOPIC_COM) {
-        //     if (messageString[0] == "server_name_response") {
-        //         serverList[messageString[1]] = [messageString[1], messageString[2]]
-                
-        //     }
-        // }
+    //string decrypt & decoding
+    // console.log(new TextDecoder().decode(decrypt(message_.payloadBytes)))
 
-        if (message_.topic == TOPIC_SEVER_COM) {
-            if (messageString[0] == "server_response") {
-                if (messageString[1] == "success") {
-                    console.log("server connecion success", messageString[2])
-                    serverData = JSON.parse(messageString[2])
-                } else {
-                    serverData = null
-                    console.log("server connecion refused")
+    //proto decrypt & decoding
+    // let posList = messages.BotPositionArr.deserializeBinary(decrypt(message_.payloadBytes)).getPositionsList();
+    // console.log(posList)
+
+    // return 
+    //---------------------------------------------------------------------------
+    try {
+
+        if (message_.topic == TOPIC_SEVER_BOT_POS) {
+            let s = messages.BotPositionArr.deserializeBinary(decrypt(message_.payloadBytes));
+            mqtt_data = s.getPositionsList()
+            newData = true;
+
+        } else {
+            let messageString = decryptString(message_.payloadBytes).split(';')
+            // if (message_.topic == TOPIC_COM) {
+            //     if (messageString[0] == "server_name_response") {
+            //         serverList[messageString[1]] = [messageString[1], messageString[2]]
+
+            //     }
+            // }
+
+            if (message_.topic == TOPIC_SEVER_COM) {
+                if (messageString[0] == "server_response") {
+                    if (messageString[1] == "success") {
+                        console.log("server connecion success", messageString[2])
+                        serverData = JSON.parse(messageString[2])
+                    } else {
+                        serverData = null
+                        console.log("server connecion refused")
+                    }
+                }
+                if (messageString[0] == "ping") {
+                    pingAck = true
+                }
+
+                if (messageString[0] == "battStat") {
+                    battStat_callback(messageString[1])
                 }
             }
-            if(messageString[0] == "ping"){
-                pingAck = true
-            }
-
-            if(messageString[0] == "battStat"){
-                battStat_callback(messageString[1])
-            }
         }
+
+
+    } catch {
+        console.log("message Error / decryption error")
     }
-
-
 }
 
 // this functions id used to connect to a specific server
@@ -96,26 +113,26 @@ export function connenctToServer(serverIdx) {
         mqtt_client.subscribe(TOPIC_SEVER_BOT_POS)
         mqtt_client.subscribe(TOPIC_SEVER_COM)
 
-        console.log("subscribed to server: " + serverList[serverIdx][0] +' name: '+ serverList[serverIdx][1])
+        console.log("subscribed to server: " + serverList[serverIdx][0] + ' name: ' + serverList[serverIdx][1])
         publish(TOPIC_SEVER_COM, client_id + ";connection_req")
     }
 
 }
 
-export function searchServers(){
+export function searchServers() {
     publish(TOPIC_COM, client_id + ";get_servers"); // request for platform pc names
 }
 
-export function ping(){
+export function ping() {
     publish(TOPIC_SEVER_COM, client_id + ";ping");
 }
 
-export function battStat(callback){
+export function battStat(callback) {
     battStat_callback = callback
     publish(TOPIC_SEVER_COM, client_id + ";battStat");
 }
 
-export function resetServerData(){
+export function resetServerData() {
     serverData = null
 }
 export function onConnectionLost(response) {
@@ -123,8 +140,9 @@ export function onConnectionLost(response) {
 }
 
 export function publish(topic, message) {
-    if (connected){
-        var payload = new MQTT.Message(message);
+    if (connected) {
+        var encrypted = encryptString(message)
+        var payload = new MQTT.Message(encrypted);
         payload.destinationName = topic;
         mqtt_client.send(payload);
     }
@@ -133,7 +151,7 @@ export function setNewDataState(state) {
     newData = false;
 }
 
-export function setPingAck(state){
+export function setPingAck(state) {
     pingAck = state
 }
 
