@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'b(byjb)3o*&vekhc*l#w52h)mrs+64*n$&g$q9gz!nmh93gtlp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'swarm_interface',
+    'schedules',
 ]
 
 MIDDLEWARE = [

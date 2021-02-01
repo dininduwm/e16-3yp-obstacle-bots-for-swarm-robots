@@ -1,0 +1,18 @@
+<html>
+<title>Schedule List</title>
+
+<body>
+    <h1>Schedule List</h1>
+    <div class='schedules'>
+        {% for shedule in schedules %}
+        <div class='article'>
+            <h2>{{ shedule.project_name}}</h2>
+            <p>user</p>
+            <p>{{ shedule.description }}</p>
+            <p> {{ shedule.date }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>
