@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "collections": "^5.1.12",
     "examples": "^0.1.0",
     "google-protobuf": "^3.14.0-rc.1",
     "mqtt": "^4.2.4",
@@ -20,6 +21,7 @@
     "resources": "^0.4.3",
     "test": "^0.6.0",
     "three": "^0.122.0",
-    "tween": "^0.9.0"
+    "tween": "^0.9.0",
+    "ws": "^7.4.2"
   }
 }

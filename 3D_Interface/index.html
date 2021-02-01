@@ -1,64 +1,37 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3JS_interface</title>
 </head>
 
-<style>
-    .view{
-        float: left;
-        width: 1500px;
-        height: 900px;
-    }
-    .controlPad{
-        float: right;
-    }
-    .btn-group .button {
-        background-color: #033b2e; /* Green */
-        border: none;
-        color: white;
+<script src="https://kit.fontawesome.com/f1c65451e4.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="css/style.css">
 
-        padding: 16px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        transition-duration: 0.1s;
-        cursor: pointer;
-        display: block;
-      }
-    .button:hover {
-        background-color: #009ffc;
-        color: white;
-      }
+<body class="body">
+        <div class="view" id="root">
+            <div class="Container camera" style="z-index: 2">
+                <i id="CameraReset" class="fas fa-camera"></i>
+                <i id="CameraTopView" class="fas fa-chevron-up"></i>
+                <i id="CameraReset" class="fas fa-chevron-down"></i>
+            </div>
 
+            <div class="Container dest" style="z-index: 2">
+                <i title="Set Destination" id="setDestination" class="fas fa-map-marker-alt"
+                    onclick="this.classList.toggle('active')"></i>
+                <i id="deleteAllDestinations" class="fas fa-backspace"></i>
+            </div>
 
-    .btn-group .button:not(:last-child) {
-    border-bottom: none; /* Prevent double borders */
-    }
-    
-    .btn-group .button:hover {
-    background-color: #009ffc;
-    }
-</style>
+            <div class = "Container pc" style="z-index: 2" >
+                <i id ="InternetIcon" class="fas fa-globe-americas"></i>
+                <label class = "text1"> Platform PC UOP</label>
+                <label class = "online"> online</label>
+            </div>
 
-<body>
+        </div>
 
-    <table>
-        <tr>
-            <td>
-                <div class = "view", id = "root"/>
-            </td>
-            <td>
-                <div class="btn-group">
-                    <button class = "button" id = "CameraReset" >Reset Camera</button>
-                    <button class = "button" id = "CameraTopView" >Top View</button>
-                </div>
-            </td>
-        </tr>
-    </table>
 </body>
 <script src="./app.js"></script>
+
 </html>
