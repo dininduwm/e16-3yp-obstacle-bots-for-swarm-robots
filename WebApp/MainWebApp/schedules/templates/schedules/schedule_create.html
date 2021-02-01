@@ -1,0 +1,19 @@
+<html>
+
+<head>
+    <title>
+        Create Schedule
+    </title>
+</head>
+
+<body>
+    <div class='create-schedule'>
+        <h2>Create A new Schedule</h2>
+        <form class='site-form' action="{% url 'schedules:create' %}" method="post">
+            {% csrf_token %} {{ form }}
+            <input type="submit" value="Create">
+        </form>
+    </div>
+</body>
+
+</html>

@@ -5,7 +5,8 @@ from . import views
 app_name = 'schedules'
 
 urlpatterns = [
-    re_path(r'^$', views.schedule_list, name='schedules'),
+    re_path(r'^create/$', views.schedule_create, name='create'),
+    re_path(r'^$', views.schedule_list, name='list'),    
 ]
 
 # adding static locations for the debug purpose

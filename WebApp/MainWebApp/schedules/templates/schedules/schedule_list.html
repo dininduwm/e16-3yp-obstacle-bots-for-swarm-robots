@@ -3,11 +3,16 @@
 
 <body>
     <h1>Schedule List</h1>
+    <div class='button'>
+        {% if control == False %}
+        <button type="button" onclick="alert('View Current Algo')">View The Current Algorithm</button> {% else %}
+        <button type="button" onclick="alert('Control Bots')">Try your Algorithm</button> {% endif %}
+    </div>
     <div class='schedules'>
         {% for shedule in schedules %}
         <div class='article'>
             <h2>{{ shedule.project_name}}</h2>
-            <p>user</p>
+            <p>{{ shedule.user }}</p>
             <p>{{ shedule.description }}</p>
             <p> {{ shedule.date }}</p>
         </div>
