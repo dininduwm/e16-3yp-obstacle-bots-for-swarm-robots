@@ -362,7 +362,6 @@ function mouseInteractions() {
         if (intersects[0].object.name == "obstacle") {
             intersects[0].object.material.color.set(0x05ffa3);
 
-            setBatteryLevel(bots[0], 60, true)
             
         }
         //handle the interactions with destinations

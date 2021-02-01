@@ -1,4 +1,4 @@
-import { connenctToServer, serverData, serverList, searchServers, pingAck, ping, setPingAck, resetServerData } from './mqttClient'
+import { connenctToServer, serverData, pingAck, ping, setPingAck, resetServerData } from './mqttClient'
 
 
 
@@ -6,7 +6,7 @@ let icons = ['fas fa-globe-americas', 'fas fa-globe-europe', 'fas fa-globe-afric
 let count = 0;
 var online = false
 var serverIdx = 0; //the index of the server that needed to be connected
-
+export var serverList = {}
 export function animateInternetIcon() {
 
     if (online) {
@@ -37,9 +37,9 @@ export function findServer() {
     
     //search for available servers
     if (Object.keys(serverList).length == 0) {
-        console.log("Searching servers");
-        searchServers();
-        document.getElementById('serverName').textContent = 'Searching servers...'
+        console.log("ServerList Empty");
+        updateServerList();
+        document.getElementById('serverName').textContent = 'No Servers'
         setTimeout(findServer, 2000);
     } else {
         if (serverData != null) {
@@ -75,4 +75,8 @@ function pingServer(){
         resetServerData(); // server data is set to null to force the findServer() function to call connectToServer() function
         findServer();
     }
+}
+
+export function updateServerList(){
+    serverList = {0:[0, "platform PC UOP"]}
 }

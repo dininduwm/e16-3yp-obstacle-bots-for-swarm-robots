@@ -2590,7 +2590,99 @@ function onMessageArrived(message) {
 	return PahoMQTT;
 });
 
-},{}],"node_modules/base64-js/index.js":[function(require,module,exports) {
+},{}],"servers.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.animateInternetIcon = animateInternetIcon;
+exports.setOnline = setOnline;
+exports.findServer = findServer;
+exports.updateServerList = updateServerList;
+exports.serverList = void 0;
+
+var _mqttClient = require("./mqttClient");
+
+var icons = ['fas fa-globe-americas', 'fas fa-globe-europe', 'fas fa-globe-africa', 'fas fa-globe-asia'];
+var count = 0;
+var online = false;
+var serverIdx = 0; //the index of the server that needed to be connected
+
+var serverList = {};
+exports.serverList = serverList;
+
+function animateInternetIcon() {
+  if (online) {
+    setTimeout(function () {
+      document.getElementById('InternetIcon').style.color = '#21f873';
+      document.getElementById("online").style.color = '#21f873';
+      document.getElementById("online").textContent = "online";
+      document.getElementById("InternetIcon").className = icons[count];
+      count++;
+      count = count % 4;
+      animateInternetIcon();
+    }, 1000);
+  } else {
+    document.getElementById('InternetIcon').style.color = '#9da7a1';
+    document.getElementById("online").style.color = '#9da7a1';
+    document.getElementById("online").textContent = "offline";
+  }
+}
+
+function setOnline() {}
+
+function findServer() {
+  //search for available servers
+  if (Object.keys(serverList).length == 0) {
+    console.log("ServerList Empty");
+    updateServerList();
+    document.getElementById('serverName').textContent = 'No Servers';
+    setTimeout(findServer, 2000);
+  } else {
+    if (_mqttClient.serverData != null) {
+      // if there are any online servers
+      document.getElementById('serverName').textContent = serverList[serverIdx][1];
+      online = true;
+      pingServer();
+      animateInternetIcon();
+    } else {
+      // connect to a specified server by the index, following is set to "0" for now
+      (0, _mqttClient.connenctToServer)(serverIdx);
+      console.log("Trying to connect: " + serverList[serverIdx][1]);
+      setTimeout(findServer, 2000);
+    }
+  }
+} // ping the server
+
+
+function pingServer() {
+  if (online) {
+    setTimeout(function () {
+      online = _mqttClient.pingAck;
+      (0, _mqttClient.setPingAck)(false); //set the pingAck = false to detect if it will be true after pinging the server
+
+      (0, _mqttClient.ping)(); // ping the server 
+
+      pingServer(); // recurse the function
+    }, 1000);
+  } else {
+    //this block run in a disconnection 
+    (0, _mqttClient.setPingAck)(true); // pingAck should be true to initiate the pinging 
+
+    document.getElementById('serverName').textContent = "Reconnecting...";
+    (0, _mqttClient.resetServerData)(); // server data is set to null to force the findServer() function to call connectToServer() function
+
+    findServer();
+  }
+}
+
+function updateServerList() {
+  exports.serverList = serverList = {
+    0: [0, "platform PC UOP"]
+  };
+}
+},{"./mqttClient":"mqttClient.js"}],"node_modules/base64-js/index.js":[function(require,module,exports) {
 'use strict'
 
 exports.byteLength = byteLength
@@ -5614,9 +5706,11 @@ exports.publish = publish;
 exports.setNewDataState = setNewDataState;
 exports.setPingAck = setPingAck;
 exports.sendDestinations = sendDestinations;
-exports.pingAck = exports.serverData = exports.serverList = exports.newData = exports.mqtt_data = void 0;
+exports.pingAck = exports.serverData = exports.newData = exports.mqtt_data = void 0;
 
 var _pahoMqtt = _interopRequireDefault(require("paho-mqtt"));
+
+var _servers = require("./servers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5638,12 +5732,10 @@ var messages = require('./protobuf/MQTT_msg_pb.js');
 var message = new messages.BotPositionArr();
 var mqtt_data,
     newData = false,
-    serverList = {},
     serverData = null,
     pingAck = true;
 exports.pingAck = pingAck;
 exports.serverData = serverData;
-exports.serverList = serverList;
 exports.newData = newData;
 exports.mqtt_data = mqtt_data;
 
@@ -5677,17 +5769,14 @@ function onFailure() {
 function onMessageArrived(message_) {
   if (message_.topic == TOPIC_SEVER_BOT_POS) {
     var s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
-    console.log("binary: ", message_.payloadBytes);
     exports.mqtt_data = mqtt_data = s.getPositionsList();
     exports.newData = newData = true;
   } else {
-    var messageString = message_.payloadString.split(';');
-
-    if (message_.topic == TOPIC_COM) {
-      if (messageString[0] == "server_name_response") {
-        serverList[messageString[1]] = [messageString[1], messageString[2]];
-      }
-    }
+    var messageString = message_.payloadString.split(';'); // if (message_.topic == TOPIC_COM) {
+    //     if (messageString[0] == "server_name_response") {
+    //         serverList[messageString[1]] = [messageString[1], messageString[2]]
+    //     }
+    // }
 
     if (message_.topic == TOPIC_SEVER_COM) {
       if (messageString[0] == "server_response") {
@@ -5713,12 +5802,12 @@ function onMessageArrived(message_) {
 
 
 function connenctToServer(serverIdx) {
-  if (Object.keys(serverList).length != 0) {
-    TOPIC_SEVER_BOT_POS = 'swarm/' + serverList[serverIdx][0] + '/bot_pos';
-    TOPIC_SEVER_COM = 'swarm/' + serverList[serverIdx][0] + '/com';
+  if (Object.keys(_servers.serverList).length != 0) {
+    TOPIC_SEVER_BOT_POS = 'swarm/' + _servers.serverList[serverIdx][0] + '/bot_pos';
+    TOPIC_SEVER_COM = 'swarm/' + _servers.serverList[serverIdx][0] + '/com';
     mqtt_client.subscribe(TOPIC_SEVER_BOT_POS);
     mqtt_client.subscribe(TOPIC_SEVER_COM);
-    console.log("subscribed to server: " + serverList[serverIdx][0] + ' name: ' + serverList[serverIdx][1]);
+    console.log("subscribed to server: " + _servers.serverList[serverIdx][0] + ' name: ' + _servers.serverList[serverIdx][1]);
     publish(TOPIC_SEVER_COM, client_id + ";connection_req");
   }
 }
@@ -5773,7 +5862,7 @@ function sendDestinations(destinations) {
     console.log(dest);
   }
 }
-},{"paho-mqtt":"node_modules/paho-mqtt/paho-mqtt.js","./protobuf/MQTT_msg_pb.js":"protobuf/MQTT_msg_pb.js"}],"node_modules/three/build/three.module.js":[function(require,module,exports) {
+},{"paho-mqtt":"node_modules/paho-mqtt/paho-mqtt.js","./servers.js":"servers.js","./protobuf/MQTT_msg_pb.js":"protobuf/MQTT_msg_pb.js"}],"node_modules/three/build/three.module.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -43417,88 +43506,7 @@ STLLoader.prototype = Object.assign(Object.create(_threeModule.Loader.prototype)
     return isBinary(binData) ? parseBinary(binData) : parseASCII(ensureString(data));
   }
 });
-},{"../../../build/three.module.js":"node_modules/three/build/three.module.js"}],"servers.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.animateInternetIcon = animateInternetIcon;
-exports.setOnline = setOnline;
-exports.findServer = findServer;
-
-var _mqttClient = require("./mqttClient");
-
-var icons = ['fas fa-globe-americas', 'fas fa-globe-europe', 'fas fa-globe-africa', 'fas fa-globe-asia'];
-var count = 0;
-var online = false;
-var serverIdx = 0; //the index of the server that needed to be connected
-
-function animateInternetIcon() {
-  if (online) {
-    setTimeout(function () {
-      document.getElementById('InternetIcon').style.color = '#21f873';
-      document.getElementById("online").style.color = '#21f873';
-      document.getElementById("online").textContent = "online";
-      document.getElementById("InternetIcon").className = icons[count];
-      count++;
-      count = count % 4;
-      animateInternetIcon();
-    }, 1000);
-  } else {
-    document.getElementById('InternetIcon').style.color = '#9da7a1';
-    document.getElementById("online").style.color = '#9da7a1';
-    document.getElementById("online").textContent = "offline";
-  }
-}
-
-function setOnline() {}
-
-function findServer() {
-  //search for available servers
-  if (Object.keys(_mqttClient.serverList).length == 0) {
-    console.log("Searching servers");
-    (0, _mqttClient.searchServers)();
-    document.getElementById('serverName').textContent = 'Searching servers...';
-    setTimeout(findServer, 2000);
-  } else {
-    if (_mqttClient.serverData != null) {
-      // if there are any online servers
-      document.getElementById('serverName').textContent = _mqttClient.serverList[serverIdx][1];
-      online = true;
-      pingServer();
-      animateInternetIcon();
-    } else {
-      // connect to a specified server by the index, following is set to "0" for now
-      (0, _mqttClient.connenctToServer)(serverIdx);
-      console.log("Trying to connect: " + _mqttClient.serverList[serverIdx][1]);
-      setTimeout(findServer, 2000);
-    }
-  }
-} // ping the server
-
-
-function pingServer() {
-  if (online) {
-    setTimeout(function () {
-      online = _mqttClient.pingAck;
-      (0, _mqttClient.setPingAck)(false); //set the pingAck = false to detect if it will be true after pinging the server
-
-      (0, _mqttClient.ping)(); // ping the server 
-
-      pingServer(); // recurse the function
-    }, 1000);
-  } else {
-    //this block run in a disconnection 
-    (0, _mqttClient.setPingAck)(true); // pingAck should be true to initiate the pinging 
-
-    document.getElementById('serverName').textContent = "Reconnecting...";
-    (0, _mqttClient.resetServerData)(); // server data is set to null to force the findServer() function to call connectToServer() function
-
-    findServer();
-  }
-}
-},{"./mqttClient":"mqttClient.js"}],"screenLables.js":[function(require,module,exports) {
+},{"../../../build/three.module.js":"node_modules/three/build/three.module.js"}],"screenLables.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44644,7 +44652,6 @@ function mouseInteractions() {
 
     if (intersects[0].object.name == "obstacle") {
       intersects[0].object.material.color.set(0x05ffa3);
-      setBatteryLevel(bots[0], 60, true);
     } //handle the interactions with destinations
 
 
@@ -44781,7 +44788,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36513" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40755" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

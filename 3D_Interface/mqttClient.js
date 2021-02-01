@@ -1,4 +1,5 @@
 import MQTT from 'paho-mqtt';
+import { serverList} from './servers.js'
 
 
 
@@ -17,7 +18,7 @@ let battStat_callback = null
 var messages = require('./protobuf/MQTT_msg_pb.js');
 var message = new messages.BotPositionArr()
 
-export let mqtt_data, newData = false, serverList = {}, serverData = null, pingAck = true;
+export let mqtt_data, newData = false, serverData = null, pingAck = true;
 
 export function mqttClient() {
 
@@ -50,18 +51,17 @@ export function onMessageArrived(message_) {
 
     if (message_.topic == TOPIC_SEVER_BOT_POS) {
         let s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
-        console.log("binary: ", message_.payloadBytes)
         mqtt_data = s.getPositionsList()
         newData = true;
     } else {
         let messageString = message_.payloadString.split(';')
 
-        if (message_.topic == TOPIC_COM) {
-            if (messageString[0] == "server_name_response") {
-                serverList[messageString[1]] = [messageString[1], messageString[2]]
+        // if (message_.topic == TOPIC_COM) {
+        //     if (messageString[0] == "server_name_response") {
+        //         serverList[messageString[1]] = [messageString[1], messageString[2]]
                 
-            }
-        }
+        //     }
+        // }
 
         if (message_.topic == TOPIC_SEVER_COM) {
             if (messageString[0] == "server_response") {
