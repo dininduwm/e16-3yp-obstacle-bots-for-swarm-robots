@@ -1,4 +1,6 @@
 import MQTT from 'paho-mqtt';
+import { serverList } from './servers.js'
+import { decryptString, decrypt, encryptString } from './encrypt.js'
 
 
 
@@ -9,12 +11,15 @@ const TOPIC_COM = 'swarm/common' // common data line for all the clients and ser
 const mqtt_server = "broker.mqttdashboard.com";
 const mqtt_port = 8000;
 let mqtt_client;
-let client_id;
+let client_id = null;
+let connected = false
+
+let battStat_callback = null
 
 var messages = require('./protobuf/MQTT_msg_pb.js');
 var message = new messages.BotPositionArr()
 
-export let mqtt_data, newData = false, serverList = [], serverData;
+export let mqtt_data, newData = false, serverData = null, pingAck = true;
 
 export function mqttClient() {
 
@@ -29,6 +34,7 @@ export function mqttClient() {
 
 export function onConnect() {
 
+    connected = true
     console.log('MQTT: connected');
 
     mqtt_client.onMessageArrived = onMessageArrived;
@@ -37,8 +43,6 @@ export function onConnect() {
     // Subscribe to topics
     mqtt_client.subscribe(TOPIC_COM);
 
-    publish(TOPIC_COM, client_id + ";get_servers"); // request for platform pc names
-
 }
 export function onFailure() {
     console.log('MQTT: connection failed');
@@ -46,62 +50,120 @@ export function onFailure() {
 
 export function onMessageArrived(message_) {
 
-    if (message_.topic == TOPIC_SEVER_BOT_POS) {
-        let s = messages.BotPositionArr.deserializeBinary(message_.payloadBytes);
-        mqtt_data = s.getPositionsList()
-        console.log(mqtt_data)
-        newData = true;
-    } else {
-        let messageString = message_.payloadString.split(';')
-        if (messageString[0] == "server_name_response") {
-            serverList.push(messageString[1])
-            console.log("Server name recieved; " + messageString[2])
+    //message recieve tesing ----------------------------------------------------
 
-            connenctToServer(0);
-        }
-        if (message_.topic == TOPIC_SEVER_COM) {
-            if (messageString[0] == "server_response") {
-                if (messageString[1] == "success") {
-                    console.log("server connecion success", messageString[2])
-                    serverData = JSON.parse(messageString[2])
-                } else {
-                    console.log("server connecion refused")
+    //string decrypt & decoding
+    // console.log(new TextDecoder().decode(decrypt(message_.payloadBytes)))
+
+    //proto decrypt & decoding
+    // let posList = messages.BotPositionArr.deserializeBinary(decrypt(message_.payloadBytes)).getPositionsList();
+    // console.log(posList)
+
+    // return 
+    //---------------------------------------------------------------------------
+    try {
+
+        if (message_.topic == TOPIC_SEVER_BOT_POS) {
+            let s = messages.BotPositionArr.deserializeBinary(decrypt(message_.payloadBytes));
+            mqtt_data = s.getPositionsList()
+            newData = true;
+
+        } else {
+            let messageString = decryptString(message_.payloadBytes).split(';')
+            // if (message_.topic == TOPIC_COM) {
+            //     if (messageString[0] == "server_name_response") {
+            //         serverList[messageString[1]] = [messageString[1], messageString[2]]
+
+            //     }
+            // }
+
+            if (message_.topic == TOPIC_SEVER_COM) {
+                if (messageString[0] == "server_response") {
+                    if (messageString[1] == "success") {
+                        console.log("server connecion success", messageString[2])
+                        serverData = JSON.parse(messageString[2])
+                    } else {
+                        serverData = null
+                        console.log("server connecion refused")
+                    }
+                }
+                if (messageString[0] == "ping") {
+                    pingAck = true
+                }
+
+                if (messageString[0] == "battStat") {
+                    battStat_callback(messageString[1])
                 }
             }
         }
+
+
+    } catch {
+        console.log("message Error / decryption error")
     }
-
-
 }
 
 // this functions id used to connect to a specific server
 export function connenctToServer(serverIdx) {
-    if (serverList.length != 0) {
+    if (Object.keys(serverList).length != 0) {
 
-        TOPIC_SEVER_BOT_POS = 'swarm/' + serverList[serverIdx] + '/bot_pos'
-        TOPIC_SEVER_COM = 'swarm/' + serverList[serverIdx] + '/com'
+        TOPIC_SEVER_BOT_POS = 'swarm/' + serverList[serverIdx][0] + '/bot_pos'
+        TOPIC_SEVER_COM = 'swarm/' + serverList[serverIdx][0] + '/com'
 
         mqtt_client.subscribe(TOPIC_SEVER_BOT_POS)
         mqtt_client.subscribe(TOPIC_SEVER_COM)
 
-        console.log("subscribed to server: " + serverList[serverIdx])
+        console.log("subscribed to server: " + serverList[serverIdx][0] + ' name: ' + serverList[serverIdx][1])
         publish(TOPIC_SEVER_COM, client_id + ";connection_req")
     }
 
 }
 
+export function searchServers() {
+    publish(TOPIC_COM, client_id + ";get_servers"); // request for platform pc names
+}
+
+export function ping() {
+    publish(TOPIC_SEVER_COM, client_id + ";ping");
+}
+
+export function battStat(callback) {
+    battStat_callback = callback
+    publish(TOPIC_SEVER_COM, client_id + ";battStat");
+}
+
+export function resetServerData() {
+    serverData = null
+}
 export function onConnectionLost(response) {
     console.log(response.errorMessage);
 }
 
 export function publish(topic, message) {
-    var payload = new MQTT.Message(message);
-    payload.destinationName = topic;
-    mqtt_client.send(payload);
-    console.log('MQTT: published');
+    if (connected) {
+        var encrypted = encryptString(message)
+        var payload = new MQTT.Message(encrypted);
+        payload.destinationName = topic;
+        mqtt_client.send(payload);
+    }
 }
 export function setNewDataState(state) {
     newData = false;
+}
+
+export function setPingAck(state) {
+    pingAck = state
+}
+
+export function sendDestinations(destinations) {
+    if (serverData != null && destinations != null) {
+        var dest = []
+        destinations.forEach((element) => {
+            dest.push({ x: element.mesh.position.x + 0.5 + serverData.areana_dim / 2, y: element.mesh.position.z + 0.5 + serverData.areana_dim / 2 });
+        })
+        publish(TOPIC_SEVER_COM, client_id + ";set_dest;" + JSON.stringify(dest))
+        console.log(dest)
+    }
 }
 
 

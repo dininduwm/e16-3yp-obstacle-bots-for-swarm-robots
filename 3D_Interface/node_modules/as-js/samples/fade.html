@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css" >
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h1>Fade In/Out</h1>
+            <p>When button is clicked, it ...</p>
+
+            <textarea class="code" style="width: 99%; height: 360px" readonly>
+<button type="button"
+    data-as='{
+        "click": {
+            "load": {
+                "url": "./data/partial_content.html",
+                "block": true,
+                "blockOptions": {
+                    "message": "<h2>Custom loading message</h2>"
+                },
+                "success": {
+                    "html": {
+                        "target": "#div"
+                    }
+                }
+            }
+        }
+    }'
+>Load content</button>
+
+<div id="div"></div>
+</textarea>
+
+        </div>
+        <div class="row mt-30">
+            <div class="col-md-6">
+                <button type="button"
+                    data-as='{
+                        "click": {
+                            "fadeIn": {
+                                "target": "#target",
+                                "duration": 400,
+                                "complete": {
+                                    "html": {
+                                        "result": "<p>faded IN...</p>",
+                                        "target": "#target",
+                                        "append": true
+                                    }
+                                }
+                            }
+                        }
+                    }'
+                >Fade In Fast</button>
+                <button type="button"
+                    data-as='{
+                        "click": {
+                            "fadeOut": {
+                                "target": "#target",
+                                "duration": 1000,
+                                "complete": {
+                                    "html": {
+                                        "result": "<p>faded OUT...</p>",
+                                        "target": "#target",
+                                        "append": true
+                                    }
+                                }
+                            }
+                        }
+                    }'
+                >Fade Out Slow</button>
+            </div>
+            <div id="target" class="col-md-6">
+                This will be fading
+            </div>
+        </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="http://malsup.github.io/jquery.blockUI.js"></script>
+    <script src="../build/Release/as.js"></script>
+</body>
+</html>

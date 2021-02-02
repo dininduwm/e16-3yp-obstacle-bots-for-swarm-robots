@@ -61,8 +61,8 @@ proto.BotPosition.prototype.toObject = function(opt_includeInstance) {
 proto.BotPosition.toObject = function(includeInstance, msg) {
   var f, obj = {
     botId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    xCod: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    yCod: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    xCod: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
+    yCod: +jspb.Message.getFieldWithDefault(msg, 3, 0.0),
     angle: +jspb.Message.getFieldWithDefault(msg, 4, 0.0)
   };
 
@@ -105,11 +105,11 @@ proto.BotPosition.deserializeBinaryFromReader = function(msg, reader) {
       msg.setBotId(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readFloat());
       msg.setXCod(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readFloat());
       msg.setYCod(value);
       break;
     case 4:
@@ -153,15 +153,15 @@ proto.BotPosition.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getXCod();
-  if (f !== 0) {
-    writer.writeInt32(
+  if (f !== 0.0) {
+    writer.writeFloat(
       2,
       f
     );
   }
   f = message.getYCod();
-  if (f !== 0) {
-    writer.writeInt32(
+  if (f !== 0.0) {
+    writer.writeFloat(
       3,
       f
     );
@@ -192,32 +192,32 @@ proto.BotPosition.prototype.setBotId = function(value) {
 
 
 /**
- * optional int32 x_cod = 2;
+ * optional float x_cod = 2;
  * @return {number}
  */
 proto.BotPosition.prototype.getXCod = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
 };
 
 
 /** @param {number} value */
 proto.BotPosition.prototype.setXCod = function(value) {
-  jspb.Message.setProto3IntField(this, 2, value);
+  jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 
 /**
- * optional int32 y_cod = 3;
+ * optional float y_cod = 3;
  * @return {number}
  */
 proto.BotPosition.prototype.getYCod = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 3, 0.0));
 };
 
 
 /** @param {number} value */
 proto.BotPosition.prototype.setYCod = function(value) {
-  jspb.Message.setProto3IntField(this, 3, value);
+  jspb.Message.setProto3FloatField(this, 3, value);
 };
 
 

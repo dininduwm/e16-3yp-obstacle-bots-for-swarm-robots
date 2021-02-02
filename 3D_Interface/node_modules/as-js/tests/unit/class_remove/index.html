@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>AS-JS Load Test Suite</title>
+    <link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.15.0.css">
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://code.jquery.com/qunit/qunit-1.15.0.js"></script>
+
+    <script src="../../../components/jquery-mockjax/jquery.mockjax.js"></script>
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+
+    <button id="btn1"
+        data-as='{
+            "click": {
+                "class.remove": {
+                    "class": "one",
+                    "target": "#target",
+                    "success": {
+                        "assertResult": null
+                    }
+                }
+            }
+        }'
+    >One</button>
+
+    <div id="target" class="one two"></div>
+
+    <button id="btn2"
+        data-as='{
+            "click": {
+                "class.remove": {
+                    "class": "foo",
+                    "target": "#nonexisting"
+                }
+            }
+        }'
+    >Two</button>
+
+    <script src="../../../src/core.js"></script>
+    <script src="../../../src/method/class_remove.js"></script>
+
+    <script src="class_remove_test.js"></script>
+
+    <script src="../../../src/execute_bind.js"></script>
+
+</body>
+</html>

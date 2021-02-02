@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css" >
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h1>If</h1>
+            <p>When button is clicked, it loads specified url and puts loaded content to specified target element</p>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <textarea class="code" style="width: 99%; height: 320px" readonly>
+<button type="button"
+    data-as='{
+        "click": {
+            "if": {
+                "arg": {
+                    "true": null
+                },
+                "then": {
+                    "html": {
+                        "result": "Then part",
+                        "target": "#target"
+                    }
+                }
+            }
+        }
+    }'
+>Then part</button>
+                    </textarea>
+                </div>
+                <div class="col-md-6">
+                    <textarea class="code" style="width: 99%; height: 320px" readonly>
+<button type="button"
+    data-as='{
+        "click": {
+            "if": {
+                "arg": {
+                    "false": null
+                },
+                "else": {
+                    "html": {
+                        "result": "Else part",
+                        "target": "#target"
+                    }
+                }
+            }
+        }
+    }'
+>Then part</button>
+                    </textarea>
+                </div>
+            </div>
+
+        </div>
+        <div class="row mt-30">
+            <div class="col-md-6">
+                <button type="button"
+                    data-as='{
+                        "click": {
+                            "if": {
+                                "arg": {
+                                    "true": null
+                                },
+                                "then": {
+                                    "html": {
+                                        "result": "Then part",
+                                        "target": "#target"
+                                    }
+                                }
+                            }
+                        }
+                    }'
+                >Then part</button>
+                <button type="button"
+                    data-as='{
+                        "click": {
+                            "if": {
+                                "arg": {
+                                    "false": null
+                                },
+                                "else": {
+                                    "html": {
+                                        "result": "Else part",
+                                        "target": "#target"
+                                    }
+                                }
+                            }
+                        }
+                    }'
+                >Else part</button>
+            </div>
+            <div id="target" class="col-md-6">
+                it will be loaded here...
+            </div>
+        </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="../build/Release/as.js"></script>
+</body>
+</html>

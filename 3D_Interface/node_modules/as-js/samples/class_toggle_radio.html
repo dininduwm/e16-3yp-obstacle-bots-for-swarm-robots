@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/styles/default.min.css">
+    <link rel="stylesheet" href="style.css" >
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <h1>Class Toggle - Radio Button Mode</h1>
+        <p>When button is clicked, it will set fixed specified html to the target</p>
+
+        <pre><code class="html" style="width: 99%; height: 380px"
+>&lt;button type="button"
+    data-as='{
+        "click": {
+            "class.toggle": {
+                "target": "#a", "class": "selected", "parent": true
+            }
+        }
+    }'
+&gt;A&lt;/button&gt;
+&lt;button type="button"
+    data-as='{
+        "click": {
+            "class.toggle": {
+                "target": "#b", "class": "selected", "parent": true
+            }
+        }
+    }'
+&gt;B&lt;/button&gt;
+&lt;button type="button"
+    data-as='{
+        "click": {
+            "class.toggle": {
+                "target": "#c", "class": "selected", "parent": true
+            }
+        }
+    }'
+&gt;C&lt;/button&gt;
+
+&lt;ul&gt;
+    &lt;li id="a"&gt;First&lt;/li&gt;
+    &lt;li id="b"&gt;Second&lt;/li&gt;
+    &lt;li id="c"&gt;Third&lt;/li&gt;
+&lt;/ul&gt;
+
+        </code></pre>
+
+    </div>
+    <div class="row mt-30">
+        <div class="col-md-6">
+            <button type="button"
+                data-as='{
+                    "click": {
+                        "class.toggle": {
+                            "target": "#a",
+                            "class": "selected",
+                            "parent": true
+                        }
+                    }
+                }'
+            >A</button>
+            <button type="button"
+                    data-as='{
+                    "click": {
+                        "class.toggle": {
+                            "target": "#b",
+                            "class": "selected",
+                            "parent": true
+                        }
+                    }
+                }'
+            >B</button>
+            <button type="button"
+                    data-as='{
+                    "click": {
+                        "class.toggle": {
+                            "target": "#c",
+                            "class": "selected",
+                            "parent": true
+                        }
+                    }
+                }'
+            >C</button>
+        </div>
+        <div class="col-md-6">
+            <ul>
+                <li id="a">First</li>
+                <li id="b">Second</li>
+                <li id="c">Third</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="../build/Release/as.js"></script>
+</body>
+</html>
