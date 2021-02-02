@@ -1,12 +1,103 @@
 <html>
 <title>Schedule List</title>
 
+<style>
+    body {
+        display: grid;
+        background-color: black;
+        background-image: url('http://www.estidia.eu/wp-content/uploads/2018/04/Savin-NY-Website-Background-Web.jpg');
+        background-size: cover;
+        font-family: 'Titillium Web', sans-serif;
+        justify-items: center;
+    }
+    
+    .article {
+        display: grid;
+        height: 12vh;
+        width: 30vw;
+        grid-template-rows: 25% 25% 25% 25%;
+        background-color: rgba(103, 143, 129, 0.301);
+        align-items: center;
+        border-radius: 5px;
+        border-top-right-radius: 100px;
+        border-bottom-right-radius: 100px;
+        padding: 3%;
+        margin: 6%;
+        margin-left: 0;
+        transition-duration: 100ms;
+    }
+    
+    .article:hover {
+        background-color: rgba(25, 54, 44, 0.301);
+        margin-left: 3%;
+    }
+    
+    .article>h2 {
+        margin-left: 1vw;
+        margin-bottom: 2vw;
+    }
+    
+    .article>p {
+        margin-left: 3vw;
+    }
+    
+    .button {
+        display: grid;
+        grid-template-columns: 50% auto;
+        align-items: center;
+        justify-items: center;
+        height: 5vh;
+        width: 10vw;
+        background-color: rgba(53, 4, 82, 0.993);
+        border-radius: 1.5vh;
+        border-top-left-radius: 2.5vh;
+        border-bottom-left-radius: 2.5vh;
+        font-size: 130%;
+        font-weight: bold;
+        padding: 0;
+        color: rgb(255, 255, 255);
+        transition-duration: 500ms;
+        outline: none;
+    }
+    
+    .button>i {
+        transition-duration: 300ms;
+        justify-self: left;
+        margin-left: 1px;
+        font-size: 4.5vh;
+    }
+    
+    .button:focus {
+        background-color: rgba(11, 221, 204, 0.425);
+        width: 100%;
+        outline: none;
+    }
+    
+    .button:hover {
+        background-color: rgba(70, 112, 109, 0.425);
+        outline: none;
+    }
+    
+    .button:hover>i {
+        margin-left: 30px;
+        outline: none;
+    }
+</style>
+<script src="https://kit.fontawesome.com/f1c65451e4.js" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200&display=swap" rel="stylesheet">
+
 <body>
     <h1>Schedule List</h1>
     <div class='button'>
         {% if control == False %}
-        <button type="button" onclick="alert('View Current Algo')">View The Current Algorithm</button> {% else %}
-        <button type="button" onclick="alert('Control Bots')">Try your Algorithm</button> {% endif %}
+        <div class='button' onclick="alert('View Bots')">
+            <i class="fas fa-play-circle"></i>VIEW
+        </div> {% else %}
+        <div class='button' onclick="alert('Control Bots')">
+            <i class="fas fa-play-circle"></i> DEPLOY
+
+        </div>{% endif %}
     </div>
     <div class='schedules'>
         {% for shedule in schedules %}
