@@ -91,13 +91,17 @@
     <h1>Schedule List</h1>
     <div class='button'>
         {% if control == False %}
-        <div class='button' onclick="alert('View Bots')">
-            <i class="fas fa-play-circle"></i>VIEW
+        <div id='myButton' class='button' ">
+            <i class="fas fa-play-circle "></i>VIEW
         </div> {% else %}
-        <div class='button' onclick="alert('Control Bots')">
+        <div id='myButton' class='button' ">
             <i class="fas fa-play-circle"></i> DEPLOY
-
         </div>{% endif %}
+        <script type="text/javascript">
+            document.getElementById("myButton").onclick = function() {
+                location.href = "{% url 'swarm:swarm_interface' %}";
+            };
+        </script>
     </div>
     <div class='schedules'>
         {% for shedule in schedules %}

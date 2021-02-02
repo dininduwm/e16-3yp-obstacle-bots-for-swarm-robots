@@ -6,45 +6,9 @@
     <link rel="stylesheet" href="/static/home_template/assets/css/main.css" />
     <title>3JS_interface</title>
 </head>
-<style>
-    .view {
-        float: left;
-        width: 1500px;
-        height: 900px
-    }
-    
-    .controlPad {
-        float: right
-    }
-    
-    .btn-group .button {
-        background-color: #033b2e;
-        border: none;
-        color: #fff;
-        padding: 16px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        transition-duration: .1s;
-        cursor: pointer;
-        display: block
-    }
-    
-    .button:hover {
-        background-color: #009ffc;
-        color: #fff
-    }
-    
-    .btn-group .button:not(:last-child) {
-        border-bottom: none
-    }
-    
-    .btn-group .button:hover {
-        background-color: #009ffc
-    }
-</style>
+
+<script src="https://kit.fontawesome.com/f1c65451e4.js" crossorigin></script>
+<link rel="stylesheet" href="/static/swarm/style.ff37c86a.css">
 
 <body>
     <!-- Header -->
@@ -71,19 +35,14 @@
         </ul>
     </nav>
 
-    <table>
-        <tr>
-            <td>
-                <div class="view" ,="" id="root"> </div>
-            </td>
-            <td>
-                <div class="btn-group">
-                    <button class="button" id="CameraReset">Reset Camera</button>
-                    <button class="button" id="CameraTopView">Top View</button>
-                </div>
-            </td>
-        </tr>
-    </table>
+    <div class="view" id="root">
+        <div class="Container camera" style="z-index:2"> <i id="CameraReset" class="fa-camera fas"></i> <i id="CameraTopView" class="fa-chevron-up fas"></i> <i id="CameraReset" class="fa-chevron-down fas"></i>
+        </div>
+        <div class="Container dest" style="z-index:2"> <i title="Set Destination" id="setDestination" class="fa-map-marker-alt fas" onclick="this.classList.toggle('active')"></i> <i id="deleteAllDestinations" class="fa-backspace fas"></i> </div>
+        <div id="batStat" class="Container batt" style="z-index:2" onclick="this.classList.toggle('active')"> Battery State </div>
+        <div class="Container pc" style="z-index:2"> <i id="InternetIcon" class="fa-globe-americas fas"></i> <label id="serverName" class="text1"> Platform PC UOP</label> <label id="online" class="online">
+                offline</label> </div>
+    </div>
 
     <script src="/static/home_template/assets/js/jquery.min.js"></script>
     <script src="/static/home_template/assets/js/browser.min.js"></script>
@@ -91,7 +50,7 @@
     <script src="/static/home_template/assets/js/util.js"></script>
     <script src="/static/home_template/assets/js/main.js"></script>
 </body>
-<script src="/static/swarm_new/app.7221c2f7.js"></script>
+<script src="/static/swarm/app.aa4bc72d.js"></script>
 
 
 </html>
