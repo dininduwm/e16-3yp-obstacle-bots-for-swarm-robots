@@ -76,8 +76,32 @@ def getResultant(robots_data, idx):
     Forces = []
 
     for i in range(len(robots_data)):
+
+        """ calculate the forces from other robots """
+
         if i != idx:
             Forces.append(getForce(robots_data[i], robots_data[idx]))
+
+        """ calculate the Forces from boundaries"""
+
+        # 1 / 4. pi . epsilon replacement factor
+        k = 15
+
+        #cordinate of the current robot
+        x_coord = robots_data[idx].init_pos[0]
+        y_coord = robots_data[idx].init_pos[1]
+        
+        # initialize the board dimensions
+        board_width = 30
+        board_hight = 30
+
+        # distances, angles to each board sides
+        distances = [board_width - x_coord, y_coord, x_coord, board_hight - y_coord]
+        angles = [180.0, 90.0, 0.0, -90.0]
+
+        for j in range(4):
+            force = 1 / (k * ((distances[j]) ** 25)) if (distances[j]) else 0
+            Forces.append([force, angles[j]])
 
     # calculate the Force for destination
     destination_robot = robot(robots_data[idx].des_pos, robots_data[idx].des_angle, -1, -1)

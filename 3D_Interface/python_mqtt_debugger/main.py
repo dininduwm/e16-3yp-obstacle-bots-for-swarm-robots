@@ -16,7 +16,7 @@ from MQTT_msg_pb2 import *
 # swarm id
 SWARM_ID = 0;
 swarm_name = "platformPC UOP"
-BOT_COUNT = 10;
+BOT_COUNT = 20;
 ARENA_DIM = 30;
 
 TOPIC_COM = 'swarm/common'
@@ -60,7 +60,6 @@ def on_message(client, userdata, message):
     # newBotDecode = BotPositionArr.FromString(message.payload)
     decrypted = aesDecrypt(message.payload).decode('utf-8')
 
-    print(decrypted)
     try:
         messageString = decrypted.split(';')
         if message.topic == TOPIC_COM:

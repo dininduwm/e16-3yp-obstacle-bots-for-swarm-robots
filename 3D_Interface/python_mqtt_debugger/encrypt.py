@@ -24,8 +24,3 @@ def aesEncryptString(data):
     return aesEncrypt(data.encode('utf-8'))
 
 
-en = aesEncryptString('hello bro')
-de = aesDecrypt(en)
-
-# print(list(bytearray('hello bro'.en)))
-print(de) 

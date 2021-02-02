@@ -24,7 +24,7 @@ def sendToSerial(ser, data):
 
 # this function is triggered periodicaly to broadcast data
 def serialAutoSend(ser, sharedData):
-    interval = 0.15  # frequency the data to be sent in seconds
+    interval = 0.25 # frequency the data to be sent in seconds
 
     while True:
         # sendToSerial(ser, sharedData[0])
@@ -33,7 +33,7 @@ def serialAutoSend(ser, sharedData):
 
             # creating a String
             data = str(key) + ',' + ','.join(map(str, sharedData[0][key])) + ','
-            print(data)
+            print("data ",data)
 
             # sending data through serial
             sendToSerial(ser, data)

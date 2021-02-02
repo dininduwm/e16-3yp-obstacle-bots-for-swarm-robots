@@ -22,7 +22,7 @@ comPort = '/dev/ttyUSB0'
 ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
 ser.flushInput()   
 
-cam = cv2.VideoCapture('http://192.168.1.100:8080/video') # video source to capture images
+cam = cv2.VideoCapture('http://192.168.1.5:8081/video') # video source to capture images
 #cam = cv2.VideoCapture(0) # video source to capture images
 
 # robot datas

@@ -102,17 +102,7 @@ void loop()
     turn();
   }
 
-  // change the direction if the travelDis id increasing
-  // if (prevDist < travelDis)
-  // {
-  //   dirCorrection = -1;
-  // }
-  // else
-  // {
-  //   dirCorrection = 1;
-  // }
-  // prevDist = travelDis;
-
+  
   // set the movingDone flag if the robo is at the destination
   if (travelDis < distThresh)
   {
@@ -120,6 +110,21 @@ void loop()
   }else{
     movingDone = false;
   }
+
+  // //turn test
+  //   updateGyro();
+  //   Input = (double)angle;
+  //   myPID.Compute();
+  //   ML(Output);
+  //   MR(-Output);
+  
+  //   if(tcount > 200){
+  //     tcount = 0;
+  //     angle = 0;
+  //     Setpoint = 90;
+  //   }
+  
+  // //test
 
   if ((tcount < 40) && turningDone && newData && !movingDone) //run motors with PID if conditions are satisfied 
   {
@@ -252,8 +257,8 @@ void updateGyro()
   GyroX = (Wire.read() << 8 | Wire.read()) / 32.75; // For a 1000deg/s range we have to divide first the raw value by 131.0, according to the datasheet
   GyroY = (Wire.read() << 8 | Wire.read()) / 131.0;
   GyroZ = (Wire.read() << 8 | Wire.read()) / 131.0;
-
-  GyroX = GyroX - GyroErrorX; // GyroErrorX ~(-0.56)
+  // Serial.println(GyroX);
+  GyroX = GyroX - (-3.4);//GyroErrorX; // GyroErrorX ~(-0.56)
 
   angle = angle + GyroX * elapsedTime; // deg/s * s = deg
 }
