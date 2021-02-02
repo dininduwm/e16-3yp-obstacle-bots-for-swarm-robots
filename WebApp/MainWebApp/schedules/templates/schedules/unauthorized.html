@@ -1,0 +1,68 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOT AUTHORIZED</title>
+</head>
+<style>
+    body {
+        background-color: rgb(236, 229, 199);
+        color: rgb(216, 106, 3);
+    }
+    
+    .text1 {
+        position: absolute;
+        left: 50vw;
+        top: 40vh;
+        font-size: 8vh;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        transform: translate(-50%, -50%);
+    }
+    
+    .text2 {
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        position: absolute;
+        font-size: 3vh;
+        color: rgb(95, 73, 45);
+        left: 31vw;
+        top: 48vh;
+    }
+    
+    .button {
+        position: absolute;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-size: 2vh;
+        background-color: rgb(216, 106, 3);
+        height: 5vh;
+        width: 5vw;
+        transform: translate(-50%, -50%);
+        border-radius: 1vh;
+        ;
+        color: aliceblue;
+        outline: none;
+        left: 50vw;
+        top: 58vh;
+    }
+</style>
+
+<script src="https://kit.fontawesome.com/f1c65451e4.js" crossorigin="anonymous"></script>
+
+<body class="body">
+    <div class='text1'>
+        <i class="fas fa-exclamation-circle"></i> Not Authorized
+    </div>
+    <div class='text2'>Contact us for support
+
+        <a href="url">someone@something.com</a>
+    </div>
+
+    <input id="myButton" class='button' type='button' value='Home'>
+    <script type="text/javascript">
+        document.getElementById("myButton").onclick = function() {
+            location.href = "/";
+        };
+    </script>
+</body>
+
+</html>

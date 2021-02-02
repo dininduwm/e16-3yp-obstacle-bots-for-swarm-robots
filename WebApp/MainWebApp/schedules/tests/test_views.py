@@ -48,7 +48,7 @@ class TestViews(TestCase):
         response = self.client.get(reverse('schedules:create'))
         self.assertEquals(response.status_code, 200)
         # TODO: change the html render page
-        #self.assertTemplateUsed(response, 'schedules/schedule_create.html')
+        self.assertTemplateUsed(response, 'schedules/unauthorized.html')
         
 
     # try admin page with a normal user this should fail

@@ -30,8 +30,8 @@ def schedule_create(request):
         query = AuthorizeClient.objects.filter(user=request.user)
         if len(query) > 0:            
             if not query[0].auth_stat:
-                return HttpResponse("Not authorized yet")
+                return render(request, 'schedules/unauthorized.html')
         else:
-            return HttpResponse('Not authorized page')
+            return render(request, 'schedules/unauthorized.html')
         form = forms.CreateSchedule()
     return render(request, 'schedules/schedule_create.html', {'form': form})
