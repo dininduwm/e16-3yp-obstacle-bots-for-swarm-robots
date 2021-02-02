@@ -98,7 +98,7 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   [Algorithm Deployment Video](https://drive.google.com/file/d/18J7mnoRWbKy1-WM-fGOGq0C8-KU52HCJ/view?usp=sharing)
   
   #### Web Interface Authentication And Authorization Testing
-  [Web Interface Vedio](https://drive.google.com/file/d/12DfR7rRFpMq2U1c6BGW0rHfQw0c6rsvO/view?usp=sharing)
+  [Web Interface Testing Video](https://drive.google.com/file/d/12DfR7rRFpMq2U1c6BGW0rHfQw0c6rsvO/view?usp=sharing)
   
 ### BUDGET
   ![BUDGET](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/budget.png?raw=true)
