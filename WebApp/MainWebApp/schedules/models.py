@@ -10,6 +10,12 @@ class BotServer(models.Model):
     def __str__(self):
         return self.server_name
 
+# model to handle the authorization data
+class AuthorizeClient(models.Model):
+    user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    auth_stat = models.BooleanField(default=False)
+
+
 # Model to collect sheduling data to deploy algos to the arena
 class Schedule(models.Model):
     project_name = models.CharField(max_length=100)

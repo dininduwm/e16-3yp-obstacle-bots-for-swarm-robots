@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
+from schedules.models import AuthorizeClient
 
 # Create your views here.
 def signup_view(request):
@@ -10,6 +11,10 @@ def signup_view(request):
         user = User.objects.create_user(request.POST['email'],request.POST['email'],request.POST['pass']);
         # saving the user
         user.save()
+        # creating the auth state
+        client = AuthorizeClient()
+        client.user = user
+        client.save()
         # loggin in the user
         login(request, user)
         return redirect('home')

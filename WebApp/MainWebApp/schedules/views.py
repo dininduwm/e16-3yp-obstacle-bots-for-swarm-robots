@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from .models import Schedule
+from django.shortcuts import render, redirect, HttpResponse
+from .models import Schedule, AuthorizeClient
 from django.contrib.auth.decorators import login_required
 from . import forms
 
@@ -16,7 +16,7 @@ def schedule_list(request):
     return render(request, 'schedules/schedule_list.html', {'schedules': schedules, 'control': allowControl})
 
 # schedule create page
-@login_required(login_url='/accounts/create/')
+@login_required(login_url='/accounts/login/')
 def schedule_create(request):
     if request.method == 'POST':
         form = forms.CreateSchedule(request.POST)
@@ -27,5 +27,11 @@ def schedule_create(request):
             instance.save()
             return redirect('schedules:list')
     else:
+        query = AuthorizeClient.objects.filter(user=request.user)
+        if len(query) > 0:            
+            if not query[0].auth_stat:
+                return HttpResponse("Not authorized yet")
+        else:
+            return HttpResponse('Not authorized page')
         form = forms.CreateSchedule()
     return render(request, 'schedules/schedule_create.html', {'form': form})
