@@ -5,6 +5,85 @@
         Create Schedule
     </title>
 </head>
+<style>
+    @font-face {
+        font-family: "roboto";
+        src: url('../fonts/RobotoCondensed-Regular.ttf');
+    }
+    
+    .body {
+        background-color: black
+    }
+    
+    .create-schedule {
+        display: grid;
+        height: 100%;
+        grid-template-rows: 20% 50%;
+        justify-items: center;
+        color: blue;
+        background-color: aqua;
+        background-image: url('http://www.estidia.eu/wp-content/uploads/2018/04/Savin-NY-Website-Background-Web.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        font-family: 'Titillium Web', sans-serif;
+    }
+    
+    .create-schedule>h2 {
+        margin: 0;
+        padding-top: 6%;
+        font-size: 250%;
+        color: rgb(14, 32, 31)
+    }
+    
+    .site-form {
+        width: 50%;
+        display: grid;
+    }
+    
+    label {
+        font-size: 110%;
+        color: black;
+    }
+    
+    [name="project_name"],
+    [name="description"],
+    [name="server_id"] {
+        margin-bottom: 2%;
+        background-color: rgba(192, 192, 192, 0.301);
+        border: 1px solid;
+        border-radius: 5px;
+        outline: none;
+    }
+    
+    [name="server_id"] {
+        margin-bottom: 4%;
+    }
+    
+    [type="submit"] {
+        border: 0px solid;
+        height: 150%;
+        width: 40%;
+        justify-self: center;
+        border-radius: 1000px;
+        background-color: rgba(26, 63, 60, 0.425);
+        outline: none;
+        font-size: 110%;
+        padding: 0;
+        color: rgb(0, 0, 0);
+        transition-duration: 100ms;
+    }
+    
+    [type="submit"]:focus {
+        background-color: rgba(11, 221, 204, 0.425);
+        width: 45%;
+    }
+    
+    [type="submit"]:hover {
+        background-color: rgba(70, 112, 109, 0.425);
+    }
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200&display=swap" rel="stylesheet">
 
 <body>
     <div class='create-schedule'>
