@@ -11,8 +11,8 @@
 * Related links
    * [Faculty website](http://eng.pdn.ac.lk/)
    * [Department website](http://www.ce.pdn.ac.lk/)
-   * [Web Application Home Page](http://54.163.154.240/)
-   * [Swarm Dash Board](http://54.163.154.240/swarm/)
+   * [Web Application Home Page](http://3.93.215.173/)
+   * [Swarm Dash Board](http://3.93.215.173/swarm/)
  
 ### IMAGE
    ![image](https://raw.githubusercontent.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/master/docs/img/Bot_Real_02.jpg?raw=true)
@@ -24,9 +24,10 @@
 3. >[SPECIFICATIONS](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#specifications)
 4. >[SOLUTION ARCHITECTURE](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#solution-architecture)
 5. >[HARDWARE](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#hardware)
-6. >[SOFTWARE](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#software)
-7. >[TESTING](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#testing)
-8. >[BUDGET](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#budget)
+6. >[WEB INTERFACE](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#software)
+7. >[ALGORITHM](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#algorithm)
+8. >[TESTING](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#testing)
+9. >[BUDGET](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#budget)
 
 
 
@@ -79,13 +80,28 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   
   
   
-### SOFTWARE
+### WEB INTERFACE
 
-  ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/web_interface.png?raw=true)
+  ![INTERFACE](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/new_interface.png?raw=true)
+  
+  [WEB INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1SNQPwF69SZxUKAlyjqtQ6vkmn7EWHOTA/view?usp=sharing)
+  
+### ALGORITHM
 
+  ![ALGORITHM](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/field.png?raw=true)
+  
+  ![THEORY](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/equation.png?raw=true)
+  
 ### TESTING
-  [![Watch the video](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/VideoThumb.png)](https://drive.google.com/file/d/1ObHcwEYGeDP1fNFbdbTpTihoFugFnTEj/view?usp=drivesdk)
+  
+  #### Algorithm Deployment
+  [Algorithm Deployment Video](https://drive.google.com/file/d/18J7mnoRWbKy1-WM-fGOGq0C8-KU52HCJ/view?usp=sharing)
+  
+  #### Web Interface Authentication And Authorization Testing
+  [Web Interface Testing Video](https://drive.google.com/file/d/12DfR7rRFpMq2U1c6BGW0rHfQw0c6rsvO/view?usp=sharing)
+  
+  #### Hardware Testing
+  [Hardware Testing Video](https://drive.google.com/file/d/1UNAkzgOKk-umYvnypkwuJJWv3zXbf69Z/view?usp=sharing)
   
 ### BUDGET
   ![BUDGET](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/budget.png?raw=true)
-
