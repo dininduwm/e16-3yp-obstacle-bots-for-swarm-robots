@@ -6,11 +6,10 @@
     <link rel="stylesheet" href="/static/home_template/assets/css/main.css" />
     <title>3JS_interface</title>
 </head>
-
 <script src="https://kit.fontawesome.com/f1c65451e4.js" crossorigin></script>
-<link rel="stylesheet" href="/static/swarm/style.ff37c86a.css">
+<link rel="stylesheet" href="/static/swarm/style.ef71521b.css">
 
-<body>
+<body class="body">
     <!-- Header -->
     <header id="header">
         <a class="logo" href="index.html">Swarm Robotics</a>
@@ -40,17 +39,21 @@
         </div>
         <div class="Container dest" style="z-index:2"> <i title="Set Destination" id="setDestination" class="fa-map-marker-alt fas" onclick="this.classList.toggle('active')"></i> <i id="deleteAllDestinations" class="fa-backspace fas"></i> </div>
         <div id="batStat" class="Container batt" style="z-index:2" onclick="this.classList.toggle('active')"> Battery State </div>
-        <div class="Container pc" style="z-index:2; top:15vh"> <i id="InternetIcon" class="fa-globe-americas fas"></i> <label id="serverName" class="text1"> Platform PC UOP</label> <label id="online" class="online">
+        <div id="time_remain" class="time_remain">
+            <p id="time_text" class="time_text">19:25</p>
+            <div id="time_bar" class="time_bar">
+                <div id="time_bar_fill"></div> <i class="fa-sort-up fas"></i>
+            </div>
+        </div>
+        <div class="Container pc" style="z-index:2"> <i id="InternetIcon" class="fa-globe-americas fas"></i> <label id="serverName" class="text1"> Platform PC UOP</label> <label id="online" class="online">
                 offline</label> </div>
     </div>
-
     <script src="/static/home_template/assets/js/jquery.min.js"></script>
     <script src="/static/home_template/assets/js/browser.min.js"></script>
     <script src="/static/home_template/assets/js/breakpoints.min.js"></script>
     <script src="/static/home_template/assets/js/util.js"></script>
     <script src="/static/home_template/assets/js/main.js"></script>
 </body>
-<script src="/static/swarm/app.aa4bc72d.js"></script>
-
+<script src="/static/swarm/app.90953a91.js"></script>
 
 </html>
