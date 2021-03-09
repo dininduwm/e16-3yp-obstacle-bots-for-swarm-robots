@@ -85,8 +85,6 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   
 ### WEB INTERFACE
 
-  ![INTERFACE](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/new_interface.png?raw=true)
-  
   #### Web Interface
   [WEB INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1p-WY_BGf4mX0sW0hUGA0x1Oh4LhzKp-s/view?usp=sharing)
   #### 3D Interface
