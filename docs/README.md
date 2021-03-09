@@ -15,7 +15,7 @@
    * [Swarm Dash Board](http://3.93.215.173/swarm/)
  
 ### IMAGE
-   ![image](https://raw.githubusercontent.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/master/docs/img/Bot_Real_02.jpg?raw=true)
+   ![image](https://raw.githubusercontent.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/master/docs/img/New_Bot.jpg?raw=true)
 
 ### TABLE OF CONTENT
 
@@ -59,17 +59,20 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 
 ### HARDWARE
 
- * #### PROTOTYPE
- 
-     ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Bot_Real_01.png?raw=true)
+ * #### REAL HARDWARE
+    ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/New_Bot.jpg?raw=true)
 
-    ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Bot_Real_02.jpg?raw=true)
+ * #### PROTOTYPE
+
+    ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/proto.jpg?raw=true)
 
  * #### 3D MODEL
  
      ![robot_base_design](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_base_design.png?raw=true)
 
    ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/solid.jpg?raw=true)
+   
+    [3D MODEL DEMO VIDEO](https://drive.google.com/file/d/1BgqnTfJoUTvxhPZTlfKIsdu9cmKUDJUL/view?usp=sharing)
 
     
 * #### PCB DESIGN
@@ -78,13 +81,17 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 
   ![PCB](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/pcb1.jpg?raw=true)
   
-  
+  [PCB DEMO VIDEO](https://drive.google.com/file/d/1F948O53cgekAJtsLhbUBktsmgBemvtih/view?usp=sharing)
   
 ### WEB INTERFACE
 
-  ![INTERFACE](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/new_interface.png?raw=true)
+  #### Web Interface
+  [WEB INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1p-WY_BGf4mX0sW0hUGA0x1Oh4LhzKp-s/view?usp=sharing)
+  #### 3D Interface
+  [3D INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1X0jq2r_McNR5bppIPc1HjJY1mYPvrYJg/view?usp=sharing)
   
-  [WEB INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1SNQPwF69SZxUKAlyjqtQ6vkmn7EWHOTA/view?usp=sharing)
+  #### Platform PC Operator GUI
+  [3D INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1NqZ_JTVdCaxA32IgvhgPbMnpfuTEIJsR/view?usp=sharing)
   
 ### ALGORITHM
 
@@ -105,3 +112,4 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   
 ### BUDGET
   ![BUDGET](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/budget.png?raw=true)
+
