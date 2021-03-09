@@ -23,6 +23,7 @@ urlpatterns = [
     re_path(r'^accounts/', include('accounts.urls')),
     re_path(r'^swarm/', include('swarm_interface.urls')),
     re_path(r'^schedules/', include('schedules.urls')),
+    re_path(r'^specs/', views.specs_view, name='specs'),
     re_path(r'^$', views.home_view, name='home'),
 ]
 

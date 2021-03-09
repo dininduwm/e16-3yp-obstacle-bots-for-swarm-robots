@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<!--
+	Industrious by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html>
+
+<head>
+    <title>Swarm Robotics</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="/static/home_template/assets/css/main.css" />
+
+</head>
+
+<body class="is-preload">
+
+    <!-- Header -->
+    <header id="header">
+        <a class="logo" href="index.html">Swarm Robotics</a>
+        <nav>
+            <a href="#menu">Menu</a>
+        </nav>
+    </header>
+
+    <!-- Nav -->
+    <nav id="menu">
+        <ul class="links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'swarm:swarm_interface' %}">Swarm Dashboard</a></li>
+            <li><a href="{% url 'schedules:list' %}">Schedule List</a></li>
+            <li><a href="{% url 'schedules:create' %}">Create Schedule</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="javascript:{}" onclick="document.getElementById('my_form').submit();">Logout</a></li>
+            <form id="my_form" method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+            </form>
+            {% else %}
+            <li><a href="{% url 'accounts:login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <section>
+        <nav class="inner">
+            <header>
+                <div class="highlights">
+                    <section>
+                        <div class="image">
+                            <img src="/static/home_template/images/arena.png" alt="" />
+                        </div>
+                    </section>
+                </div>
+                
+            </header>
+        </nav>
+    </section>
+    <section>
+        <!-- Highlights -->
+        <div id="bot_show" style= " height:400px; width:100vw; top:7vh; left:10vw "></div>
+        <section class="wrapper">
+            <div class="inner">
+                <div class="highlights">
+                    <section>
+                        <div class="content">
+                            <header>
+                                <h3><b style="color:#243dce">Hardware Components</b></h3>
+                            </header style="color:#bbda22">
+                            <p><b><ul>
+                                <li>
+                                    HC12-433Mhz transceiver module<br> 
+                                </li>
+                                <li>
+                                    L293d motor driver<br> 
+                                </li>
+                                <li>
+                                    Low latency Transmission<br> 
+                                </li>
+                                <li>
+                                    Bots are radio silent so no interruptions for other swarm robots<br> 
+                                </li>
+                                <li>
+                                    Accurate positioning through overhead camera<br> 
+                                </li>
+                                <li>
+                                    Accurate dynamic movements<br>
+                                </li>
+                                <li>
+                                    Color changing capability (multicolor obstacles).<br>
+                                </li>
+                                <li>
+                                    Gpio extension for further development<br>
+                                </li>
+                                </b></ul>
+                            </p>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="content">
+                            <header>
+                                <h3><b style="color:#243dce">Software Components</b></h3>
+                            </header>
+                            <p><b><ul>
+                                <li>
+                                    User friendly interface<br> 
+                                </li>
+                                <li>
+                                    Easy to handle<br> 
+                                </li>
+                                <li>
+                                    Easy to see error logs<br> 
+                                </li>
+                                <li>
+                                    Easy maintanace (battery status)<br>
+                                </li>
+                                </b></ul>
+                            </p>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="content">
+                            <header>
+                                <h3><b style="color:#243dce">Security Components</b></h3>
+                            </header>
+                            <p><b><ul>
+                                <li>
+                                    Encrypted data trasmission<br> 
+                                </li>
+                                <li>
+                                    Secure data channels<br> 
+                                </li>
+                                <li>
+                                    User based authentication<br> 
+                                </li>
+                                <li>
+                                    Admin section<br> 
+                                </li>
+                               
+                                </b></ul>
+                            </p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </section>
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="copyright">
+            &copy;copyright - swarm robots platform 2021</a>
+        </div>
+
+    </footer>
+</body>
+<!-- Scripts -->
+<script src="/static/robo/basics.63abb3c4.js"></script>
+<script src="/static/robo/app.c328ef1a.js"></script>
+<script src="/static/home_template/assets/js/jquery.min.js"></script>
+<script src="/static/home_template/assets/js/browser.min.js"></script>
+<script src="/static/home_template/assets/js/breakpoints.min.js"></script>
+<script src="/static/home_template/assets/js/util.js"></script>
+<script src="/static/home_template/assets/js/main.js"></script>
+
+
+
+</html>

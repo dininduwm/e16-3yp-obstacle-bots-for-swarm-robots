@@ -1,0 +1,101 @@
+.body{
+    background: #f0eded;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns:80% 20%;
+}
+
+.camera_view{
+    width:auto;
+    height:100vh;
+    border:1px solid rgb(141, 140, 140);
+    background: red;
+}
+.control_pannel{
+    display: grid;
+    grid-template-rows: 20% 10% 50% 20%;
+    width:auto
+}
+
+
+.bot_show{
+    height: auto;
+    width: auto;
+    background: red;
+}
+.bots{
+    border: 1px solid rgb(197, 197, 197);
+    border-radius:1vh;
+    margin: 1vh;
+}
+.bot{
+    display: grid;
+    grid-template-columns: auto auto auto auto auto ;
+    height: 3.5vh;
+    margin:0.6vh;
+    margin-left: 1vh;
+    margin-Right: 1vh;
+    align-items: center;
+    justify-items: center;
+    background:rgb(116, 116, 116);
+    border-radius: 2vh;
+    color: white;
+}
+
+.bot:hover{
+    background:rgb(172, 168, 168);
+}
+.bot>p{
+    margin: 0;
+    margin-left: 0.5vw;
+}
+.status{
+    display:flex;
+    background: white;
+    height:2.6vh;
+    width: 4vw;
+    border-radius: 2vh;
+    align-items: center;
+    justify-content: center;
+}
+.status>p{
+    margin: 0;
+    color:rgb(32, 32, 32)
+}
+.online{
+    height: 1vh;
+    width:1vh;
+    background: greenyellow;
+    border-radius:4vh;
+}
+
+.client{
+    display:grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    justify-items: center;
+    margin: 1vh;
+}
+
+.client>i{
+    font-size:3vh;
+    color: rgb(158, 150, 150);
+}
+.client>p{
+    justify-self:flex-start
+}
+
+.fas.fa-stop-circle{
+    font-size: 12vh;
+    color:rgb(206, 20, 20);  
+    align-self: center;
+    justify-self: center;  
+}
+
+.fas.fa-stop-circle:hover{
+    font-size: 13vh;
+    color:rgb(247, 38, 38);    
+}
+
+/*# sourceMappingURL=/basics.63abb3c4.css.map */
