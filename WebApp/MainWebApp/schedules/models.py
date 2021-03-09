@@ -15,6 +15,9 @@ class AuthorizeClient(models.Model):
     user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
     auth_stat = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.user.username
+
 
 # Model to collect sheduling data to deploy algos to the arena
 class Schedule(models.Model):
