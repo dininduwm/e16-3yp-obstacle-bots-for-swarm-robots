@@ -15,7 +15,7 @@
    * [Swarm Dash Board](http://3.93.215.173/swarm/)
  
 ### IMAGE
-   ![image](https://raw.githubusercontent.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/master/docs/img/Bot_Real_02.jpg?raw=true)
+   ![image](https://raw.githubusercontent.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/master/docs/img/New_Bot.jpg?raw=true)
 
 ### TABLE OF CONTENT
 
@@ -63,8 +63,6 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
     ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/New_Bot.jpg?raw=true)
 
  * #### PROTOTYPE
- 
-     ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/Bot_Real_01.png?raw=true)
 
     ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/proto.jpg?raw=true)
 
