@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!-- saved from url=(0029)http://127.0.0.1:5501/v1.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickerapps</title>
+    <link rel="stylesheet" href="./Tickerapps_files/styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com/">
+    <link href="./Tickerapps_files/css2" rel="stylesheet">
+    <link rel="icon" type="image/png" href="http://127.0.0.1:5501/static/btc/usd/v1/ta.png">
+</head>
+
+<body>
+    <div class="bitcoin_logo">
+        <img src="./Tickerapps_files/btc.png" alt="">
+    </div>
+    <div class="text_container">
+        <div class="top">
+            <div class="current">
+                <div class="current_text">
+                    <div>
+                        <p class="current_high">CURRENT ASK:<span class="current_high_val"><span class="current_high_val_dollar">$</span>46,995.70</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="current_low">CURRENT BID:<span class="current_low_val"><span class="current_low_val_dollar">$</span>46,984.47</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="h24">
+                <div class="h24_val">
+                    <div>
+                        <p class="h24_high_val"><span class="h24_high_text_text">24h HIGH: </span><span class="h24_high_val_val"><span class="h24_high_val_val_dollar">$</span>47,936.23</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="h24_low_val"><span class="h24_low_text_text">24h LOW: </span><span class="h24_low_val_val"><span class="h24_low_val_val_dollar">$</span>45,492.52</span>
+                        </p>
+                    </div>
+                </div>
+                <!-- <div class="h24_text">
+                    <div>
+                        <p class="h24_high">24h HIGH: </p>
+                    </div>
+                    <div>
+                        <p class="h24_low">24h LOW:</p>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <div class="current_usd">
+            <p class="current_usd_text"><span class="usd_dollar">$</span><span class="usd_val"><span class="usd_val_1">46</span><span class="usd_comma">,</span><span class="usd_val_2">991</span><span class="usd_dot">.</span><span class="usd_val_3">58</span></span><span class="usd">USD</span></p>
+        </div>
+        <div class="bottom">
+            <div class="h24_change">
+                <div class="h24_change_text_div">
+                    <p class="h24_change_text">24h CHANGE:</p>
+                </div>
+                <div class="h24_change_val_div">
+                    <div>
+                        <p class="h24_change_usd" style="color: red;">-<span class="h24_change_usd_dollar">$</span>86.46</p>
+                    </div>
+                    <div>
+                        <p class="h24_change_percentage" style="color: red;">-0.18%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="ath_time_high_full">
+                <div class="h24_text_bottom">
+                    <div>
+                        <p class="ath_time_high_text">ALL TIME HIGH: <span class="ath_time_high_text_val"><span class="ath_time_high_text_val_dollar">$</span>49,041.18</span></p>
+                    </div>
+                    <div>
+                        <p class="ath_time_high_date">on 22 FEB 2021</p>
+                    </div>
+                    <div>
+                        <p class="ath_time_high_time">TIME SINCE ATH: <span class="ath_time_high_time_val">17:20:45:41</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <input id="topic" type="hidden" name="next" value="btc_data_EUR">
+    <input id="key" type="hidden" name="next" value="[139, 190, 60, 202, 65, 17, 46, 241, 173, 243, 170, 221, 190, 150, 115, 6]">
+
+    <script src="./Tickerapps_files/mqttws31.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="./Tickerapps_files/index.js"></script>
+    <script src="./Tickerapps_files/app.js"></script>
+<!-- Code injected by live-server -->
+<script type="text/javascript">
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+</body></html>

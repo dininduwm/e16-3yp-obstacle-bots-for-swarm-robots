@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import time
+import math
 from math import atan
 from kalman import kalman
 from positioning_algo import positions  
@@ -8,6 +9,13 @@ import json
 import serial
 from multiprocessing import Process, Manager
 from serialCom import readSerialData, sendToSerial, serialAutoSend
+import movements
+from robot import robot
+
+# Settings section
+serialComEn = False
+ipCamEn = True
+kalmanEn = False
 
 # TODO: to be used in future 
 # important variables
@@ -19,11 +27,14 @@ sharedData.append("") # json string
 comPort = '/dev/ttyUSB0'
 
 # making the connection with the seral port
-ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
-ser.flushInput()   
+if serialComEn:
+    ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
+    ser.flushInput()   
 
-cam = cv2.VideoCapture('http://192.168.1.5:8081/video') # video source to capture images
-#cam = cv2.VideoCapture(0) # video source to capture images
+if ipCamEn:
+    cam = cv2.VideoCapture('http://192.168.1.4:8080/video') # video source to capture images
+else:
+    cam = cv2.VideoCapture(0) # video source to capture images
 
 # robot datas
 robotData = {} 
@@ -59,13 +70,46 @@ parameters =  cv2.aruco.DetectorParameters_create()
 # saving to a video
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
 
+# calculate destinations
+def desCalc(robots, broadcastPos):
+    # need to optimize
+    # print(robots)
+    print(broadcastPos)
+    global robot
+    des = (3, 4)
+    robots_data = []
+    keys = []
+    for key, robot_i in robots.items():
+        keys.append(key)
+        robots_data.append(
+            robot(
+                robot_i[0], 0, (3, 4), 0
+            )
+        )
+    
+    result = movements.action(robots_data)
+    # print(result)
+
+    for i, robot_i in enumerate(result):
+        # calculate the direction
+        F = robot_i[0]*100  # resultant force
+        F = min(0.5, F)
+        Dir = robot_i[1]  # relustant force direction
+        dx = F*math.cos((Dir/180*math.pi))
+        dy = F*math.sin((Dir/180*math.pi))
+        # calculate the broadcast positions
+        broadcastPos[keys[i]] = positions(robots[keys[i]][0], robots[keys[i]][3], [robots_data[i].init_pos[0] + dx, robots_data[i].init_pos[1] + dy], 0)
+    
+    return broadcastPos
+
+
 def camProcess():
 
     # destination point
     desX = 400
     desY = 50
 
-    global sharedData
+    global sharedData, broadcastPos
     print("Cam Process Started")
     while True:
         ret, frame = cam.read()    
@@ -94,44 +138,48 @@ def camProcess():
 
             # adding data to the dictionary
             if (markerIds[i][0] in robotData):
-                robotData[markerIds[i][0]][0] = conData[0]
-                robotData[markerIds[i][0]][1] = conData[1]
-
-                # adding data to the kalman obj
-                k_obj = robotData[markerIds[i][0]][2]       # grabbing the kalman object
-                kalVal = k_obj(conData[0], conData[1][0] , conData[1][1], True)    # calculating the kalman value
+                if kalmanEn:
+                    # adding data to the kalman obj
+                    k_obj = robotData[markerIds[i][0]][2]       # grabbing the kalman object
+                    kalVal = k_obj(conData[0], conData[1][0] , conData[1][1], True)    # calculating the kalman value
 
             else:
-                # add new key to the set
-                robotDataSet.add(markerIds[i][0])
-
-                k_obj = kalman(conData[0], conData[1][0], conData[1][1])            # creating the kalman object                
-                robotData[markerIds[i][0]] = [0,0,0,0]
-                robotData[markerIds[i][0]][0] = conData[0]
-                robotData[markerIds[i][0]][1] = conData[1]
-                robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
+                if kalmanEn:
+                    # add new key to the set
+                    robotDataSet.add(markerIds[i][0])
+                    # adding data to the kalman algo
+                    k_obj = kalman(conData[0], conData[1][0], conData[1][1]) 
+                    robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
+                               # creating the kalman object                
+                robotData[markerIds[i][0]] = [0,0,0,0,0]
+            # adding data to the dictionary    
+            robotData[markerIds[i][0]][0] = conData[0]
+            robotData[markerIds[i][0]][1] = conData[1]
+            robotData[markerIds[i][0]][3] = [tuple(markerCorners[i][0][1]), tuple(markerCorners[i][0][2])]
 
             # adding data to be broadcasted
             # TODO Changed
-            broadcastPos[int(markerIds[i][0])] = positions(conData[0], [tuple(markerCorners[i][0][1]), tuple(markerCorners[i][0][2])], [desX,desY], 0)
+            # broadcastPos[int(markerIds[i][0])] = positions(conData[0], [tuple(markerCorners[i][0][1]), tuple(markerCorners[i][0][2])], [desX,desY], 0)
 
-        # updating the not detected objects through kalman algo
-        differentSet = robotDataSet - markerSet
-                
-        for id in differentSet:
-            k_obj = robotData[id][2]       # grabbing the kalman object
-            k_obj([0,0],[0,0],[0,0],False)    # calculating the kalman value
+        if kalmanEn:
+            # updating the not detected objects through kalman algo
+            differentSet = robotDataSet - markerSet
+                    
+            for id in differentSet:
+                k_obj = robotData[id][2]       # grabbing the kalman object
+                k_obj([0,0],[0,0],[0,0],False)    # calculating the kalman value
 
-            kalVal = k_obj.x.transpose()
+                kalVal = k_obj.x.transpose()
 
-            # setting data to the dataset
-            robotData[id][0] = [kalVal[0], kalVal[1]]            
-            robotData[id][1] = [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]]
+                # setting data to the dataset
+                robotData[id][0] = [kalVal[0], kalVal[1]]            
+                robotData[id][1] = [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]]
 
-            # adding data to be broadcasted
-            #broadcastPos[id] = positions([kalVal[0], kalVal[1]], [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]], [desX, desY], 0)
+                # adding data to be broadcasted
+                broadcastPos[id] = positions([kalVal[0], kalVal[1]], [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]], [desX, desY], 0)
 
-        # print(robotData)
+        # calculate destinations    
+        broadcastPos = desCalc(robotData, broadcastPos)
 
         try:
             # print(broadcastPos[1][0], desX, desY)
@@ -167,12 +215,15 @@ if __name__ == '__main__':
     # reading recived data from the arduino
     # p2 = Process(target=readSerialData, args=(ser,sharedData))
     # send data to the arduino
-    p3 = Process(target=serialAutoSend, args=(ser, sharedData))
+    if serialComEn:
+        p3 = Process(target=serialAutoSend, args=(ser, sharedData))
 
     p1.start()   
     # p2.start() 
-    p3.start()   
+    if serialComEn:
+        p3.start()   
 
     p1.join()   
     # p2.join() 
-    p3.join()
+    if serialComEn:
+        p3.join()

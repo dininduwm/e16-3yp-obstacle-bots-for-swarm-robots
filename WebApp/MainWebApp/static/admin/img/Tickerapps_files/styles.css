@@ -1,0 +1,332 @@
+@font-face {
+    src: url('Tahoma.eot?#iefix') format('embedded-opentype'), url('Tahoma.woff') format('woff'), url('Tahoma.ttf') format('truetype'), url('Tahoma.svg#svgFontName') format('svg');
+    font-family: tahoma;
+}
+
+@font-face {
+    src: url('OpenSansCondensed-Bold.eot?#iefix') format('embedded-opentype'), url('OpenSansCondensed-Bold.woff') format('woff'), url('OpenSansCondensed-Bold.ttf') format('truetype'), url('OpenSansCondensed-Bold.svg#svgFontName') format('svg');
+    font-family: 'OpenSansCondensed';
+}
+
+:root {
+    --fontSize: 1;
+}
+
+body {
+    color: black;
+    background-color: white;
+    margin: 0px;
+    font-family: tahoma;
+    font-weight: bold;
+}
+
+img {
+    position: relative;
+    top: -1.5vw;
+    width: 100%;
+}
+
+.bitcoin_logo {
+    height: auto;
+    width: 28%;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    margin: 0px;
+}
+
+.text_container {
+    height: 30vw;
+    width: 80%;
+    margin: 0px;
+    position: absolute;
+    left: 20%;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.top {
+    height: 30%;
+    width: 100%;
+    position: absolute;
+    top: -5%;
+}
+
+.bottom {
+    width: 50%;
+    margin: 0px;
+    width: 100%;
+    position: absolute;
+    top: 70%;
+    height: 35%;
+}
+
+.current {
+    height: 20%;
+    margin: 0px;
+    position: absolute;
+    width: 55vw;
+    left: 0px;
+    /* background-color: chartreuse;  */
+}
+
+.current_text {
+    margin: 0px;
+    position: absolute;
+    left: 6.5vw;
+    width: 40vw;
+    font-size: calc(var(--fontSize) * 2.5vw);
+}
+
+.current_low {
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.current_high {
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.current_val {
+    margin: 0px;
+    position: absolute;
+    left: 23.5vw;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.current_low_val {
+    position: relative;
+    left: 0.75vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.current_high_val {
+    position: relative;
+    left: 0.5vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.usd {
+    position: relative;
+    left: 2vw;
+    /* top: calc(var(--fontSize) * 1.5vw); */
+    font-size: calc(var(--fontSize) * 8vw);
+    font-weight: 300;
+    font-family: 'OpenSansCondensed';
+}
+
+.usd_val {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 9vw);
+}
+
+.usd_dollar {
+    position: relative;
+    right: 1vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 9vw);
+}
+
+.usd_comma {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 6vw);
+}
+
+.usd_val_2 {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 9vw);
+}
+
+.usd_val_3 {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 9vw);
+}
+
+.usd_val_1 {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 9vw);
+}
+
+.current_usd {
+    text-align: center;
+    height: 35%;
+    position: absolute;
+    left: 1vw;
+    top: calc(var(--fontSize) * 9.7vw);
+    width: 100%;
+    /* background-color: cyan; */
+}
+
+.current_usd_text {
+    position: relative;
+    top: -2vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 6.5vw);
+}
+
+.h24 {
+    align-content: center;
+    height: 100%;
+    margin: 0px;
+    position: absolute;
+    width: 40vw;
+    left: 40vw;
+    /* background-color: chartreuse;   */
+}
+
+.h24_text {
+    position: relative;
+    right: 0vw;
+    height: 100%;
+    width: 50%;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+    display: inline-block;
+    /* background-color: blue; */
+}
+
+.h24_low {
+    width: 15vw;
+    position: relative;
+    right: -5.5vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.h24_high {
+    width: 15vw;
+    position: relative;
+    right: -5.5vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.h24_val {
+    display: inline-block;
+    height: 100%;
+    margin: 0px;
+    position: absolute;
+    right: 3vw;
+    font-size: calc(var(--fontSize) * 3vw);
+    /* background-color: red; */
+}
+
+.h24_low_val {
+    position: absolute;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.h24_high_val {
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.h24_high_text_text {
+    position: relative;
+    right: -0.6vw;
+}
+
+.h24_low_text_text {
+    position: relative;
+    right: 0.3vw;
+}
+
+.ath_time_high_full {
+    position: absolute;
+    width: 50%;
+    top: 0px;
+    height: 100%;
+    text-align: center;
+    margin: 0px;
+    position: absolute;
+    right: 0;
+}
+
+.ath_time_high_text {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    text-align: center;
+    font-size: calc(var(--fontSize) * 2.8vw);
+}
+
+.ath_time_high_date {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    text-align: center;
+    font-size: calc(var(--fontSize) * 2.5vw);
+    font-weight: normal;
+}
+
+.ath_time_high_time {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    text-align: center;
+    font-size: calc(var(--fontSize) * 2.5vw);
+    font-weight: normal;
+}
+
+.h24_change {
+    margin: 0px;
+    width: 50%;
+    height: 100%;
+}
+
+.h24_change_text_div {
+    top: 33%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    position: absolute;
+    left: 8%;
+}
+
+.h24_change_val_div {
+    position: absolute;
+    left: 31%;
+    text-align: center;
+}
+
+.h24_change_text {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 3vw);
+}
+
+.h24_change_usd {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 2.8vw);
+}
+
+.h24_change_percentage {
+    position: relative;
+    right: 0vw;
+    margin: 0px;
+    font-size: calc(var(--fontSize) * 2.8vw);
+}
+
+.h24_text_bottom {
+    position: absolute;
+    right: 5%;
+}
