@@ -71,10 +71,10 @@ parameters =  cv2.aruco.DetectorParameters_create()
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
 
 # calculate destinations
-def desCalc(robots, broadcastPos):
+def desCalc(robots, broadcastPos, frame):
     # need to optimize
     # print(robots)
-    print(broadcastPos)
+    # print(broadcastPos)
     global robot
     des = (3, 4)
     robots_data = []
@@ -86,17 +86,25 @@ def desCalc(robots, broadcastPos):
                 robot_i[0], 0, (3, 4), 0
             )
         )
-    
+    print(robots_data)
     result = movements.action(robots_data)
-    # print(result)
+    print('fin',result)
 
     for i, robot_i in enumerate(result):
         # calculate the direction
-        F = robot_i[0]*100  # resultant force
-        F = min(0.5, F)
+        F = robot_i[0]*150000  # resultant force
+        # F = min(0.5, F)
         Dir = robot_i[1]  # relustant force direction
         dx = F*math.cos((Dir/180*math.pi))
         dy = F*math.sin((Dir/180*math.pi))
+        print(dx,dy)
+
+        # add the destination circle
+        frame = cv2.circle(frame, tuple(des), 1, (0,255,0), 2)
+        #print((int(robots_data[i].init_pos[0] + dx), int(robots_data[i].init_pos[1] + dy)))
+        frame = cv2.line(frame, (int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), tuple(des), (0,255,0), 2)
+        frame = cv2.line(frame, (int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), (int(robots_data[i].init_pos[0]+dx), int(robots_data[i].init_pos[1]+dy)), (0,0,255), 2)
+
         # calculate the broadcast positions
         broadcastPos[keys[i]] = positions(robots[keys[i]][0], robots[keys[i]][3], [robots_data[i].init_pos[0] + dx, robots_data[i].init_pos[1] + dy], 0)
     
@@ -179,7 +187,7 @@ def camProcess():
                 broadcastPos[id] = positions([kalVal[0], kalVal[1]], [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]], [desX, desY], 0)
 
         # calculate destinations    
-        broadcastPos = desCalc(robotData, broadcastPos)
+        broadcastPos = desCalc(robotData, broadcastPos, frame)
 
         try:
             # print(broadcastPos[1][0], desX, desY)
