@@ -14,6 +14,7 @@ from robot import robot
 import paho.mqtt.client as mqtt #import the client1
 from encrypt import aesEncrypt, aesEncryptString, aesDecrypt
 import json
+from roboArrangement import  arrageBot
 
 # swarm configuration =========================
 # inporting the protobuff to serialize and deserialize the data
@@ -31,6 +32,16 @@ TOPIC_SEVER_BOT_POS = 'swarm/'+ str(SWARM_ID) + '/bot_pos'
 connected_clients = []
 robots_data = []
 newBotPosArr = BotPositionArr()
+
+# image resolutions
+img_x = 1280
+img_y = 720 
+
+# remapping destinations
+def remapDes(arr):
+    for data in arr:
+        data['x'] = int(data['x']/30*img_x)
+        data['y'] = int(data['y']/30*img_y)
 
 # on message function
 def on_message(client, userdata, message):
@@ -52,8 +63,9 @@ def on_message(client, userdata, message):
             if messageString[1] == 'set_dest':
                 print("Destination reset")
                 destinations = json.loads(messageString[2])
+                remapDes(destinations)
                 print(destinations)
-                # arrageBot(robots_data , destinations)
+                arrageBot(robotData , destinations)
 
             if messageString[1] == 'ping':
                 client.publish(TOPIC_SEVER_COM, aesEncryptString('ping'))
@@ -61,47 +73,8 @@ def on_message(client, userdata, message):
             if messageString[1] == 'battStat':
                 client.publish(TOPIC_SEVER_COM, aesEncryptString('battStat;' + battStat()))
     except :
-        print("message format error")
-# # brocker ip address (this brokeris running inside our aws server)
-# broker_address= "broker.mqttdashboard.com"
-# print("creating new instance")
-
-# # client Name
-# client = mqtt.Client("Platform_PC", transport='websockets') #create new instance
-# client.on_message = on_message # attach function to callback
-
-# print("connecting to broker")
-# client.connect(broker_address, 8000, 60) #connect to broker
-# # starting the mqtt client loop
-# client.loop_start() 
-
-# # subscribing to the current postion topic
-# client.subscribe("swarm/{}/currentPos".format(SWARM_ID))
-# client.subscribe(TOPIC_COM)
-# client.subscribe(TOPIC_SEVER_COM)
-
-# print("Publishing message to topic", "swarm/{}/currentPos".format(SWARM_ID))
-
-# while True:
-#     time.sleep(1)
-#     newBotPosArr = BotPositionArr()
-
-#     for i in range(2):
-#         newBot = BotPosition()
-#         newBot.bot_id = i
-#         # newBot.x_cod = robots_data[i].init_pos[0]/(640*30) 
-#         # newBot.y_cod = robots_data[i].init_pos[1]/(480*30)
-#         newBot.x_cod = 12
-#         newBot.y_cod = 12
-#         print(newBot.x_cod,newBot.y_cod)
-#         newBot.angle = 0
-#         newBotPosArr.positions.append(newBot)
-
-#     data = newBotPosArr.SerializeToString()
-#     # print(data)
-#     client.publish(TOPIC_SEVER_BOT_POS, aesEncrypt(data))
-#     print('loop')
-# =============================================
+        pass
+        # print("message format error")
 
 # Settings section
 serialComEn = False
@@ -170,14 +143,13 @@ def desCalc(robots, broadcastPos, frame, client):
     # print(robots)
     # print(broadcastPos)
     global robot
-    des = (3, 4)
     robots_data = []
     keys = []
     for key, robot_i in robots.items():
         keys.append(key)
         robots_data.append(
             robot(
-                robot_i[0], 0, (3, 4), 0
+                robot_i[0], 0, tuple(robot_i[4]), 0
             )
         )
     # print(robots_data)
@@ -194,10 +166,10 @@ def desCalc(robots, broadcastPos, frame, client):
         # print(dx,dy)
 
         # add the destination circle
-        frame = cv2.circle(frame, tuple(des), 1, (0,255,0), 2)
+        frame = cv2.circle(frame, tuple(robots_data[i].des_pos), 1, (0,255,0), 2)
         # print(frame.shape)
         #print((int(robots_data[i].init_pos[0] + dx), int(robots_data[i].init_pos[1] + dy)))
-        frame = cv2.line(frame, (int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), tuple(des), (0,255,0), 2)
+        frame = cv2.line(frame, (int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), tuple(robots_data[i].des_pos), (0,255,0), 2)
         frame = cv2.line(frame, (int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), (int(robots_data[i].init_pos[0]+dx), int(robots_data[i].init_pos[1]+dy)), (0,0,255), 2)
 
         # calculate the broadcast positions
@@ -206,11 +178,8 @@ def desCalc(robots, broadcastPos, frame, client):
         # prepare data to send through mqtt
         newBot = BotPosition()
         newBot.bot_id = i
-        newBot.x_cod = robots_data[i].init_pos[0]/1280*30 
-        newBot.y_cod = robots_data[i].init_pos[1]/720*30
-        # newBot.x_cod = 12
-        # newBot.y_cod = 12
-        print(newBot.x_cod,newBot.y_cod)
+        newBot.x_cod = robots_data[i].init_pos[0]/img_x*30 
+        newBot.y_cod = robots_data[i].init_pos[1]/img_y*30
         newBot.angle = 0
         newBotPosArr.positions.append(newBot)
 
@@ -223,7 +192,6 @@ def desCalc(robots, broadcastPos, frame, client):
 
 
 def camProcess():
-
     # brocker ip address (this brokeris running inside our aws server)
     broker_address= "broker.mqttdashboard.com"
     print("creating new instance")
@@ -290,7 +258,7 @@ def camProcess():
                     k_obj = kalman(conData[0], conData[1][0], conData[1][1]) 
                     robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
                                # creating the kalman object                
-                robotData[markerIds[i][0]] = [0,0,0,0,0]
+                robotData[markerIds[i][0]] = [0,0,0,0,[0,0],True] # [center_point,top_two_cord,kalman,top_two_cord,destination,idle]
             # adding data to the dictionary    
             robotData[markerIds[i][0]][0] = conData[0]
             robotData[markerIds[i][0]][1] = conData[1]
