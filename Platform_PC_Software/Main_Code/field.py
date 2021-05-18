@@ -63,7 +63,7 @@ def calculateResultant(Forces):
         function takes the Forces list one the point
         and calculate the resultant force and direction
     '''
-    print(Forces)
+    # print(Forces)
     import resaltant
     # print("Forces: ", Forces)
     return resaltant.getResultant(Forces)
@@ -81,9 +81,9 @@ def getResultant(robots_data, idx):
         """ calculate the forces from other robots """
 
         if i != idx:
-            print("Test")
+            # print("Test")
             x = getForce(robots_data[i], robots_data[idx], False, 0.0000001)
-            print(x)
+            # print(x)
             Forces.append(x)
 
         """ calculate the Forces from boundaries"""
@@ -110,7 +110,7 @@ def getResultant(robots_data, idx):
     # calculate the Force for destination
     destination_robot = robot(robots_data[idx].des_pos, robots_data[idx].des_angle, -1, -1)
     y = getForce(robots_data[idx], destination_robot, True, 1000000)
-    print('desF', y)
+    # print('desF', y)
     Forces.append(y)
     # give a magnitude factor to to destination force
     # Forces[-1][0] *= len(robots_data)

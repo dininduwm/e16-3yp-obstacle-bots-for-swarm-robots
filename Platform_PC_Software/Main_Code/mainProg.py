@@ -11,6 +11,97 @@ from multiprocessing import Process, Manager
 from serialCom import readSerialData, sendToSerial, serialAutoSend
 import movements
 from robot import robot
+import paho.mqtt.client as mqtt #import the client1
+from encrypt import aesEncrypt, aesEncryptString, aesDecrypt
+import json
+
+# swarm configuration =========================
+# inporting the protobuff to serialize and deserialize the data
+from MQTT_msg_pb2 import *
+
+# swarm id
+SWARM_ID = 0;
+swarm_name = "platformPC UOP"
+BOT_COUNT = 2;
+ARENA_DIM = 30;
+
+TOPIC_COM = 'swarm/common'
+TOPIC_SEVER_COM = 'swarm/' + str(SWARM_ID) + '/com'
+TOPIC_SEVER_BOT_POS = 'swarm/'+ str(SWARM_ID) + '/bot_pos'
+connected_clients = []
+robots_data = []
+newBotPosArr = BotPositionArr()
+
+# on message function
+def on_message(client, userdata, message):
+    # newBotDecode = BotPositionArr.FromString(message.payload)
+    decrypted = aesDecrypt(message.payload).decode('utf-8')
+
+    try:
+        messageString = decrypted.split(';')
+        if message.topic == TOPIC_COM:
+            if messageString[1] == 'get_servers':
+                print('client requests server name')
+                client.publish(TOPIC_COM, aesEncryptString('server_name_response;'+str(SWARM_ID)+';'+swarm_name))
+        
+        if message.topic == TOPIC_SEVER_COM:
+            if messageString[1] == 'connection_req':
+                print('client requests connection')
+                client.publish(TOPIC_SEVER_COM, aesEncryptString('server_response;success;'+ json.dumps({'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM})))
+
+            if messageString[1] == 'set_dest':
+                print("Destination reset")
+                destinations = json.loads(messageString[2])
+                print(destinations)
+                # arrageBot(robots_data , destinations)
+
+            if messageString[1] == 'ping':
+                client.publish(TOPIC_SEVER_COM, aesEncryptString('ping'))
+            
+            if messageString[1] == 'battStat':
+                client.publish(TOPIC_SEVER_COM, aesEncryptString('battStat;' + battStat()))
+    except :
+        print("message format error")
+# # brocker ip address (this brokeris running inside our aws server)
+# broker_address= "broker.mqttdashboard.com"
+# print("creating new instance")
+
+# # client Name
+# client = mqtt.Client("Platform_PC", transport='websockets') #create new instance
+# client.on_message = on_message # attach function to callback
+
+# print("connecting to broker")
+# client.connect(broker_address, 8000, 60) #connect to broker
+# # starting the mqtt client loop
+# client.loop_start() 
+
+# # subscribing to the current postion topic
+# client.subscribe("swarm/{}/currentPos".format(SWARM_ID))
+# client.subscribe(TOPIC_COM)
+# client.subscribe(TOPIC_SEVER_COM)
+
+# print("Publishing message to topic", "swarm/{}/currentPos".format(SWARM_ID))
+
+# while True:
+#     time.sleep(1)
+#     newBotPosArr = BotPositionArr()
+
+#     for i in range(2):
+#         newBot = BotPosition()
+#         newBot.bot_id = i
+#         # newBot.x_cod = robots_data[i].init_pos[0]/(640*30) 
+#         # newBot.y_cod = robots_data[i].init_pos[1]/(480*30)
+#         newBot.x_cod = 12
+#         newBot.y_cod = 12
+#         print(newBot.x_cod,newBot.y_cod)
+#         newBot.angle = 0
+#         newBotPosArr.positions.append(newBot)
+
+#     data = newBotPosArr.SerializeToString()
+#     # print(data)
+#     client.publish(TOPIC_SEVER_BOT_POS, aesEncrypt(data))
+#     print('loop')
+# =============================================
 
 # Settings section
 serialComEn = False
@@ -71,7 +162,10 @@ parameters =  cv2.aruco.DetectorParameters_create()
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
 
 # calculate destinations
-def desCalc(robots, broadcastPos, frame):
+def desCalc(robots, broadcastPos, frame, client):
+    # create a array to store protobuf information
+    newBotPosArr = BotPositionArr()
+
     # need to optimize
     # print(robots)
     # print(broadcastPos)
@@ -86,9 +180,9 @@ def desCalc(robots, broadcastPos, frame):
                 robot_i[0], 0, (3, 4), 0
             )
         )
-    print(robots_data)
+    # print(robots_data)
     result = movements.action(robots_data)
-    print('fin',result)
+    # print('fin',result)
 
     for i, robot_i in enumerate(result):
         # calculate the direction
@@ -97,21 +191,58 @@ def desCalc(robots, broadcastPos, frame):
         Dir = robot_i[1]  # relustant force direction
         dx = F*math.cos((Dir/180*math.pi))
         dy = F*math.sin((Dir/180*math.pi))
-        print(dx,dy)
+        # print(dx,dy)
 
         # add the destination circle
         frame = cv2.circle(frame, tuple(des), 1, (0,255,0), 2)
+        # print(frame.shape)
         #print((int(robots_data[i].init_pos[0] + dx), int(robots_data[i].init_pos[1] + dy)))
         frame = cv2.line(frame, (int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), tuple(des), (0,255,0), 2)
         frame = cv2.line(frame, (int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), (int(robots_data[i].init_pos[0]+dx), int(robots_data[i].init_pos[1]+dy)), (0,0,255), 2)
 
         # calculate the broadcast positions
         broadcastPos[keys[i]] = positions(robots[keys[i]][0], robots[keys[i]][3], [robots_data[i].init_pos[0] + dx, robots_data[i].init_pos[1] + dy], 0)
+
+        # prepare data to send through mqtt
+        newBot = BotPosition()
+        newBot.bot_id = i
+        newBot.x_cod = robots_data[i].init_pos[0]/1280*30 
+        newBot.y_cod = robots_data[i].init_pos[1]/720*30
+        # newBot.x_cod = 12
+        # newBot.y_cod = 12
+        print(newBot.x_cod,newBot.y_cod)
+        newBot.angle = 0
+        newBotPosArr.positions.append(newBot)
+
+    # publishing data to mqtt
+    data = newBotPosArr.SerializeToString()
+    # print(data)
+    client.publish(TOPIC_SEVER_BOT_POS, aesEncrypt(data))
     
     return broadcastPos
 
 
 def camProcess():
+
+    # brocker ip address (this brokeris running inside our aws server)
+    broker_address= "broker.mqttdashboard.com"
+    print("creating new instance")
+
+    # client Name
+    client = mqtt.Client("Platform_PC", transport='websockets') #create new instance
+    client.on_message = on_message # attach function to callback
+
+    print("connecting to broker")
+    client.connect(broker_address, 8000, 60) #connect to broker
+    # starting the mqtt client loop
+    client.loop_start() 
+
+    # subscribing to the current postion topic
+    client.subscribe("swarm/{}/currentPos".format(SWARM_ID))
+    client.subscribe(TOPIC_COM)
+    client.subscribe(TOPIC_SEVER_COM)
+
+    print("Publishing message to topic", "swarm/{}/currentPos".format(SWARM_ID))
 
     # destination point
     desX = 400
@@ -187,7 +318,7 @@ def camProcess():
                 broadcastPos[id] = positions([kalVal[0], kalVal[1]], [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]], [desX, desY], 0)
 
         # calculate destinations    
-        broadcastPos = desCalc(robotData, broadcastPos, frame)
+        broadcastPos = desCalc(robotData, broadcastPos, frame, client)
 
         try:
             # print(broadcastPos[1][0], desX, desY)
