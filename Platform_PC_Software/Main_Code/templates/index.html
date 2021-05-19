@@ -1,0 +1,71 @@
+<!-- <div class="col-lg-8  offset-lg-2"> -->
+
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panaroma view</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<!-- <style>
+    .view {
+        position: absolute;
+        top: 10vh;
+        height: 50vh;
+        width: 100%;
+    }
+
+    body {
+        margin: 0;
+        background: rgb(29, 29, 28);
+    }
+
+    .controls{
+        position: absolute;
+        top:87vh;
+        height:10vh;
+        width: 98vw;
+        left: 50vw;
+        transform: translate(-50%, 0%);
+        border: 3px solid rgb(71, 69, 69);
+        border-radius: 10px;
+    }
+</style> -->
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div >
+                <img src="{{ url_for('video_feed') }}" width="100%" class="view">
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- <div class = "controls">
+        <div id = "switch" class = "button"><label>Switch</label></div>
+        <div id = "refresh" class = "button"><label>Refresh</label></div>
+        <label>Blur</label>
+        <input id ="blur"  type="range" min="1" max="100" value="50" class = 'slider'>
+
+        <label>Color</label>
+        <input id = "color" type="range" min="1" max="100" value="50" class = 'slider' >
+
+        <!-- <label > Left</label>
+        <div>
+            <select name="devices" id="device1" class = "dropdown"></select>
+        </div>
+        <label > Right</label>
+        <div>
+            <select name="devices" id="device2" class = "dropdown"></select>
+        </div> -->
+
+    </div> -->
+</body>
+
+<script src = "app.js"></script>
+</html>

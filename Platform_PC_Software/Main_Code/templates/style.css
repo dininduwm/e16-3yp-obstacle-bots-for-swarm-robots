@@ -1,0 +1,70 @@
+.view {
+    position: absolute;
+    top: 10vh;
+    /* height: 50vh;
+    width: 100%; */
+}
+
+body {
+    margin: 0;
+    background: rgb(29, 29, 28);
+    color:rgb(187, 212, 200);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.controls{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    align-items: center;
+    top:87vh;
+    height:7vh;
+    width: 98vw;
+    left: 50vw;
+    transform: translate(-50%, 0%);
+    border: 3px solid rgb(71, 69, 69);
+    border-radius: 30px;
+}
+
+.button{
+    display: grid;
+    height: 60%;
+    width: 100px;
+    
+    margin: 10;
+    margin-right:3vw;
+    
+    font-size: 150%;
+    
+    align-items:center ;
+    text-align:center;
+    color:rgb(187, 212, 200);
+    border-radius: 20px;
+    background:rgb(3, 112, 107);
+    transition-duration: 100ms;
+}
+
+.button:hover{
+    background:rgb(34, 150, 144);
+}
+
+.slider{
+    width: 12%;
+    margin-right:5vw;
+}
+
+.dropdown{
+    height: 40%;
+    width:100px;
+    margin-left: 1vw;
+    margin-right: 3vw;
+    background: rgb(29, 29, 28);
+    color:rgb(187, 212, 200);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    border: 1px solid rgb(117, 114, 114);
+    border-radius: 10px;
+}
+
+.dropdown:hover{
+    border: 2px solid rgb(151, 174, 187);
+}

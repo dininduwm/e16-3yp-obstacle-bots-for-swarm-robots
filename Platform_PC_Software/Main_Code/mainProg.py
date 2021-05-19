@@ -15,10 +15,9 @@ import paho.mqtt.client as mqtt #import the client1
 from encrypt import aesEncrypt, aesEncryptString, aesDecrypt
 import json
 from roboArrangement import  arrageBot
-
-# swarm configuration =========================
-# inporting the protobuff to serialize and deserialize the data
 from MQTT_msg_pb2 import *
+from flaskServing import *
+from helpFunc import *
 
 # swarm id
 SWARM_ID = 0;
@@ -37,11 +36,49 @@ newBotPosArr = BotPositionArr()
 img_x = 1280
 img_y = 720 
 
-# remapping destinations
-def remapDes(arr):
-    for data in arr:
-        data['x'] = int(data['x']/30*img_x)
-        data['y'] = int(data['y']/30*img_y)
+# parameters for saving the video
+frameRate = 21
+dispWidth = 640
+dispHeight = 480
+
+# Settings section
+serialComEn = False
+ipCamEn = True
+kalmanEn = False
+flaskEn = False
+
+# TODO: to be used in future 
+# important variables
+manager = Manager()
+sharedData = manager.list()
+sharedData.append("") # json string
+sharedData.append("") # json string
+
+# com port of the device
+comPort = '/dev/ttyUSB0'
+
+# making the connection with the seral port
+if serialComEn:
+    ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
+    ser.flushInput()   
+
+if ipCamEn:
+    cam = cv2.VideoCapture('http://192.168.1.4:8080/video') # video source to capture images
+else:
+    cam = cv2.VideoCapture(0) # video source to capture images
+
+# robot datas
+robotData = {} 
+robotDataSet = set()
+
+# position dictonary to bradcast
+broadcastPos = {}
+
+#Load the dictionary that was used to generate the markers.
+dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_250)
+
+# Initialize the detector parameters using default values
+parameters =  cv2.aruco.DetectorParameters_create()
 
 # on message function
 def on_message(client, userdata, message):
@@ -76,66 +113,11 @@ def on_message(client, userdata, message):
         pass
         # print("message format error")
 
-# Settings section
-serialComEn = False
-ipCamEn = True
-kalmanEn = False
-
-# TODO: to be used in future 
-# important variables
-manager = Manager()
-sharedData = manager.list()
-sharedData.append("") # json string
-
-# com port of the device
-comPort = '/dev/ttyUSB0'
-
-# making the connection with the seral port
-if serialComEn:
-    ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
-    ser.flushInput()   
-
-if ipCamEn:
-    cam = cv2.VideoCapture('http://192.168.1.4:8080/video') # video source to capture images
-else:
-    cam = cv2.VideoCapture(0) # video source to capture images
-
-# robot datas
-robotData = {} 
-robotDataSet = set()
-
-# position dictonary to bradcast
-broadcastPos = {}
-
-# finction to convert for points to center point + angle
-def convert(points):
-    # grabing the points
-    p1 = points[0]
-    p2 = points[1]
-    p3 = points[2]
-    p4 = points[3]
-
-    # calculating the center point
-    center = [int((p1[0]+p2[0]+p3[0]+p4[0])/4), int((p1[1]+p2[1]+p3[1]+p4[1])/4)]
-    
-    return [center, [p2, p3]]
-
-# parameters for saving the video
-frameRate = 21
-dispWidth = 640
-dispHeight = 480
-
-#Load the dictionary that was used to generate the markers.
-dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_250)
-
-# Initialize the detector parameters using default values
-parameters =  cv2.aruco.DetectorParameters_create()
-
 # saving to a video
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
 
 # calculate destinations
-def desCalc(robots, broadcastPos, frame, client):
+def destinationCalculation(robots, broadcastPos, frame, client):
     # create a array to store protobuf information
     newBotPosArr = BotPositionArr()
 
@@ -286,7 +268,7 @@ def camProcess():
                 broadcastPos[id] = positions([kalVal[0], kalVal[1]], [[kalVal[2], kalVal[3]] , [kalVal[4], kalVal[5]]], [desX, desY], 0)
 
         # calculate destinations    
-        broadcastPos = desCalc(robotData, broadcastPos, frame, client)
+        broadcastPos = destinationCalculation(robotData, broadcastPos, frame, client)
 
         try:
             # print(broadcastPos[1][0], desX, desY)
@@ -304,7 +286,9 @@ def camProcess():
         sharedData[0] = broadcastPos
 
         cv2.imshow('Cam', frame)
-
+        ret, buffer = cv2.imencode('.jpg', frame)
+        img = buffer.tobytes()
+        sharedData[1] = img
         #saving to the file
         #outVid.write(frame)
 
@@ -315,22 +299,28 @@ def camProcess():
     #outVid.release()
     cv2.destroyAllWindows()
 
+
 # main programme
 if __name__ == '__main__':
     # adding the cam process to the pool
     p1 = Process(target=camProcess)
     # reading recived data from the arduino
     # p2 = Process(target=readSerialData, args=(ser,sharedData))
+    # flask Thread
+    if flaskEn:
+        p2 = Process(target=flaskThread, args=(sharedData,))
     # send data to the arduino
     if serialComEn:
         p3 = Process(target=serialAutoSend, args=(ser, sharedData))
 
-    p1.start()   
-    # p2.start() 
+    p1.start()  
+    if flaskEn: 
+        p2.start() 
     if serialComEn:
         p3.start()   
 
-    p1.join()   
-    # p2.join() 
+    p1.join()  
+    if flaskEn: 
+        p2.join() 
     if serialComEn:
         p3.join()
