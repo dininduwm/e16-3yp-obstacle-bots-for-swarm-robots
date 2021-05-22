@@ -45,7 +45,8 @@ dispHeight = 480
 serialComEn = False
 ipCamEn = True
 kalmanEn = False
-flaskEn = False
+flaskEn = True
+cv2WindowEn = False
 
 # TODO: to be used in future 
 # important variables
@@ -53,6 +54,8 @@ manager = Manager()
 sharedData = manager.list()
 sharedData.append("") # json string
 sharedData.append("") # json string
+sharedData.append(False) # sharedData[2] is the serial broatcasting enable
+sharedData.append("")
 
 # com port of the device
 comPort = '/dev/ttyUSB0'
@@ -117,8 +120,21 @@ def on_message(client, userdata, message):
 # saving to a video
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
 
+# homing sequence
+def homeBots():
+    homing_seq = sharedData[3]
+    if homing_seq:
+        # print('home', homing_seq)
+        data = json.loads(homing_seq)
+        for key, item in data.items():
+            # print(key, robotData)
+            robotData[int(key)][4] = tuple(item)
+        sharedData[3] = ""
+
 # calculate destinations
 def destinationCalculation(robots, broadcastPos, frame, client):
+    # check homing sequence
+    homeBots()
     # create a array to store protobuf information
     newBotPosArr = BotPositionArr()
 
@@ -286,7 +302,8 @@ def camProcess():
         # addig to the shared variable
         sharedData[0] = broadcastPos
 
-        cv2.imshow('Cam', frame)
+        if cv2WindowEn:
+            cv2.imshow('Cam', frame)
         ret, buffer = cv2.imencode('.jpg', frame)
         img = buffer.tobytes()
         sharedData[1] = img

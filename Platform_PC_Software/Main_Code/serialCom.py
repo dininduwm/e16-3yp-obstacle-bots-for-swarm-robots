@@ -27,15 +27,17 @@ def serialAutoSend(ser, sharedData):
     interval = 0.25 # frequency the data to be sent in seconds
 
     while True:
-        # sendToSerial(ser, sharedData[0])
-        for key in sharedData[0]:
-            #print(key, sharedData[0][key])
+        # send if the operator GUI enabled
+        if sharedData[2]:
+            # sendToSerial(ser, sharedData[0])
+            for key in sharedData[0]:
+                #print(key, sharedData[0][key])
 
-            # creating a String
-            data = str(key) + ',' + ','.join(map(str, sharedData[0][key])) + ','
-            print("data ",data)
+                # creating a String
+                data = str(key) + ',' + ','.join(map(str, sharedData[0][key])) + ','
+                print("data ",data)
 
-            # sending data through serial
-            sendToSerial(ser, data)
+                # sending data through serial
+                sendToSerial(ser, data)
 
-            time.sleep(interval)
+                time.sleep(interval)

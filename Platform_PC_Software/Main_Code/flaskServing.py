@@ -1,4 +1,6 @@
 from flask import Flask, render_template, Response, request
+import time
+import json
 
 # flask initiating
 app = Flask(__name__)
@@ -6,6 +8,7 @@ app = Flask(__name__)
 # flash camera feed function
 def camFeed():
     while True:
+        time.sleep(0.01)
         img = app.config['frame'][1]
         # print ('image =======', img)
 
@@ -29,6 +32,48 @@ def js():
 @app.route('/video_feed')
 def video_feed():
     return Response(camFeed(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+# routs for the programme functions
+@app.route('/start')
+def start():
+    print('Process started')
+    app.config['frame'][2] = True
+    return "hello world"
+
+@app.route('/pause')
+def pause():
+    print('Process paused')
+    app.config['frame'][2] = False
+    return "hello world"
+
+@app.route('/home')
+def home():
+    print('Home')
+    data = {
+        '1': [417, 445],
+        '3': [515, 445],
+    }
+    app.config['frame'][3] = json.dumps(data)
+    return "hello world"
+
+@app.route('/home_1')
+def homeBot_1():
+    print('Home')
+    data = {
+        '1': [417, 445],
+    }
+    app.config['frame'][3] = json.dumps(data)
+    return "hello world"
+
+@app.route('/home_2')
+def homeBot_2():
+    print('Home')
+    data = {
+        '3': [515, 445],
+    }
+    app.config['frame'][3] = json.dumps(data)
+    return "hello world"
 
 # falsk thread
 def flaskThread(sharedData):
