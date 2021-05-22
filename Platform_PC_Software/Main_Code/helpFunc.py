@@ -1,3 +1,6 @@
+img_x = 640
+img_y = 480 
+
 # remapping destinations
 def remapDes(arr):
     for data in arr:

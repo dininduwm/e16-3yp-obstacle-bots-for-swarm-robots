@@ -34,9 +34,11 @@ def getForce(robot1, robot2, dest_flag = False, k = 15):
 
     
     if dest_flag:
-        force = (dist) / k if (dist) else 0
+        force = (dist**2) / k if (dist) else 0
+        force = min(0.0004, force)
     else:
         force = 1 / (k * ((dist) ** 5)) if (dist) else 0
+        force = min(0.0007, force)
     
     # calculate the angle
     if (x1 == x2): return [force, 90.00]
@@ -82,7 +84,7 @@ def getResultant(robots_data, idx):
 
         if i != idx:
             # print("Test")
-            x = getForce(robots_data[i], robots_data[idx], False, 0.0000001)
+            x = getForce(robots_data[i], robots_data[idx], False, 0.000005)
             # print(x)
             Forces.append(x)
 
@@ -109,7 +111,7 @@ def getResultant(robots_data, idx):
 
     # calculate the Force for destination
     destination_robot = robot(robots_data[idx].des_pos, robots_data[idx].des_angle, -1, -1)
-    y = getForce(robots_data[idx], destination_robot, True, 1000000)
+    y = getForce(robots_data[idx], destination_robot, True, 10000000)
     # print('desF', y)
     Forces.append(y)
     # give a magnitude factor to to destination force

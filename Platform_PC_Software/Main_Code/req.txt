@@ -1,0 +1,29 @@
+asgiref @ file:///tmp/build/80754af9/asgiref_1602513567813/work
+certifi==2020.6.20
+chardet==4.0.0
+click==8.0.0
+dataclasses==0.8
+Django @ file:///tmp/build/80754af9/django_1601563330930/work
+Flask==2.0.0
+idna==2.10
+itsdangerous==2.0.1
+Jinja2==3.0.1
+MarkupSafe==2.0.1
+mkl-fft==1.2.0
+mkl-random==1.1.1
+mkl-service==2.3.0
+Naked==0.1.31
+numpy @ file:///opt/concourse/worker/volumes/live/3f9886a9-9d2f-4d0a-7e31-acf5536b90f1/volume/numpy_and_numpy_base_1596234665264/work
+paho-mqtt==1.5.1
+protobuf==3.17.0
+psycopg2 @ file:///opt/concourse/worker/volumes/live/f70b797f-1fea-4855-7694-330b8c27138c/volume/psycopg2_1594305349650/work
+pycryptodome==3.10.1
+pyserial @ file:///tmp/build/80754af9/pyserial_1594419199743/work
+pytz==2020.1
+PyYAML==5.4.1
+requests==2.25.1
+shellescape==3.8.1
+six==1.15.0
+sqlparse @ file:///tmp/build/80754af9/sqlparse_1602184451250/work
+urllib3==1.26.4
+Werkzeug==2.0.1

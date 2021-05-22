@@ -33,8 +33,8 @@ robots_data = []
 newBotPosArr = BotPositionArr()
 
 # image resolutions
-img_x = 1280
-img_y = 720 
+img_x = 640
+img_y = 480 
 
 # parameters for saving the video
 frameRate = 21
@@ -95,6 +95,7 @@ def on_message(client, userdata, message):
         if message.topic == TOPIC_SEVER_COM:
             if messageString[1] == 'connection_req':
                 print('client requests connection')
+                BOT_COUNT = len(robotData)
                 client.publish(TOPIC_SEVER_COM, aesEncryptString('server_response;success;'+ json.dumps({'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM})))
 
             if messageString[1] == 'set_dest':
@@ -131,7 +132,7 @@ def destinationCalculation(robots, broadcastPos, frame, client):
         keys.append(key)
         robots_data.append(
             robot(
-                robot_i[0], 0, tuple(robot_i[4]), 0
+                    robot_i[0], 0, robot_i[4], 0
             )
         )
     # print(robots_data)
@@ -195,8 +196,8 @@ def camProcess():
     print("Publishing message to topic", "swarm/{}/currentPos".format(SWARM_ID))
 
     # destination point
-    desX = 400
-    desY = 50
+    # desX = 400
+    # desY = 50
 
     global sharedData, broadcastPos
     print("Cam Process Started")
@@ -240,7 +241,7 @@ def camProcess():
                     k_obj = kalman(conData[0], conData[1][0], conData[1][1]) 
                     robotData[markerIds[i][0]][2] = k_obj   # adding kalman object to the array
                                # creating the kalman object                
-                robotData[markerIds[i][0]] = [0,0,0,0,[0,0],True] # [center_point,top_two_cord,kalman,top_two_cord,destination,idle]
+                robotData[markerIds[i][0]] = [0,0,0,0,conData[0],True] # [center_point,top_two_cord,kalman,top_two_cord,destination,idle]
             # adding data to the dictionary    
             robotData[markerIds[i][0]][0] = conData[0]
             robotData[markerIds[i][0]][1] = conData[1]
