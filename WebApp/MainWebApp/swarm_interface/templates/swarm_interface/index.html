@@ -1,4 +1,4 @@
-<html lang="en">
+<!-- <html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,6 @@
 <link rel="stylesheet" href="/static/swarm/style.af07cd6d.css">
 
 <body class="body">
-    <!-- Header -->
     <header id="header">
         <a class="logo" href="index.html">Swarm Robotics</a>
         <nav>
@@ -18,7 +17,6 @@
         </nav>
     </header>
 
-    <!-- Nav -->
     <nav id="menu">
         <ul class="links">
             <li><a href="{% url 'home' %}">Home</a></li>
@@ -54,5 +52,221 @@
 <script src="/static/home_template/assets/js/util.js"></script>
 <script src="/static/home_template/assets/js/main.js"></script>
 <script src="/static/swarm/app.90953a91.js"></script>
+
+</html> -->
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWARM</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+</head>
+
+<body>
+
+    <script>
+        navigator.mediaDevices.getUserMedia({
+
+                video: {
+
+                    width: {
+                        max: 1280
+                    },
+
+                    height: {
+                        max: 720
+                    }
+
+                }
+            })
+            .then(stream => {
+                document.getElementById("video").srcObject = stream;
+            })
+    </script>
+
+
+    <div class="pos-f-t">
+        <div class="collapse" id="navbarToggleExternalContent">
+            <div class="bg-dark p-4">
+                <h5 class="text-white h4" style="color:#ffffff;">SWARM ROBOTS PLATFORM </h5>
+                <span class="text-muted">.</span>
+            </div>
+        </div>
+        <nav class="navbar navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div>
+                <h5 style="color:white; font-family:Verdana, Geneva, Tahoma, sans-serif; padding-right:8.2in">SWARM ROBOTS PLATFORM | University of Peradeniya</h5>
+            </div>
+        </nav>
+
+
+    </div>
+
+    <div style="display:flex; flex-direction:row;">
+
+
+        <div class="container" style="display:flex; flex-direction:column; padding: 10px;  background-color: #858688; ">
+            <div class="w3-container w3-cursive">
+                <h1 style="font-weight: bold; font-style: italic; font-family:'Garamond'; font-size: 30px;">TOP VIEW OF THE SWARM PLATFORM</h1>
+            </div>
+            <div class="container" style=" background-color: #707174; padding: 20px;">
+                <video id="video" autoplay></video>
+            </div>
+        </div>
+
+        <div style="height: 700px; flex-direction:column; padding: 10px; overflow-y: auto;  background-color: #343A40; padding: 15px; width:3.8in">
+
+            <div>
+                <h2 style=" padding: 5px; color: white; font-weight: bold; font-size: 25px; text-align:center;">Robot Details</h2>
+            </div>
+
+            <div style=" padding: 5px;">
+                <div class="card">
+                    <h5 class="card-header">Robot 1</h5>
+
+                    <div class="card-body">
+
+                        <div style="padding-bottom:10px; padding-left: 90px;">
+                            <span class="badge badge-success" style="background-color:#4be41c; border-radius:1.2em; ">Online</span>
+                        </div>
+
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 93%;" aria-valuenow="93" aria-valuemin="0" aria-valuemax="100">93%</div>
+                        </div>
+                        <p> </p>
+                        <a href="#" class="btn btn-danger">STOP</a>
+                        <a href="#" class="btn btn-outline-secondary ">HOME</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style=" padding: 5px;">
+                <div class="card">
+                    <h5 class="card-header">Robot 2 </h5>
+                    <div class="card-body">
+
+                        <div style="padding-bottom:10px; padding-left: 90px;">
+                            <span class="badge badge-success" style="background-color:#4be41c; border-radius:1.2em; ">Online</span>
+                        </div>
+
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
+                        </div>
+
+                        <p></p>
+                        <a href="#" class="btn btn-danger">STOP</a>
+                        <a href="#" class="btn btn-outline-secondary ">HOME</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style=" padding: 5px;">
+                <div class="card">
+                    <h5 class="card-header">Robot 3 </h5>
+                    <div class="card-body">
+
+                        <div style="padding-bottom:10px; padding-left: 90px;">
+                            <span class="badge badge-success" style="background-color:#98a095; border-radius:1.2em; ">Offline</span>
+                        </div>
+
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                        </div>
+
+                        <p></p>
+                        <a href="#" class="btn btn-danger">STOP</a>
+                        <a href="#" class="btn btn-outline-secondary ">HOME</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style=" padding: 5px;">
+                <div class="card">
+                    <h5 class="card-header">Robot 4 </h5>
+                    <div class="card-body">
+
+                        <div style="padding-bottom:10px; padding-left: 90px;">
+                            <span class="badge badge-success" style="background-color:#98a095; border-radius:1.2em; ">Offline</span>
+                        </div>
+
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 13%;" aria-valuenow="13" aria-valuemin="0" aria-valuemax="100">13%</div>
+                        </div>
+
+                        <p></p>
+                        <a href="#" class="btn btn-danger">STOP</a>
+                        <a href="#" class="btn btn-outline-secondary ">HOME</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style=" padding: 5px;">
+                <div class="card">
+                    <h5 class="card-header">Robot 5 </h5>
+                    <div class="card-body">
+
+                        <div style="padding-bottom:10px; padding-left: 90px;">
+                            <span class="badge badge-success" style="background-color:#98a095; border-radius:1.2em; ">Offline</span>
+                        </div>
+
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">90%</div>
+                        </div>
+
+                        <p></p>
+                        <a href="#" class="btn btn-danger">STOP</a>
+                        <a href="#" class="btn btn-outline-secondary ">HOME</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div style="display:flex; flex-direction:column; padding: 10px; background-color: #161A1D; padding: 15px; width:3in">
+
+            <div>
+                <h2 style=" padding: 5px; color: white; font-weight: bold; text-align:center; padding-bottom:1in"> Control Panel</h2>
+            </div>
+
+            <div style="padding: 10px; ">
+                <button type="button " class="btn btn-primary " style="padding: 15px; width:100%; ">START</button>
+            </div>
+
+            <div style="padding: 10px; ">
+                <button type=" button " class="btn btn-secondary " style="padding: 15px; width:100%;  ">PAUSE</button>
+            </div>
+
+            <div style="padding: 10px; ">
+                <button type="button " class="btn btn-success " style="padding: 15px; width:100%; ">HOME</button>
+            </div>
+
+            <div style="padding: 30px; ">
+                <!-- <button type="button " class="btn btn-outline-danger " style="padding: 15px; width:100% ">STOP</button> -->
+                <button type="button" class="btn btn-danger" style="padding: 40px; text-align:center; height:2in; width:2in;  font-family:'Garamond'; border-radius:100%; font-weight:bold; font-size:35px; margin:auto; ">STOP</button>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+</body>
+
 
 </html>
