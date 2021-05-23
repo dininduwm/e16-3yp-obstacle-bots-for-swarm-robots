@@ -9,6 +9,7 @@
    * Dr. Isuru Navinna
    * Mr. Ziyan Marikkar
    * Prof. Roshan Ragel
+   * Dr. Upul Jayasinghe
 * Related links
    * [Project Page](https://cepdnaclk.github.io/e16-3yp-obstacle-bots-for-swarm-robots/)
    * [Web Application Home Page](http://3.93.215.173/)
