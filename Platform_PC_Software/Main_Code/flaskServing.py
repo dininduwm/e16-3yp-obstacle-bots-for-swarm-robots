@@ -50,28 +50,40 @@ def pause():
 @app.route('/home')
 def home():
     print('Home')
-    data = {
-        '1': [417, 445],
-        '3': [515, 445],
-    }
+    data = [
+        {
+            'x': 417,
+            'y': 445,
+        },
+        {
+            'x': 515,
+            'y': 445,
+        },
+    ]
     app.config['frame'][3] = json.dumps(data)
     return "hello world"
 
 @app.route('/home_1')
 def homeBot_1():
     print('Home')
-    data = {
-        '1': [417, 445],
-    }
+    data = [
+        {
+            'x': 515,
+            'y': 445,
+        },
+    ]
     app.config['frame'][3] = json.dumps(data)
     return "hello world"
 
 @app.route('/home_2')
 def homeBot_2():
     print('Home')
-    data = {
-        '3': [515, 445],
-    }
+    data = [
+        {
+            'x': 417,
+            'y': 445,
+        },
+    ]
     app.config['frame'][3] = json.dumps(data)
     return "hello world"
 

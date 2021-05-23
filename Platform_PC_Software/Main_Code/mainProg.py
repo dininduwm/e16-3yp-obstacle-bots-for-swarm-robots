@@ -42,7 +42,7 @@ dispWidth = 640
 dispHeight = 480
 
 # Settings section
-serialComEn = False
+serialComEn = True
 ipCamEn = True
 kalmanEn = False
 flaskEn = True
@@ -60,13 +60,16 @@ sharedData.append("")
 # com port of the device
 comPort = '/dev/ttyUSB0'
 
+# flags
+desReachedFlag = False
+
 # making the connection with the seral port
 if serialComEn:
     ser = serial.Serial(comPort, 9600, timeout=1, rtscts=1) # connecting to the serial port
     ser.flushInput()   
 
 if ipCamEn:
-    cam = cv2.VideoCapture('http://192.168.1.4:8080/video') # video source to capture images
+    cam = cv2.VideoCapture('http://192.168.1.5:8081/video') # video source to capture images
 else:
     cam = cv2.VideoCapture(0) # video source to capture images
 
@@ -83,8 +86,17 @@ dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_250)
 # Initialize the detector parameters using default values
 parameters =  cv2.aruco.DetectorParameters_create()
 
+def battStat():
+    batt_lvls = {}
+    
+    batt_lvls[0] = 85
+    batt_lvls[1] = 79 
+    
+    return json.dumps(batt_lvls)
+
 # on message function
 def on_message(client, userdata, message):
+    global BOT_COUNT
     # newBotDecode = BotPositionArr.FromString(message.payload)
     decrypted = aesDecrypt(message.payload).decode('utf-8')
 
@@ -97,8 +109,8 @@ def on_message(client, userdata, message):
         
         if message.topic == TOPIC_SEVER_COM:
             if messageString[1] == 'connection_req':
-                print('client requests connection')
                 BOT_COUNT = len(robotData)
+                print('client requests connection', {'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM})
                 client.publish(TOPIC_SEVER_COM, aesEncryptString('server_response;success;'+ json.dumps({'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM})))
 
             if messageString[1] == 'set_dest':
@@ -109,13 +121,13 @@ def on_message(client, userdata, message):
                 arrageBot(robotData , destinations)
 
             if messageString[1] == 'ping':
-                client.publish(TOPIC_SEVER_COM, aesEncryptString('ping'))
+                client.publish(TOPIC_SEVER_COM, aesEncryptString('ping;'))
             
             if messageString[1] == 'battStat':
                 client.publish(TOPIC_SEVER_COM, aesEncryptString('battStat;' + battStat()))
-    except :
-        pass
-        # print("message format error")
+    except Exception as e :
+        # pass
+        print("message format error", e)
 
 # saving to a video
 #outVid = cv2.VideoWriter('videos/recordings.avi', cv2.VideoWriter_fourcc(*'XVID'),  frameRate, (dispWidth, dispHeight))
@@ -125,10 +137,8 @@ def homeBots():
     homing_seq = sharedData[3]
     if homing_seq:
         # print('home', homing_seq)
-        data = json.loads(homing_seq)
-        for key, item in data.items():
-            # print(key, robotData)
-            robotData[int(key)][4] = tuple(item)
+        destinations = json.loads(homing_seq)
+        arrageBot(robotData , destinations)
         sharedData[3] = ""
 
 # calculate destinations
@@ -141,7 +151,7 @@ def destinationCalculation(robots, broadcastPos, frame, client):
     # need to optimize
     # print(robots)
     # print(broadcastPos)
-    global robot
+    global robot, desReachedFlag
     robots_data = []
     keys = []
     for key, robot_i in robots.items():
@@ -154,6 +164,9 @@ def destinationCalculation(robots, broadcastPos, frame, client):
     # print(robots_data)
     result = movements.action(robots_data)
     # print('fin',result)
+
+    # count the bots who have reached the destination
+    countDesReach = 0
 
     for i, robot_i in enumerate(result):
         # calculate the direction
@@ -181,6 +194,24 @@ def destinationCalculation(robots, broadcastPos, frame, client):
         newBot.y_cod = robots_data[i].init_pos[1]/img_y*30
         newBot.angle = 0
         newBotPosArr.positions.append(newBot)
+
+        if distanceTwoPoints((int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), tuple(robots_data[i].des_pos)):
+            countDesReach += 1
+
+    # find if the destination reached
+    if (countDesReach == 0):
+        print('All the bots reached the destinations')
+        if desReachedFlag:            
+            for i, robot_i in enumerate(result):
+                broadcastPos[keys[i]] = positions(robots[keys[i]][0], robots[keys[i]][3], [robots_data[i].init_pos[0], robots_data[i].init_pos[1] + 5], 0)
+        else:
+            for i, robot_i in enumerate(result):
+                broadcastPos[keys[i]] = positions(robots[keys[i]][0], robots[keys[i]][3], [robots_data[i].des_pos[0], robots_data[i].des_pos[1]], 0)
+                desReachedFlag = True
+            for robot in robots_data:
+                robot[4] = robot[0]
+    else:
+        desReachedFlag = False
 
     # publishing data to mqtt
     data = newBotPosArr.SerializeToString()

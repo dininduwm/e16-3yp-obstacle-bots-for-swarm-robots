@@ -1,3 +1,5 @@
+import math
+
 img_x = 640
 img_y = 480 
 
@@ -18,3 +20,7 @@ def convert(points):
     # calculating the center point
     center = [int((p1[0]+p2[0]+p3[0]+p4[0])/4), int((p1[1]+p2[1]+p3[1]+p4[1])/4)]
     return [center, [p2, p3]]
+
+# distance calculation
+def distanceTwoPoints(p1, p2):
+    return math.sqrt((((p1[0]-p2[0])**2) + ((p1[1]-p2[1])**2)))
