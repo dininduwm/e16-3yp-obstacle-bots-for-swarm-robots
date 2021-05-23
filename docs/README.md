@@ -84,17 +84,17 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   
 ### WEB INTERFACE
 
-  #### Web Interface
+   #### Web Interface
 
-  [WEB INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1p-WY_BGf4mX0sW0hUGA0x1Oh4LhzKp-s/view?usp=sharing)
+   [WEB INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1p-WY_BGf4mX0sW0hUGA0x1Oh4LhzKp-s/view?usp=sharing)
 
-  #### 3D Interface
+   #### 3D Interface
 
-  [3D INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1X0jq2r_McNR5bppIPc1HjJY1mYPvrYJg/view?usp=sharing)
+   [3D INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1X0jq2r_McNR5bppIPc1HjJY1mYPvrYJg/view?usp=sharing)
   
-  #### Platform PC Operator GUI
+   #### Platform PC Operator GUI
 
-  [3D INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1NqZ_JTVdCaxA32IgvhgPbMnpfuTEIJsR/view?usp=sharing)
+   [3D INTERFACE DEMO VIDEO](https://drive.google.com/file/d/1NqZ_JTVdCaxA32IgvhgPbMnpfuTEIJsR/view?usp=sharing)
   
 ### ALGORITHM
 
@@ -104,17 +104,17 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   
 ### TESTING
   
-  #### Algorithm Deployment
+   #### Algorithm Deployment
 
-  [Algorithm Deployment Video](https://drive.google.com/file/d/18J7mnoRWbKy1-WM-fGOGq0C8-KU52HCJ/view?usp=sharing)
+   [Algorithm Deployment Video](https://drive.google.com/file/d/18J7mnoRWbKy1-WM-fGOGq0C8-KU52HCJ/view?usp=sharing)
   
-  #### Web Interface Authentication And Authorization Testing
+   #### Web Interface Authentication And Authorization Testing
 
-  [Web Interface Testing Video](https://drive.google.com/file/d/12DfR7rRFpMq2U1c6BGW0rHfQw0c6rsvO/view?usp=sharing)
+   [Web Interface Testing Video](https://drive.google.com/file/d/12DfR7rRFpMq2U1c6BGW0rHfQw0c6rsvO/view?usp=sharing)
   
-  #### Hardware Testing
+   #### Hardware Testing
 
-  [Hardware Testing Video](https://drive.google.com/file/d/1UNAkzgOKk-umYvnypkwuJJWv3zXbf69Z/view?usp=sharing)
+   [Hardware Testing Video](https://drive.google.com/file/d/1UNAkzgOKk-umYvnypkwuJJWv3zXbf69Z/view?usp=sharing)
   
 ### BUDGET
   ![BUDGET](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/budget.png?raw=true)
