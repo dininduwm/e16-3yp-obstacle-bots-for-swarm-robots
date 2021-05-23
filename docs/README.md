@@ -8,12 +8,15 @@
 * Supervisor
    * Dr. Isuru Navinna
    * Mr. Ziyan Marikkar
+   * Prof. Roshan Ragel
+   * Dr. Upul Jayasinghe
 * Related links
    * [Faculty website](http://eng.pdn.ac.lk/)
    * [Department website](http://www.ce.pdn.ac.lk/)
    * [Web Application Home Page](http://3.93.215.173/)
    * [Swarm Dash Board](http://3.93.215.173/swarm/)
- ### TABLE OF CONTENT
+
+### TABLE OF CONTENT
 
 1. >[OVERVIEW](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#overview)
 2. >[GOALS](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots#goals)
@@ -65,6 +68,9 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
    
     [3D MODEL DEMO VIDEO](https://drive.google.com/file/d/1BgqnTfJoUTvxhPZTlfKIsdu9cmKUDJUL/view?usp=sharing)
 
+ * #### SAFTY MEASURES
+
+    ![IMERGENCY STATUS](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/imergency_status.gif?raw=true)
 
     
 * #### PCB DESIGN
