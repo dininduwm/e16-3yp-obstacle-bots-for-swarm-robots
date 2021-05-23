@@ -62,10 +62,7 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
  * #### REAL HARDWARE
     ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/New_Bot.jpg?raw=true)
 
- * #### PROTOTYPE
-
-    ![robot_base_design](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/proto.jpg?raw=true)
-
+   ![STATUS _LED](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/status_led.gif?raw=true)
  * #### 3D MODEL
  
      ![robot_base_design](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_base_design.png?raw=true)
@@ -74,11 +71,6 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
    
     [3D MODEL DEMO VIDEO](https://drive.google.com/file/d/1BgqnTfJoUTvxhPZTlfKIsdu9cmKUDJUL/view?usp=sharing)
 
- * #### SAFTY MEASURES
-   
-   ![STATUS _LED](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/status_led.gif?raw=true)
-
-   ![IMERGENCY_LAMP](img/imergency_lamp.gif?raw=true){:height="36px" width="36px"}
 
     
 * #### PCB DESIGN
