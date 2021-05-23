@@ -78,7 +78,7 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
    
    ![STATUS _LED](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/status_led.gif?raw=true)
 
-   ![IMERGENCY_LAMP](/img/imergency_lamp.gif?raw=true){:height="36px" width="36px"}
+   ![IMERGENCY_LAMP](img/imergency_lamp.gif?raw=true){:height="36px" width="36px"}
 
     
 * #### PCB DESIGN
