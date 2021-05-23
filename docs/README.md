@@ -61,9 +61,7 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
    ![STATUS _LED](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/status_led.gif?raw=true)
  * #### 3D MODEL
  
-     ![robot_base_design](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/3DModel/Components/Design_Diagrams/robot_base_design.png?raw=true)
-
-   ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/solid.jpg?raw=true)
+   ![MODEL](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/solid_full.jpg?raw=true)
    
     [3D MODEL DEMO VIDEO](https://drive.google.com/file/d/1BgqnTfJoUTvxhPZTlfKIsdu9cmKUDJUL/view?usp=sharing)
 
@@ -91,10 +89,8 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 ### ALGORITHM
 
   ![ALGORITHM](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/rusiru.gif?raw=true)
-
-  ![ALGORITHM](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/field.png?raw=true)
   
-  ![THEORY](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/equation.png?raw=true)
+  ![THEORY](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/algo.jpg?raw=true)
   
 ### TESTING
   
