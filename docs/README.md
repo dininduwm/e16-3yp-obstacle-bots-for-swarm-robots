@@ -15,7 +15,7 @@
    * [Department website](http://www.ce.pdn.ac.lk/)
    * [Web Application Home Page](http://3.93.215.173/)
    * [Swarm Dash Board](http://3.93.215.173/swarm/)
-   * [Git Hub Repository](https://cepdnaclk.github.io/e16-3yp-obstacle-bots-for-swarm-robots/)
+   * [Git Hub Repository](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots)
 
 ### TABLE OF CONTENT
 
@@ -118,4 +118,8 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   
 ### BUDGET
   ![BUDGET](https://github.com/dtdinidu7/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/docs/img/budget.png?raw=true)
+
+### FINAL DEMO VIDEO
+  [Final Demo Video](https://drive.google.com/file/d/1B5mBls3YdkssftkCu0zrgztlk1W86l-X/view?usp=sharing)
+  
 
