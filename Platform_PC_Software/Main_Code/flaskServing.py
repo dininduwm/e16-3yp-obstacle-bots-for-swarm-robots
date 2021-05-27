@@ -8,7 +8,7 @@ app = Flask(__name__)
 # flash camera feed function
 def camFeed():
     while True:
-        time.sleep(0.01)
+        time.sleep(0.1)
         img = app.config['frame'][1]
         # print ('image =======', img)
 

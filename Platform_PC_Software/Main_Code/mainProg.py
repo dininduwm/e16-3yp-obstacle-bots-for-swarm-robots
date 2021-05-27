@@ -111,7 +111,7 @@ def on_message(client, userdata, message):
             if messageString[1] == 'connection_req':
                 BOT_COUNT = len(robotData)
                 print('client requests connection', {'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM})
-                client.publish(TOPIC_SEVER_COM, aesEncryptString('server_response;success;'+ json.dumps({'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM})))
+                client.publish(TOPIC_SEVER_COM, aesEncryptString('server_response;success;'+ json.dumps({'bot_count':BOT_COUNT, 'areana_dim':ARENA_DIM})), qos = 2)
 
             if messageString[1] == 'set_dest':
                 print("Destination reset")
@@ -195,21 +195,26 @@ def destinationCalculation(robots, broadcastPos, frame, client):
         newBot.angle = 0
         newBotPosArr.positions.append(newBot)
 
-        if distanceTwoPoints((int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), tuple(robots_data[i].des_pos)):
+        # print(distanceTwoPoints((int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), tuple(robots_data[i].des_pos)))
+        if 40<distanceTwoPoints((int(robots_data[i].init_pos[0]), int(robots_data[i].init_pos[1])), tuple(robots_data[i].des_pos)):
             countDesReach += 1
 
     # find if the destination reached
     if (countDesReach == 0):
-        print('All the bots reached the destinations')
         if desReachedFlag:            
+            # print('All the bots reached the destinations')
             for i, robot_i in enumerate(result):
                 broadcastPos[keys[i]] = positions(robots[keys[i]][0], robots[keys[i]][3], [robots_data[i].init_pos[0], robots_data[i].init_pos[1] + 5], 0)
         else:
+            temp = []
             for i, robot_i in enumerate(result):
                 broadcastPos[keys[i]] = positions(robots[keys[i]][0], robots[keys[i]][3], [robots_data[i].des_pos[0], robots_data[i].des_pos[1]], 0)
-                desReachedFlag = True
-            for robot in robots_data:
-                robot[4] = robot[0]
+            for key in robotData:
+                temp.append({'x':int(robotData[key][0][0]), 'y': int(robotData[key][0][1])})
+            
+            
+            arrageBot(robotData, temp)
+            desReachedFlag = True
     else:
         desReachedFlag = False
 
@@ -347,6 +352,7 @@ def camProcess():
     cam.release()
     #outVid.release()
     cv2.destroyAllWindows()
+
 
 
 # main programme
