@@ -126,5 +126,6 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
   
 ### FUTURE IMPROVEMENT
   We plan to run all the algorithms first and then send the data to the robots.
+  
   We have to further tune the parameters  to get a smooth process.
   
