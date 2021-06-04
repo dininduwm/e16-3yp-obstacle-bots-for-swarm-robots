@@ -16,6 +16,8 @@
    * [Web Application Home Page](http://3.93.215.173/)
    * [Swarm Dash Board](http://3.93.215.173/swarm/)
    * [Git Hub Repository](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots)
+   * [Design Manual](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/Documentation/DesignManual.pdf)
+   * [User Manual](https://github.com/cepdnaclk/e16-3yp-obstacle-bots-for-swarm-robots/blob/master/Documentation/UserManual.pdf)
 
 ### TABLE OF CONTENT
 
@@ -122,4 +124,8 @@ In swarm robotics the major barrier is that the researchers have to do a lot of 
 ### FINAL DEMO VIDEO
   [Final Demo Video](https://drive.google.com/file/d/1B5mBls3YdkssftkCu0zrgztlk1W86l-X/view?usp=sharing)
   
-
+### FUTURE IMPROVEMENT
+  We plan to run all the algorithms first and then send the data to the robots.
+  
+  We have to further tune the parameters  to get a smooth process.
+  
