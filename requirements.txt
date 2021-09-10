@@ -9,4 +9,4 @@ protobuf==3.13.0
 pyserial==3.4
 pytz==2020.4
 six==1.15.0
-sqlparse==0.4.1
+sqlparse==0.4.2
