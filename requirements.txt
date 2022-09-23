@@ -5,7 +5,7 @@ grpcio-tools==1.33.2
 numpy==1.19.4
 opencv-python==4.4.0.46
 paho-mqtt==1.5.1
-protobuf==3.13.0
+protobuf==3.18.3
 pyserial==3.4
 pytz==2020.4
 six==1.15.0
